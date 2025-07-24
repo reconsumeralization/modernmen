@@ -6,6 +6,13 @@ import Image from 'next/image'
 export default function TeamPage() {
   const teamMembers = [
     {
+      name: "Tammy",
+      title: "Owner / Journeyman Stylist",
+      bio: "After putting hair on the floor for over 20 years now, I love it more today than I did in the beginning. It's like a romance that evolved from a casual courtship to a lifetime commitment.",
+      fullBio: "Owner and passionate leader of Modern Men, Tammy carries herself with a positive glow and believes in making a future on making men look the best and feel confident in themselves. She inspires her team to achieve excellence in men's grooming.",
+      image: "/images/tammy.jpg"
+    },
+    {
       name: "Hicham Mellouli",
       title: "Barber",
       bio: "My journey in this industry began at the age of 19, when I started my apprenticeship under the guidance of Master Barber Zbi. I've always been drawn to the creative and social aspects of barbering, and I feel fortunate to have found a career that aligns with my strengths and interests.",
@@ -13,18 +20,25 @@ export default function TeamPage() {
       image: "/images/hicham.jpg"
     },
     {
-      name: "Ella Forestal",
+      name: "Jasmine",
       title: "Journeyman Stylist",
-      bio: "I've been passionate about the beauty industry for nine years, with seven of those years dedicated to the art of hair styling. I love letting my creative side shine through with fun, edgy cuts and colors.",
-      fullBio: "I specialize in men's hair (I do a mean fade) and textured women's cuts. Growing up in the world of competitive dance, I was introduced to hair and makeup at the young age of three. The stylist-client relationship is truly unique – I'm thrilled to help you feel and look your best!",
-      image: "/images/ella.jpg"
+      bio: "Modern Men was my first job as school finished. I was inspired by Tammy's goals and her positive energy. I have enjoyed every day and minute of working here and can't wait for what the future holds.",
+      fullBio: "Jasmine creates forever friendships with clients and provides a safe zone for them. She believes this is a team game and is constantly learning from her coworkers. She specializes in advanced traditional barbering techniques.",
+      image: "/images/jasmine.jpg"
     },
     {
-      name: "Tri Ha",
-      title: "Hairstylist",
-      bio: "I began my journey as a barber at 18, driven by a passion for the craft and the impact a great haircut can have on a person's confidence. At 19, I enrolled at The Style Academy, where I gained valuable training.",
-      fullBio: "For me, barbering is about more than just cutting hair—it's about creating a personalized experience for each client, understanding their unique style, and helping them feel their best. My goal is always to ensure that every client walks out feeling happy, confident, and satisfied with their look.",
-      image: "/images/tri.jpg"
+      name: "Henok",
+      title: "Apprentice Barber",
+      bio: "I am originally from Eritrea Africa and I can remember from the young age of 15 I was put in charge of cutting family and friends hair! I speak 4 languages: Tigrigna, Amharic, Arabic and English.",
+      fullBio: "I feel very appreciative that I can fill the demand of an experienced Barber for the growing Ethnic population in Regina and surrounding area. I truly enjoy shaving and am very happy to be a part of the Queen City Barbers team.",
+      image: "/images/henok.jpg"
+    },
+    {
+      name: "Sveta Orlenko",
+      title: "Professional Barber",
+      bio: "I have over 19 years' experience and am highly educated with diplomas from Ukraine, London England, and Israel. I was part of a highly professional hair team creating modern platform artistry hairstyles.",
+      fullBio: "I've specialized in everything from Men's haircutting and beard shaping to hair tattoos. I have developed a passion for cutting Men's hair and love doing hair Tattoos! I specialize in Men's barbering as part of the Queen City Barbers team.",
+      image: "/images/sveta.jpg"
     }
   ]
 

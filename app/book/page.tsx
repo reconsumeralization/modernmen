@@ -30,9 +30,11 @@ export default function BookPage() {
 
   const staffMembers = [
     "No Preference",
+    "Tammy",
     "Hicham Mellouli",
-    "Ella Forestal", 
-    "Tri Ha"
+    "Jasmine", 
+    "Henok",
+    "Sveta Orlenko"
   ]
 
   const timeSlots = [
