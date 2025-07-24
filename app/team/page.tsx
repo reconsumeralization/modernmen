@@ -72,8 +72,14 @@ export default function TeamPage() {
             >
               <div className="relative h-80">
                 <div className="w-full h-full bg-gradient-to-br from-salon-gold/20 to-salon-dark/20 flex items-center justify-center">
-                  <div className="text-6xl font-bold text-salon-gold opacity-30">
-                    {member.name.split(' ').map(n => n[0]).join('')}
+                  <div className="text-center">
+                    <div className="w-24 h-24 rounded-full bg-salon-gold/30 flex items-center justify-center mx-auto mb-4">
+                      <span className="text-3xl font-bold text-salon-gold">
+                        {member.name.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    </div>
+                    <div className="text-salon-gold/70 text-sm">Professional Photo</div>
+                    <div className="text-salon-gold/70 text-xs">Coming Soon</div>
                   </div>
                 </div>
               </div>

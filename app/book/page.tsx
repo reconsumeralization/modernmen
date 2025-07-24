@@ -45,24 +45,44 @@ export default function BookPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Simple form submission - in production, this would connect to your backend
-    console.log('Booking submitted:', formData)
-    setIsSubmitted(true)
     
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false)
-      setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        service: '',
-        staff: '',
-        date: '',
-        time: '',
-        message: ''
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       })
-    }, 3000)
+      
+      const result = await response.json()
+      
+      if (response.ok) {
+        console.log('Booking submitted:', result)
+        setIsSubmitted(true)
+        
+        // Reset form after 3 seconds
+        setTimeout(() => {
+          setIsSubmitted(false)
+          setFormData({
+            name: '',
+            phone: '',
+            email: '',
+            service: '',
+            staff: '',
+            date: '',
+            time: '',
+            message: ''
+          })
+        }, 3000)
+      } else {
+        console.error('Booking failed:', result)
+        alert('Booking failed: ' + (result.error || 'Unknown error'))
+      }
+    } catch (error) {
+      console.error('Network error:', error)
+      alert('Network error. Please try again.')
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
