@@ -1,0 +1,324 @@
+// Database schema definition for Prisma ORM
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users/Clients
+model Client {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  phone       String
+  dateOfBirth DateTime?
+  address     String?
+  city        String?
+  province    String?
+  postalCode  String?
+  notes       String?
+  
+  // Preferences
+  preferredStylist String?
+  allergies        String?
+  hairType         String?
+  skinSensitivity  String?
+  
+  // Tracking
+  totalVisits      Int      @default(0)
+  totalSpent       Decimal  @default(0)
+  lastVisit        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  bookings         Booking[]
+  orders           Order[]
+  loyaltyPoints    LoyaltyPoint[]
+  clientNotes      ClientNote[]
+  
+  @@map("clients")
+}
+
+// Staff/Stylists
+model Staff {
+  id           String      @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String      @unique
+  phone        String
+  role         StaffRole
+  specialties  String[]
+  
+  // Schedule
+  workingDays  String[]    // ["monday", "tuesday", etc.]
+  startTime    String      // "09:00"
+  endTime      String      // "17:00"
+  breakStart   String?     // "12:00"
+  breakEnd     String?     // "13:00"
+  
+  // Performance
+  totalBookings Int        @default(0)
+  rating        Decimal?   @default(0)
+  
+  // Status
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  
+  // Relations
+  bookings     Booking[]
+  availability StaffAvailability[]
+  
+  @@map("staff")
+}
+
+// Services
+model Service {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  duration     Int      // minutes
+  price        Decimal
+  category     String
+  isActive     Boolean  @default(true)
+  
+  // Add-ons
+  addOns       String[] // ["beard trim", "hot towel", etc.]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  bookings     Booking[]
+  
+  @@map("services")
+}
+
+// Products
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  brand       String
+  description String?
+  price       Decimal
+  cost        Decimal?    // Cost price for profit tracking
+  category    String
+  inStock     Int         @default(0)
+  minStock    Int         @default(5)
+  sku         String      @unique
+  barcode     String?
+  
+  // Images
+  imageUrls   String[]
+  
+  // Status
+  isActive    Boolean     @default(true)
+  isFeatured  Boolean     @default(false)
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  orderItems  OrderItem[]
+  
+  @@map("products")
+}
+
+// Bookings/Appointments
+model Booking {
+  id            String        @id @default(cuid())
+  clientId      String
+  staffId       String
+  serviceId     String
+  
+  // Timing
+  date          DateTime
+  startTime     String        // "14:30"
+  endTime       String        // "15:30"
+  duration      Int           // minutes
+  
+  // Details
+  status        BookingStatus @default(PENDING)
+  notes         String?
+  totalPrice    Decimal
+  
+  // Payment
+  paymentStatus PaymentStatus @default(UNPAID)
+  paymentMethod String?
+  
+  // Tracking
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Relations
+  client        Client        @relation(fields: [clientId], references: [id])
+  staff         Staff         @relation(fields: [staffId], references: [id])
+  service       Service       @relation(fields: [serviceId], references: [id])
+  
+  @@map("bookings")
+}
+
+// Orders/Sales
+model Order {
+  id            String        @id @default(cuid())
+  clientId      String
+  orderNumber   String        @unique
+  
+  // Totals
+  subtotal      Decimal
+  tax           Decimal
+  discount      Decimal       @default(0)
+  total         Decimal
+  
+  // Status
+  status        OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(UNPAID)
+  paymentMethod String?
+  
+  // Fulfillment
+  isPickup      Boolean       @default(true)
+  shippingAddress String?
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Relations
+  client        Client        @relation(fields: [clientId], references: [id])
+  items         OrderItem[]
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Decimal // Price at time of sale
+  
+  // Relations
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  
+  @@map("order_items")
+}
+
+// Staff Availability
+model StaffAvailability {
+  id        String   @id @default(cuid())
+  staffId   String
+  date      DateTime
+  startTime String
+  endTime   String
+  isAvailable Boolean @default(true)
+  reason    String?  // "vacation", "sick", "personal"
+  
+  // Relations
+  staff     Staff    @relation(fields: [staffId], references: [id])
+  
+  @@unique([staffId, date])
+  @@map("staff_availability")
+}
+
+// Client Notes
+model ClientNote {
+  id        String   @id @default(cuid())
+  clientId  String
+  note      String
+  type      String   // "service", "preference", "allergy", "general"
+  createdBy String   // Staff member who added the note
+  createdAt DateTime @default(now())
+  
+  // Relations
+  client    Client   @relation(fields: [clientId], references: [id])
+  
+  @@map("client_notes")
+}
+
+// Loyalty Points
+model LoyaltyPoint {
+  id          String   @id @default(cuid())
+  clientId    String
+  points      Int
+  reason      String   // "booking", "referral", "birthday", "redemption"
+  description String?
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  client      Client   @relation(fields: [clientId], references: [id])
+  
+  @@map("loyalty_points")
+}
+
+// Inventory Tracking
+model InventoryTransaction {
+  id        String              @id @default(cuid())
+  productId String
+  type      InventoryChangeType
+  quantity  Int
+  reason    String
+  createdBy String
+  createdAt DateTime            @default(now())
+  
+  @@map("inventory_transactions")
+}
+
+// Business Analytics
+model BusinessMetric {
+  id       String   @id @default(cuid())
+  date     DateTime
+  metric   String   // "revenue", "bookings", "new_clients", etc.
+  value    Decimal
+  metadata Json?    // Additional data
+  
+  @@unique([date, metric])
+  @@map("business_metrics")
+}
+
+// Enums
+enum StaffRole {
+  OWNER
+  MANAGER
+  STYLIST
+  BARBER
+  RECEPTIONIST
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  READY
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  PARTIAL
+  REFUNDED
+}
+
+enum InventoryChangeType {
+  PURCHASE
+  SALE
+  ADJUSTMENT
+  DAMAGED
+  EXPIRED
+  RETURN
+}

@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-salon-gold text-salon-dark px-6 py-3 rounded-md font-semibold hover:bg-yellow-500 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply border-2 border-salon-gold text-salon-gold px-6 py-3 rounded-md font-semibold hover:bg-salon-gold hover:text-salon-dark transition-colors;
+  }
+}
