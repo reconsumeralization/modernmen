@@ -2,11 +2,14 @@
 
 import React from 'react'
 
-export default function Settings() {
+const Settings = () => {
   return (
-    <div className="p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-      <p className="mt-2 text-gray-600">Application settings will be managed here.</p>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Settings</h1>
+      <p>Manage application settings here.</p>
+      {/* Add settings management features here */}
     </div>
   )
 }
+
+export default Settings

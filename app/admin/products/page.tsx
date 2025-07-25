@@ -1,7 +1,12 @@
 'use client'
 
-import ProductManager from '../../admin/components/ProductManager'
+import AdminLayout from '../components/AdminLayout'
+import ProductManager from '../components/ProductManager'
 
-export default function ProductsPage() {
-  return <ProductManager />
+export default function AdminProductsPage() {
+  return (
+    <AdminLayout currentPage="products">
+      <ProductManager />
+    </AdminLayout>
+  )
 }

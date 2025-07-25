@@ -2,11 +2,14 @@
 
 import React from 'react'
 
-export default function ScheduleManager() {
+const ScheduleManager = () => {
   return (
-    <div className="p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-bold text-gray-900">Schedule Management</h2>
-      <p className="mt-2 text-gray-600">Schedule management features will be implemented here.</p>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Schedule Manager</h1>
+      <p>Manage staff schedules here.</p>
+      {/* Add schedule management features here */}
     </div>
   )
 }
+
+export default ScheduleManager

@@ -1,38 +1,59 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { ordersAPI } from '@/lib/api'
-import AdminLayout from './AdminLayout'
+import React, { useState, useEffect } from 'react'
+import OrderCard from './orders/OrderCard'
+import SearchBar from './ui/SearchBar'
+import FilterDropdown from './ui/FilterDropdown'
+import LoadingSpinner from './ui/LoadingSpinner'
+import ErrorState from './ui/ErrorState'
+import { DollarSign, Package, Truck, MapPin } from 'lucide-react'
 
 interface Order {
   id: string
   orderNumber: string
-  client: { firstName: string; lastName: string }
+  client: { firstName: string; lastName: string; email: string }
+  items: Array<{
+    quantity: number
+    price: number
+    product: { name: string; brand: string }
+  }>
+  subtotal: number
+  tax: number
   total: number
-  status: string
-  paymentStatus: string
+  status: 'PENDING' | 'PROCESSING' | 'READY' | 'COMPLETED' | 'CANCELLED'
+  paymentStatus: 'UNPAID' | 'PAID' | 'PARTIAL' | 'REFUNDED'
+  paymentMethod?: string
+  isPickup: boolean
+  shippingAddress?: string
   createdAt: string
 }
 
-export default function OrderManager() {
+const OrderManager = () => {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [paymentFilter, setPaymentFilter] = useState('all')
+  const [fulfillmentFilter, setFulfillmentFilter] = useState('all')
 
-  const loadOrders = async () => {
+  useEffect(() => {
+    fetchOrders()
+  }, [])
+
+  const fetchOrders = async () => {
     try {
-      setLoading(true)
-      const response = await ordersAPI.getAll({
-        // search: searchTerm, // Assuming API supports search on orders
-        page: currentPage,
-        limit: 10,
+      const token = localStorage.getItem('admin_token')
+      if (!token) throw new Error('No authentication token')
+
+      const response = await fetch('/api/admin/orders', {
+        headers: { 'Authorization': `Bearer ${token}` }
       })
-      setOrders(response.orders || [])
-      setTotalPages(response.totalPages || 1)
-      setError(null)
+
+      if (!response.ok) throw new Error('Failed to fetch orders')
+      
+      const data = await response.json()
+      setOrders(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load orders')
     } finally {
@@ -40,109 +61,175 @@ export default function OrderManager() {
     }
   }
 
-  useEffect(() => {
-    loadOrders()
-  }, [searchTerm, currentPage])
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      const token = localStorage.getItem('admin_token')
+      if (!token) throw new Error('No authentication token')
+
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      })
+
+      if (!response.ok) throw new Error('Failed to update order')
+      
+      await fetchOrders()
+    } catch (err) {
+      console.error('Error updating order:', err)
+      alert('Failed to update order status')
+    }
+  }
+
+  const handleViewOrder = (order: Order) => {
+    console.log('View order:', order)
+    // TODO: Open order details modal
+  }
+
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = 
+      order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.client.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.client.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.client.email.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter
+    const matchesPayment = paymentFilter === 'all' || order.paymentStatus === paymentFilter
+    const matchesFulfillment = fulfillmentFilter === 'all' || 
+      (fulfillmentFilter === 'pickup' && order.isPickup) ||
+      (fulfillmentFilter === 'shipping' && !order.isPickup)
+    
+    return matchesSearch && matchesStatus && matchesPayment && matchesFulfillment
+  })
+
+  const statusOptions = [
+    { value: 'PENDING', label: 'Pending' },
+    { value: 'PROCESSING', label: 'Processing' },
+    { value: 'READY', label: 'Ready' },
+    { value: 'COMPLETED', label: 'Completed' },
+    { value: 'CANCELLED', label: 'Cancelled' }
+  ]
+
+  const paymentOptions = [
+    { value: 'UNPAID', label: 'Unpaid' },
+    { value: 'PAID', label: 'Paid' },
+    { value: 'PARTIAL', label: 'Partial' },
+    { value: 'REFUNDED', label: 'Refunded' }
+  ]
+
+  const fulfillmentOptions = [
+    { value: 'pickup', label: 'Pickup' },
+    { value: 'shipping', label: 'Shipping' }
+  ]
+
+  // Calculate summary stats
+  const stats = {
+    totalOrders: orders.length,
+    totalRevenue: orders.filter(o => o.paymentStatus === 'PAID').reduce((sum, o) => sum + Number(o.total), 0),
+    pendingOrders: orders.filter(o => o.status === 'PENDING').length,
+    pickupOrders: orders.filter(o => o.isPickup).length,
+  }
+
+  if (loading) return <LoadingSpinner />
+  if (error) return <ErrorState message={error} onRetry={fetchOrders} />
 
   return (
-    <AdminLayout currentPage="orders">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold text-gray-900">Order Management</h2>
-          {/* Add Order button if needed */}
-        </div>
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Order Management</h1>
+      </div>
 
-        {/* Search and Filter */}
-        {/* <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex items-center space-x-4">
-            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search orders..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border-none focus:ring-0"
-            />
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="flex items-center">
+            <Package className="w-8 h-8 text-blue-600 mr-3" />
+            <div>
+              <p className="text-sm text-blue-600">Total Orders</p>
+              <p className="text-2xl font-bold text-blue-900">{stats.totalOrders}</p>
+            </div>
           </div>
-        </div> */}
-
-        {error && <div className="text-red-600 p-4 bg-red-50 rounded-md">{error}</div>}
-
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          {loading ? (
-            <div className="p-8 text-center">Loading orders...</div>
-          ) : (
-            <>
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order #</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {orders.map((order) => (
-                    <tr key={order.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.orderNumber}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.client.firstName} {order.client.lastName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.total.toFixed(2)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          order.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          order.paymentStatus === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {order.paymentStatus}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(order.createdAt).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        {/* Actions like View Details, Edit, etc. */}
-                        <button className="text-blue-600 hover:text-blue-900">View</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="px-6 py-3 flex items-center justify-between border-t">
-                  <p className="text-sm text-gray-700">
-                    Page {currentPage} of {totalPages}
-                  </p>
-                  <div className="flex space-x-2">
-                    <button 
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="px-3 py-1 border rounded-md text-sm disabled:opacity-50"
-                    >
-                      Previous
-                    </button>
-                    <button 
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                      className="px-3 py-1 border rounded-md text-sm disabled:opacity-50"
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+        </div>
+        <div className="bg-green-50 p-4 rounded-lg">
+          <div className="flex items-center">
+            <DollarSign className="w-8 h-8 text-green-600 mr-3" />
+            <div>
+              <p className="text-sm text-green-600">Total Revenue</p>
+              <p className="text-2xl font-bold text-green-900">${stats.totalRevenue.toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-yellow-50 p-4 rounded-lg">
+          <div className="flex items-center">
+            <Package className="w-8 h-8 text-yellow-600 mr-3" />
+            <div>
+              <p className="text-sm text-yellow-600">Pending Orders</p>
+              <p className="text-2xl font-bold text-yellow-900">{stats.pendingOrders}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="flex items-center">
+            <MapPin className="w-8 h-8 text-purple-600 mr-3" />
+            <div>
+              <p className="text-sm text-purple-600">Pickup Orders</p>
+              <p className="text-2xl font-bold text-purple-900">{stats.pickupOrders}</p>
+            </div>
+          </div>
         </div>
       </div>
-    </AdminLayout>
+
+      {/* Filters */}
+      <div className="flex items-center space-x-4 mb-6 flex-wrap gap-4">
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Search orders..."
+          className="max-w-md"
+        />
+        <FilterDropdown
+          value={statusFilter}
+          onChange={setStatusFilter}
+          options={statusOptions}
+          placeholder="All Status"
+        />
+        <FilterDropdown
+          value={paymentFilter}
+          onChange={setPaymentFilter}
+          options={paymentOptions}
+          placeholder="All Payments"
+        />
+        <FilterDropdown
+          value={fulfillmentFilter}
+          onChange={setFulfillmentFilter}
+          options={fulfillmentOptions}
+          placeholder="All Fulfillment"
+        />
+      </div>
+
+      {/* Orders Grid */}
+      <div className="grid gap-4">
+        {filteredOrders.length > 0 ? (
+          filteredOrders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              onStatusUpdate={updateOrderStatus}
+              onView={handleViewOrder}
+            />
+          ))
+        ) : (
+          <div className="text-center py-12">
+            <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">No orders found</p>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
+
+export default OrderManager

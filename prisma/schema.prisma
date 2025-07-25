@@ -15,6 +15,7 @@ model Client {
   lastName    String
   email       String   @unique
   phone       String
+  password    String?  // Optional for walk-ins, required for portal access
   dateOfBirth DateTime?
   address     String?
   city        String?
@@ -40,6 +41,7 @@ model Client {
   orders           Order[]
   loyaltyPoints    LoyaltyPoint[]
   clientNotes      ClientNote[]
+  waitlistEntries  WaitlistEntry[]
   
   @@map("clients")
 }
@@ -73,6 +75,7 @@ model Staff {
   // Relations
   bookings     Booking[]
   availability StaffAvailability[]
+  waitlistEntries WaitlistEntry[]
   
   @@map("staff")
 }
@@ -95,6 +98,7 @@ model Service {
   
   // Relations
   bookings     Booking[]
+  waitlistEntries WaitlistEntry[]
   
   @@map("services")
 }
@@ -280,6 +284,25 @@ model BusinessMetric {
   @@map("business_metrics")
 }
 
+// Waitlist Entries
+model WaitlistEntry {
+  id              String         @id @default(cuid())
+  clientId        String
+  serviceId       String
+  preferredStaffId String?
+  requestedDate   DateTime
+  status          WaitlistStatus @default(WAITING)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relations
+  client          Client         @relation(fields: [clientId], references: [id])
+  service         Service        @relation(fields: [serviceId], references: [id])
+  preferredStaff  Staff?         @relation(fields: [preferredStaffId], references: [id])
+
+  @@map("waitlist_entries")
+}
+
 // Enums
 enum StaffRole {
   OWNER
@@ -321,4 +344,11 @@ enum InventoryChangeType {
   DAMAGED
   EXPIRED
   RETURN
+}
+
+enum WaitlistStatus {
+  WAITING
+  NOTIFIED
+  BOOKED
+  CANCELLED
 }

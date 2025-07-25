@@ -15,8 +15,24 @@ async function apiRequest(endpoint: string, options?: RequestInit) {
   const config = { ...defaultOptions, ...options }
   
   // Add auth header for admin endpoints
-  if (endpoint.startsWith('/admin')) {
-    const token = localStorage.getItem('admin_token') || process.env.NEXT_PUBLIC_ADMIN_TOKEN
+  if (endpoint.startsWith('/admin') || 
+      endpoint.startsWith('/clients') ||
+      endpoint.startsWith('/staff') ||
+      endpoint.startsWith('/analytics') ||
+      endpoint.startsWith('/products') ||
+      endpoint.startsWith('/orders')) {
+    const token = localStorage.getItem('adminToken')
+    if (token) {
+      config.headers = {
+        ...config.headers,
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  }
+  
+  // Add auth header for customer endpoints
+  if (endpoint.startsWith('/customers')) {
+    const token = localStorage.getItem('customerToken')
     if (token) {
       config.headers = {
         ...config.headers,

@@ -1,0 +1,46 @@
+@echo off
+echo ===========================================
+echo  VERCEL ENVIRONMENT VARIABLES SETUP
+echo ===========================================
+echo.
+
+echo ❌ MISSING CRITICAL VARIABLES:
+echo You currently only have STRIPE keys set.
+echo Missing: DATABASE_URL, JWT_SECRET, NEXT_PUBLIC_SITE_URL
+echo.
+
+echo 🔧 RUN THESE COMMANDS ONE BY ONE:
+echo.
+
+echo 1. Set Database URL (REQUIRED):
+echo    npx vercel env add DATABASE_URL
+echo    Value: postgresql://username:password@hostname:port/database?sslmode=require
+echo.
+
+echo 2. Set JWT Secret (REQUIRED):
+echo    npx vercel env add JWT_SECRET  
+echo    Value: your-super-secure-random-32-char-secret
+echo.
+
+echo 3. Set Site URL (REQUIRED):
+echo    npx vercel env add NEXT_PUBLIC_SITE_URL
+echo    Value: https://modernmen-fgfbld92j-agiaifys-projects.vercel.app
+echo.
+
+echo 4. Set Admin Password Hash (RECOMMENDED):
+echo    npx vercel env add ADMIN_PASSWORD_HASH
+echo    Value: $2b$10$8il0Z3XtGuRZrOZwHGG3IuaRR7.Ea.6lsMfF0wfg1gcYvZwo44bOm
+echo.
+
+echo 5. Set Admin Username (RECOMMENDED):
+echo    npx vercel env add ADMIN_USERNAME
+echo    Value: admin
+echo.
+
+echo 🚀 AFTER SETTING VARIABLES:
+echo    npx vercel --prod
+echo.
+
+echo ⚠️  ORDER MATTERS: Set DATABASE_URL first, then others!
+echo.
+pause

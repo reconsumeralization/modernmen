@@ -6,14 +6,26 @@
   html {
     scroll-behavior: smooth;
   }
+  
+  body {
+    padding-top: 80px; /* Account for fixed header */
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-salon-gold text-salon-dark px-6 py-3 rounded-md font-semibold hover:bg-yellow-500 transition-colors;
+    @apply bg-orange-500 text-white px-6 py-3 rounded-md font-medium hover:bg-orange-600 transition-colors;
   }
   
   .btn-secondary {
-    @apply border-2 border-salon-gold text-salon-gold px-6 py-3 rounded-md font-semibold hover:bg-salon-gold hover:text-salon-dark transition-colors;
+    @apply border-2 border-gray-900 text-gray-900 px-6 py-3 rounded-md font-medium hover:bg-gray-900 hover:text-white transition-colors;
+  }
+  
+  .section-padding {
+    @apply py-16 px-6 lg:px-8;
+  }
+  
+  .container-max {
+    @apply max-w-7xl mx-auto;
   }
 }

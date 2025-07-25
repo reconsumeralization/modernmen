@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from 'next/image'
+import TeamGrid from '../components/team/TeamGrid'
 
 export default function TeamPage() {
   const teamMembers = [
@@ -15,8 +15,8 @@ export default function TeamPage() {
     {
       name: "Hicham Mellouli",
       title: "Barber",
-      bio: "My journey in this industry began at the age of 19, when I started my apprenticeship under the guidance of Master Barber Zbi. I've always been drawn to the creative and social aspects of barbering, and I feel fortunate to have found a career that aligns with my strengths and interests.",
-      fullBio: "Throughout my career, I've had the opportunity to build strong relationships with my clients, and I take pride in making a positive impact on their lives through my work. For me, it's not just about giving great haircuts – it's about being a trusted friend and confidant, and providing a welcoming space for people to relax and connect.",
+      bio: "My journey in this industry began at the age of 19, when I started my apprenticeship under the guidance of Master Barber Zbi. I've always been drawn to the creative and social aspects of barbering.",
+      fullBio: "Throughout my career, I've had the opportunity to build strong relationships with my clients, and I take pride in making a positive impact on their lives through my work. For me, it's not just about giving great haircuts – it's about being a trusted friend and confidant.",
       image: "/images/hicham.jpg"
     },
     {
@@ -52,7 +52,7 @@ export default function TeamPage() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-salon-dark mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Our Team
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -60,52 +60,7 @@ export default function TeamPage() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {teamMembers.map((member, index) => (
-            <motion.div
-              key={member.name}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
-            >
-              <div className="relative h-80">
-                <div className="w-full h-full bg-gradient-to-br from-salon-gold/20 to-salon-dark/20 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-24 h-24 rounded-full bg-salon-gold/30 flex items-center justify-center mx-auto mb-4">
-                      <span className="text-3xl font-bold text-salon-gold">
-                        {member.name.split(' ').map(n => n[0]).join('')}
-                      </span>
-                    </div>
-                    <div className="text-salon-gold/70 text-sm">Professional Photo</div>
-                    <div className="text-salon-gold/70 text-xs">Coming Soon</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-salon-dark mb-2">
-                  {member.name}
-                </h3>
-                <p className="text-salon-gold font-medium mb-4">
-                  {member.title}
-                </p>
-                <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                  {member.bio}
-                </p>
-                <p className="text-gray-500 text-xs leading-relaxed">
-                  {member.fullBio}
-                </p>
-                <div className="mt-6">
-                  <button className="btn-primary w-full">
-                    Book with {member.name.split(' ')[0]}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        <TeamGrid teamMembers={teamMembers} />
 
         <motion.div
           initial={{ opacity: 0, y: 50 }}

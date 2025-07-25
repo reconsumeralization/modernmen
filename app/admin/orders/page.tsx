@@ -1,7 +1,12 @@
 'use client'
 
-import OrderManager from '../../admin/components/OrderManager'
+import AdminLayout from '../components/AdminLayout'
+import OrderManager from '../components/OrderManager'
 
-export default function OrdersPage() {
-  return <OrderManager />
+export default function AdminOrdersPage() {
+  return (
+    <AdminLayout currentPage="orders">
+      <OrderManager />
+    </AdminLayout>
+  )
 }

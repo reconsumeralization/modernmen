@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import prisma from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,15 +38,87 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate booking ID and timestamp
-    const bookingId = 'MM' + Date.now().toString(36).toUpperCase()
-    const timestamp = new Date().toISOString()
-    
-    // Enhanced booking object
+    // 1. Find or create client
+    let client = await prisma.client.findUnique({ where: { email: booking.email } })
+    if (!client) {
+      const [firstName, ...rest] = booking.name.split(' ')
+      const lastName = rest.join(' ') || ''
+      client = await prisma.client.create({
+        data: {
+          firstName,
+          lastName,
+          email: booking.email,
+          phone: booking.phone
+        }
+      })
+    }
+    // 2. Find service
+    const service = await prisma.service.findFirst({ where: { name: booking.service } })
+    if (!service) {
+      return NextResponse.json(
+        { error: 'Service not found', success: false },
+        { status: 400 }
+      )
+    }
+    // 3. Find staff (if provided)
+    let staff = null
+    if (booking.staff) {
+      // Try to find by full name
+      const [firstName, ...rest] = booking.staff.split(' ')
+      const lastName = rest.join(' ') || ''
+      staff = await prisma.staff.findFirst({ where: { firstName, lastName } })
+      if (!staff) {
+        return NextResponse.json(
+          { error: 'Staff not found', success: false },
+          { status: 400 }
+        )
+      }
+    } else {
+      // Optionally: assign any available staff (for now, just pick the first active)
+      staff = await prisma.staff.findFirst({ where: { isActive: true } })
+      if (!staff) {
+        return NextResponse.json(
+          { error: 'No staff available', success: false },
+          { status: 400 }
+        )
+      }
+    }
+    // 4. Parse date/time
+    if (!booking.date || !booking.time) {
+      return NextResponse.json(
+        { error: 'Date and time are required', success: false },
+        { status: 400 }
+      )
+    }
+    const dateObj = new Date(`${booking.date}T${booking.time}:00`)
+    // Calculate end time
+    const [startHour, startMinute] = booking.time.split(':').map(Number)
+    const endMinute = (startMinute + service.duration) % 60
+    const endHour = startHour + Math.floor((startMinute + service.duration) / 60)
+    const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`
+    // 5. Create booking
+    const newBooking = await prisma.booking.create({
+      data: {
+        clientId: client.id,
+        staffId: staff.id,
+        serviceId: service.id,
+        date: dateObj,
+        startTime: booking.time,
+        endTime,
+        duration: service.duration,
+        status: 'PENDING',
+        notes: booking.message || null,
+        totalPrice: service.price,
+        paymentStatus: 'UNPAID',
+        paymentMethod: null
+      }
+    })
+
+    // Simulate email/SMS/staff notification
     const enhancedBooking = {
       ...booking,
-      bookingId,
-      timestamp,
+      bookingId: newBooking.id,
+      timestamp: newBooking.createdAt,
       status: 'pending',
       source: 'website',
       salon: {
@@ -54,30 +127,15 @@ export async function POST(request: NextRequest) {
         address: '#4 - 425 Victoria Ave East, Regina, SK S4N 0N8'
       }
     }
-
-    // In production, this would:
-    // 1. Save to database (PostgreSQL, MongoDB, etc.)
-    // 2. Send confirmation email via SendGrid/Resend
-    // 3. Send SMS confirmation via Twilio
-    // 4. Create calendar event
-    // 5. Notify staff via Slack/email
-    
-    console.log('📅 NEW BOOKING RECEIVED:', enhancedBooking)
-    
-    // Simulate email sending
     const emailSent = await sendBookingConfirmation(enhancedBooking)
-    
-    // Simulate SMS sending  
     const smsSent = await sendBookingSMS(enhancedBooking)
-    
-    // Simulate staff notification
     const staffNotified = await notifyStaff(enhancedBooking)
 
     return NextResponse.json({
       success: true,
       message: 'Booking request received successfully!',
-      bookingId,
-      timestamp,
+      bookingId: newBooking.id,
+      timestamp: newBooking.createdAt,
       confirmations: {
         email: emailSent,
         sms: smsSent,
@@ -182,6 +240,86 @@ Please contact within 24 hours to confirm appointment.`
   
   console.log('👥 STAFF NOTIFIED:', staffNotification)
   return true // Simulate successful notification
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const { bookingId, status, notes, date, time, staff, service } = await request.json()
+    if (!bookingId) {
+      return NextResponse.json({ error: 'bookingId is required' }, { status: 400 })
+    }
+    // Find the booking
+    const booking = await prisma.booking.findUnique({ where: { id: bookingId } })
+    if (!booking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+    }
+    // Prepare update data
+    const updateData: any = {}
+    if (status) updateData.status = status
+    if (notes !== undefined) updateData.notes = notes
+    if (date && time) {
+      updateData.date = new Date(`${date}T${time}:00`)
+      updateData.startTime = time
+      // Update endTime if service is provided or use existing
+      let serviceObj = null
+      if (service) {
+        serviceObj = await prisma.service.findFirst({ where: { name: service } })
+        if (!serviceObj) {
+          return NextResponse.json({ error: 'Service not found' }, { status: 400 })
+        }
+        updateData.serviceId = serviceObj.id
+        updateData.duration = serviceObj.duration
+        updateData.totalPrice = serviceObj.price
+      } else {
+        serviceObj = await prisma.service.findUnique({ where: { id: booking.serviceId } })
+      }
+      const [startHour, startMinute] = time.split(':').map(Number)
+      const endMinute = (startMinute + (serviceObj?.duration || booking.duration)) % 60
+      const endHour = startHour + Math.floor((startMinute + (serviceObj?.duration || booking.duration)) / 60)
+      updateData.endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`
+    }
+    if (staff) {
+      const [firstName, ...rest] = staff.split(' ')
+      const lastName = rest.join(' ') || ''
+      const staffObj = await prisma.staff.findFirst({ where: { firstName, lastName } })
+      if (!staffObj) {
+        return NextResponse.json({ error: 'Staff not found' }, { status: 400 })
+      }
+      updateData.staffId = staffObj.id
+    }
+    // Update booking
+    const updatedBooking = await prisma.booking.update({
+      where: { id: bookingId },
+      data: updateData
+    })
+    return NextResponse.json({ success: true, booking: updatedBooking })
+  } catch (error) {
+    console.error('❌ UPDATE BOOKING ERROR:', error)
+    return NextResponse.json({ error: 'Failed to update booking' }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { bookingId } = await request.json()
+    if (!bookingId) {
+      return NextResponse.json({ error: 'bookingId is required' }, { status: 400 })
+    }
+    // Find the booking
+    const booking = await prisma.booking.findUnique({ where: { id: bookingId } })
+    if (!booking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+    }
+    // Soft delete: set status to CANCELLED
+    const cancelledBooking = await prisma.booking.update({
+      where: { id: bookingId },
+      data: { status: 'CANCELLED' }
+    })
+    return NextResponse.json({ success: true, booking: cancelledBooking })
+  } catch (error) {
+    console.error('❌ DELETE BOOKING ERROR:', error)
+    return NextResponse.json({ error: 'Failed to cancel booking' }, { status: 500 })
+  }
 }
 
 // GET endpoint for booking status (optional)

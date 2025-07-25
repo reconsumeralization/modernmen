@@ -1,40 +1,57 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
-// This is a simplified login handler for demonstration purposes.
-// In a real application, you should use a secure authentication library like NextAuth.js
-// and store hashed passwords in your database.
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@modernmen.ca'
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || bcrypt.hashSync('admin123', 10)
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@example.com'
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'password'
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key'
-
-// A simple mock JWT generator (in a real app, use a library like 'jsonwebtoken')
-function sign(payload: object): string {
-  const header = { alg: 'HS256', typ: 'JWT' };
-  const encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
-  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  // In a real scenario, you would use a crypto library to create the signature
-  const signature = `${encodedHeader}.${encodedPayload}`;
-  return signature;
-}
-
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json()
-
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      // In a real app, you would generate a proper JWT token
-      const token = sign({ email, role: 'admin' })
-      return NextResponse.json({ token })
-    } else {
+    
+    // Check if email matches admin email
+    if (email !== ADMIN_EMAIL) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
       )
     }
+    
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, ADMIN_PASSWORD_HASH)
+    
+    if (!isValidPassword) {
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      )
+    }
+    
+    // Generate JWT token
+    const token = jwt.sign(
+      { 
+        email: ADMIN_EMAIL,
+        role: 'admin',
+        iat: Math.floor(Date.now() / 1000)
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    )
+    
+    return NextResponse.json({
+      success: true,
+      token,
+      user: {
+        email: ADMIN_EMAIL,
+        role: 'admin'
+      }
+    })
+    
   } catch (error) {
+    console.error('Admin login error:', error)
     return NextResponse.json(
-      { error: 'An unexpected error occurred' },
+      { error: 'Authentication failed' },
       { status: 500 }
     )
   }

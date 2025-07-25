@@ -2,7 +2,11 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { CalendarIcon, UserIcon, PhoneIcon } from '@heroicons/react/24/outline'
+import PersonalInfo from '../components/booking/PersonalInfo'
+import ServiceSelection from '../components/booking/ServiceSelection'
+import DateTimeSelection from '../components/booking/DateTimeSelection'
+import FormField from '../components/forms/FormField'
+import Textarea from '../components/forms/Textarea'
 
 export default function BookPage() {
   const [formData, setFormData] = useState({
@@ -17,31 +21,6 @@ export default function BookPage() {
   })
 
   const [isSubmitted, setIsSubmitted] = useState(false)
-
-  const services = [
-    "Men's Haircut",
-    "Beard Grooming", 
-    "Hair Styling",
-    "Fade Cut",
-    "Hair Tattoo/Undercut Design",
-    "Color Service",
-    "Consultation"
-  ]
-
-  const staffMembers = [
-    "No Preference",
-    "Tammy",
-    "Hicham Mellouli",
-    "Jasmine", 
-    "Henok",
-    "Sveta Orlenko"
-  ]
-
-  const timeSlots = [
-    "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
-    "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM",
-    "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM"
-  ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -119,7 +98,7 @@ export default function BookPage() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold text-salon-dark mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Book Your Appointment
           </h2>
           <p className="text-xl text-gray-600">
@@ -135,146 +114,20 @@ export default function BookPage() {
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-lg space-y-6"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name *
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-salon-gold"
-              />
-            </div>
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number *
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                required
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-salon-gold"
-              />
-            </div>
-          </div>
+          <PersonalInfo formData={formData} handleChangeAction={handleChange} />
+          <ServiceSelection formData={formData} handleChange={handleChange} />
+          <DateTimeSelection formData={formData} handleChange={handleChange} />
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address *
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-salon-gold"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-2">
-                Service *
-              </label>
-              <select
-                id="service"
-                name="service"
-                required
-                value={formData.service}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-salon-gold"
-              >
-                <option value="">Select a service</option>
-                {services.map((service) => (
-                  <option key={service} value={service}>
-                    {service}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="staff" className="block text-sm font-medium text-gray-700 mb-2">
-                Preferred Stylist
-              </label>
-              <select
-                id="staff"
-                name="staff"
-                value={formData.staff}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-salon-gold"
-              >
-                <option value="">Select a stylist</option>
-                {staffMembers.map((staff) => (
-                  <option key={staff} value={staff}>
-                    {staff}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
-                Preferred Date *
-              </label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                required
-                value={formData.date}
-                onChange={handleChange}
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-salon-gold"
-              />
-            </div>
-            <div>
-              <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
-                Preferred Time *
-              </label>
-              <select
-                id="time"
-                name="time"
-                required
-                value={formData.time}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-salon-gold"
-              >
-                <option value="">Select a time</option>
-                {timeSlots.map((time) => (
-                  <option key={time} value={time}>
-                    {time}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-              Additional Notes
-            </label>
-            <textarea
+          <FormField label="Additional Notes">
+            <Textarea
               id="message"
               name="message"
               rows={4}
               value={formData.message}
               onChange={handleChange}
               placeholder="Any specific requests or preferences..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-salon-gold"
             />
-          </div>
+          </FormField>
 
           <button
             type="submit"
@@ -291,7 +144,7 @@ export default function BookPage() {
           viewport={{ once: true }}
           className="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg"
         >
-          <h3 className="text-lg font-bold text-salon-dark mb-2">Cancellation Policy</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Cancellation Policy</h3>
           <p className="text-gray-700">
             We appreciate your loyalty & respect to kindly give us 24 Hours of Notice to fill your scheduled time 
             if you can no longer make your appointment. Late cancellations & Missed appointments will be subject 

@@ -1,7 +1,12 @@
 'use client'
 
-import Settings from '../../admin/components/Settings'
+import AdminLayout from '../components/AdminLayout'
+import Settings from '../components/Settings'
 
-export default function SettingsPage() {
-  return <Settings />
+export default function AdminSettingsPage() {
+  return (
+    <AdminLayout currentPage="settings">
+      <Settings />
+    </AdminLayout>
+  )
 }

@@ -1,7 +1,12 @@
 'use client'
 
-import Analytics from '../../admin/components/Analytics'
+import AdminLayout from '../components/AdminLayout'
+import Analytics from '../components/Analytics'
 
-export default function AnalyticsPage() {
-  return <Analytics />
+export default function AdminAnalyticsPage() {
+  return (
+    <AdminLayout currentPage="analytics">
+      <Analytics />
+    </AdminLayout>
+  )
 }

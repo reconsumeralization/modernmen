@@ -42,13 +42,11 @@ export default function AdminLayout({ children, currentPage }: AdminLayoutProps)
   useEffect(() => {
     // Check authentication status
     const checkAuth = () => {
-      const token = localStorage.getItem('admin_token')
-      const devMode = process.env.NODE_ENV === 'development'
+      const token = localStorage.getItem('adminToken')
       
-      if (devMode || token) {
+      if (token) {
         setIsAuthenticated(true)
       } else {
-        // In production, redirect to login
         router.push('/admin/login')
       }
       setIsLoading(false)
@@ -58,7 +56,9 @@ export default function AdminLayout({ children, currentPage }: AdminLayoutProps)
   }, [router])
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token')
+    localStorage.removeItem('adminToken')
+    // Clear cookie
+    document.cookie = 'adminToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
     router.push('/admin/login')
   }
 
@@ -181,10 +181,19 @@ export default function AdminLayout({ children, currentPage }: AdminLayoutProps)
         <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
           <div className="flex-shrink-0 w-full group block">
             <div className="flex items-center">
-              <div className="ml-3">
+              <div className="ml-3 flex-1">
                 <p className="text-sm font-medium text-gray-700">Modern Men Admin</p>
                 <p className="text-xs font-medium text-gray-500">Salon Management</p>
               </div>
+              <button
+                onClick={handleLogout}
+                className="ml-3 flex-shrink-0 p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                title="Logout"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>

@@ -35,7 +35,7 @@ export default function ServicesPage() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-salon-dark mb-4">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Our Services
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">

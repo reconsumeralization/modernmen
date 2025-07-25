@@ -1,7 +1,12 @@
 'use client'
 
-import ServiceManager from '../../admin/components/ServiceManager'
+import AdminLayout from '../components/AdminLayout'
+import ServiceManager from '../components/ServiceManager'
 
-export default function ServicesPage() {
-  return <ServiceManager />
+export default function AdminServicesPage() {
+  return (
+    <AdminLayout currentPage="services">
+      <ServiceManager />
+    </AdminLayout>
+  )
 }

@@ -10,9 +10,11 @@ module.exports = {
       colors: {
         'salon-dark': '#1a1a1a',
         'salon-gold': '#d4af37',
+        'modern-orange': '#f97316', // Modern Men brand orange
+        'modern-dark': '#374151', // Professional gray
       },
       fontFamily: {
-        'sans': ['Arial', 'sans-serif'],
+        'sans': ['system-ui', 'Arial', 'sans-serif'],
       },
     },
   },

@@ -1,43 +1,82 @@
 import { NextRequest, NextResponse } from 'next/server'
+import jwt from 'jsonwebtoken'
 
-// Middleware for API authentication and validation
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Skip middleware for public endpoints
-  const publicPaths = [
-    '/api/bookings',      // Public booking endpoint
-    '/api/services',      // Public services endpoint
-    '/api/docs',          // API documentation
-    '/api/init'           // Database initialization (dev only)
-  ]
+  // Admin page protection (client-side handled by AdminLayout)
 
-  const isPublicPath = publicPaths.some(path => pathname.startsWith(path))
-  
-  if (isPublicPath) {
-    return NextResponse.next()
-  }
-
-  // Admin endpoints require authentication
-  if (pathname.startsWith('/api/admin')) {
-    const authHeader = request.headers.get('Authorization')
+  // API protection
+  if (pathname.startsWith('/api')) {
+    // Public endpoints
+    const publicPaths = [
+      '/api/bookings',
+      '/api/services', 
+      '/api/docs',
+      '/api/auth/login',
+      '/api/auth/customer',
+      '/api/availability'
+    ]
     
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
+    const isPublicPath = publicPaths.some(path => pathname.startsWith(path))
+    
+    if (isPublicPath) {
+      return NextResponse.next()
     }
-
-    // In production, verify JWT token here
-    const token = authHeader.substring(7)
     
-    // Simple token validation (replace with proper JWT verification)
-    if (process.env.NODE_ENV === 'production' && token !== process.env.ADMIN_API_KEY) {
-      return NextResponse.json(
-        { error: 'Invalid authentication token' },
-        { status: 401 }
-      )
+    // Protected admin endpoints
+    if (pathname.startsWith('/api/admin') || 
+        pathname.startsWith('/api/clients') ||
+        pathname.startsWith('/api/staff') ||
+        pathname.startsWith('/api/analytics') ||
+        pathname.startsWith('/api/products') ||
+        pathname.startsWith('/api/orders')) {
+      
+      const authHeader = request.headers.get('Authorization')
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return NextResponse.json(
+          { error: 'Authentication required' },
+          { status: 401 }
+        )
+      }
+      
+      const token = authHeader.substring(7)
+      
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET)
+        // Add the decoded token to the request headers for API routes to use
+        const requestHeaders = new Headers(request.headers)
+        requestHeaders.set('x-user-data', JSON.stringify(decoded))
+        
+        const response = NextResponse.next({
+          request: {
+            headers: requestHeaders,
+          },
+        })
+        
+        return response
+      } catch (error) {
+        console.error('JWT verification failed:', error)
+        return NextResponse.json(
+          { error: 'Invalid or expired token' },
+          { status: 401 }
+        )
+      }
+    }
+    
+    // Customer protected endpoints
+    if (pathname.startsWith('/api/customers')) {
+      const authHeader = request.headers.get('Authorization')
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return NextResponse.json(
+          { error: 'Customer authentication required' },
+          { status: 401 }
+        )
+      }
     }
   }
 
@@ -52,5 +91,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/api/:path*'
+  matcher: ['/api/:path*', '/admin/:path*']
 }
