@@ -325,4 +325,365 @@ export default function CustomerDashboard() {
       </main>
     </div>
   )
+}ings(bookingData)
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth-token')
+    router.push('/')
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  const upcomingBookings = bookings.filter(b => 
+    new Date(b.date) > new Date() && b.status !== 'CANCELLED'
+  )
+  
+  const pastBookings = bookings.filter(b => 
+    new Date(b.date) <= new Date() || b.status === 'COMPLETED'
+  )
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <h1 className="text-2xl font-bold text-gray-900">Customer Portal</h1>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600">
+                Welcome, {user?.firstName} {user?.lastName}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Navigation Tabs */}
+        <div className="border-b border-gray-200 mb-8">
+          <nav className="-mb-px flex space-x-8">
+            {[
+              { id: 'overview', name: 'Overview', icon: '📊' },
+              { id: 'bookings', name: 'My Bookings', icon: '📅' },
+              { id: 'history', name: 'History', icon: '📋' },
+              { id: 'profile', name: 'Profile', icon: '👤' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2`}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.name}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Overview Tab */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow-sm border">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm">✂️</span>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Total Visits</p>
+                    <p className="text-2xl font-bold text-gray-900">{user?.totalVisits}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow-sm border">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm">💰</span>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Total Spent</p>
+                    <p className="text-2xl font-bold text-gray-900">${user?.totalSpent}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow-sm border">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm">📅</span>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Upcoming</p>
+                    <p className="text-2xl font-bold text-gray-900">{upcomingBookings.length}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow-sm border">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm">⭐</span>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Loyalty Points</p>
+                    <p className="text-2xl font-bold text-gray-900">{Math.floor((user?.totalSpent || 0) / 10)}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button 
+                  onClick={() => router.push('/book')}
+                  className="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors text-center"
+                >
+                  <div className="text-2xl mb-2">📅</div>
+                  <div className="font-medium">Book Appointment</div>
+                </button>
+                <button 
+                  onClick={() => router.push('/products')}
+                  className="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition-colors text-center"
+                >
+                  <div className="text-2xl mb-2">🛒</div>
+                  <div className="font-medium">Shop Products</div>
+                </button>
+                <button 
+                  onClick={() => setActiveTab('profile')}
+                  className="bg-purple-600 text-white p-4 rounded-lg hover:bg-purple-700 transition-colors text-center"
+                >
+                  <div className="text-2xl mb-2">👤</div>
+                  <div className="font-medium">Update Profile</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
+              <div className="space-y-4">
+                {pastBookings.slice(0, 3).map((booking) => (
+                  <div key={booking.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium">{booking.service.name}</p>
+                      <p className="text-sm text-gray-600">
+                        with {booking.staff.firstName} {booking.staff.lastName}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(booking.date).toLocaleDateString()} at {booking.startTime}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">${booking.totalPrice}</p>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Completed
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bookings Tab */}
+        {activeTab === 'bookings' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">My Bookings</h2>
+              <button 
+                onClick={() => router.push('/book')}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Book New Appointment
+              </button>
+            </div>
+
+            {/* Upcoming Bookings */}
+            <div className="bg-white rounded-lg shadow-sm border">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900">Upcoming Appointments</h3>
+              </div>
+              <div className="p-6">
+                {upcomingBookings.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No upcoming appointments</p>
+                ) : (
+                  <div className="space-y-4">
+                    {upcomingBookings.map((booking) => (
+                      <div key={booking.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="font-medium text-lg">{booking.service.name}</h4>
+                            <p className="text-gray-600">
+                              with {booking.staff.firstName} {booking.staff.lastName}
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              📅 {new Date(booking.date).toLocaleDateString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              🕒 {booking.startTime} ({booking.service.duration} minutes)
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xl font-bold">${booking.totalPrice}</p>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              booking.status === 'CONFIRMED' 
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {booking.status}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* History Tab */}
+        {activeTab === 'history' && (
+          <div className="bg-white rounded-lg shadow-sm border">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">Appointment History</h3>
+            </div>
+            <div className="p-6">
+              {pastBookings.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No appointment history</p>
+              ) : (
+                <div className="space-y-4">
+                  {pastBookings.map((booking) => (
+                    <div key={booking.id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-medium">{booking.service.name}</h4>
+                          <p className="text-gray-600">
+                            with {booking.staff.firstName} {booking.staff.lastName}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {new Date(booking.date).toLocaleDateString()} at {booking.startTime}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">${booking.totalPrice}</p>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            {booking.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Profile Tab */}
+        {activeTab === 'profile' && user && (
+          <div className="bg-white rounded-lg shadow-sm border">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">Profile Information</h3>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    value={user.firstName}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    value={user.lastName}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={user.email}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    value={user.phone}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    readOnly
+                  />
+                </div>
+              </div>
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  💡 To update your profile information, please contact us at (306) 522-4111 or visit the salon.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }

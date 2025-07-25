@@ -1,79 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import jwt from 'jsonwebtoken'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
-
-// Verify JWT and get customer ID
-function getCustomerId(request: NextRequest): string | null {
-  const authHeader = request.headers.get('authorization')
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null
-  }
-  
-  const token = authHeader.split(' ')[1]
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any
-    return decoded.id
-  } catch (error) {
-    return null
-  }
-}
+import { prisma } from '@/lib/database'
+import { getTokenFromRequest, verifyToken } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
-    const customerId = getCustomerId(request)
-    if (!customerId) {
+    const token = getTokenFromRequest(request)
+    
+    if (!token) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Authentication required' },
         { status: 401 }
       )
     }
+
+    const user = verifyToken(token)
     
+    if (!user || user.role !== 'customer') {
+      return NextResponse.json(
+        { error: 'Invalid token or insufficient permissions' },
+        { status: 401 }
+      )
+    }
+
+    // Fetch user's bookings with related data
     const bookings = await prisma.booking.findMany({
-      where: {
-        clientId: customerId
-      },
+      where: { clientId: user.id },
       include: {
         service: {
           select: {
             name: true,
+            duration: true,
             price: true,
-            duration: true
+            category: true
           }
         },
         staff: {
           select: {
             firstName: true,
-            lastName: true
+            lastName: true,
+            specialties: true
           }
         }
       },
-      orderBy: {
-        date: 'desc'
-      }
+      orderBy: [
+        { date: 'desc' },
+        { startTime: 'desc' }
+      ]
     })
-    
-    // Format bookings for response
-    const formattedBookings = bookings.map(booking => ({
-      id: booking.id,
-      date: booking.date,
-      time: new Date(booking.date).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
-      service: booking.service,
-      staff: booking.staff,
-      status: booking.status,
-      notes: booking.notes
-    }))
-    
-    return NextResponse.json(formattedBookings)
-    
+
+    return NextResponse.json(bookings)
+
   } catch (error) {
-    console.error('Error fetching bookings:', error)
+    console.error('Bookings fetch error:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch bookings' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
