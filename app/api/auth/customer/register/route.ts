@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/database'
-import { hashPassword, generateToken } from '@/lib/auth'
+import { PrismaClient } from '@prisma/client'
+import bcryptjs from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+
+// Direct Prisma instance to avoid import issues
+const prisma = new PrismaClient()
+
+const JWT_SECRET = process.env.JWT_SECRET || 'modernmen-barbershop-secret-key-2025'
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,15 +37,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Phone validation
-    const phoneRegex = /^\+?[\d\s\-\(\)]+$/
-    if (!phoneRegex.test(phone)) {
-      return NextResponse.json(
-        { error: 'Please enter a valid phone number' },
-        { status: 400 }
-      )
-    }
-
     // Check if user already exists
     const existingUser = await prisma.client.findUnique({
       where: { email }
@@ -53,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = await hashPassword(password)
+    const hashedPassword = await bcryptjs.hash(password, 12)
 
     // Create new user
     const newUser = await prisma.client.create({
@@ -79,12 +76,12 @@ export async function POST(request: NextRequest) {
     })
 
     // Generate JWT token
-    const token = generateToken({
+    const token = jwt.sign({
       id: newUser.id,
       email: newUser.email,
       name: `${newUser.firstName} ${newUser.lastName}`,
       role: 'customer'
-    })
+    }, JWT_SECRET, { expiresIn: '7d' })
 
     // Set cookie and return user data
     const response = NextResponse.json({
@@ -108,5 +105,7 @@ export async function POST(request: NextRequest) {
       { error: 'Registration failed. Please try again.' },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }

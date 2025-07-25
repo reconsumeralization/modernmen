@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/database'
-import { verifyPassword, generateToken } from '@/lib/auth'
+import { PrismaClient } from '@prisma/client'
+import bcryptjs from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+
+// Direct Prisma instance
+const prisma = new PrismaClient()
+
+const JWT_SECRET = process.env.JWT_SECRET || 'modernmen-barbershop-secret-key-2025'
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    const isValidPassword = await verifyPassword(password, user.password)
+    const isValidPassword = await bcryptjs.compare(password, user.password)
     
     if (!isValidPassword) {
       return NextResponse.json(
@@ -47,12 +53,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate JWT token
-    const token = generateToken({
+    const token = jwt.sign({
       id: user.id,
       email: user.email,
       name: `${user.firstName} ${user.lastName}`,
       role: 'customer'
-    })
+    }, JWT_SECRET, { expiresIn: '7d' })
 
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user
@@ -78,5 +84,7 @@ export async function POST(request: NextRequest) {
       { error: 'Internal server error' },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }
