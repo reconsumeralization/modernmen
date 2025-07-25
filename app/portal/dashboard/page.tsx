@@ -325,9 +325,7 @@ export default function CustomerDashboard() {
       </main>
     </div>
   )
-}ings(bookingData)
-      }
-    } catch (error) {
+}
       console.error('Error fetching bookings:', error)
     } finally {
       setLoading(false)
