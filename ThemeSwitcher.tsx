@@ -52,7 +52,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({
                   onThemeChange(theme.id);
                   setIsOpen(false);
                 }}
-              >              >
+              >
                 <div 
                   className="theme-preview"
                   style={{
