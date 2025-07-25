@@ -2,7 +2,7 @@ import bcryptjs from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { NextRequest } from 'next/server'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'modernmen-barbershop-secret-key'
+const JWT_SECRET = process.env.JWT_SECRET || 'modernmen-barbershop-secret-key-2025'
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '$2b$10$8il0Z3XtGuRZrOZwHGG3IuaRR7.Ea.6lsMfF0wfg1gcYvZwo44bOm'
 
 export interface AuthUser {

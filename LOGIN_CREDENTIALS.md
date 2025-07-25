@@ -1,11 +1,11 @@
-# Modern Men Barbershop - Login Credentials
+# Modern Men Barbershop - Login Credentials & Registration
 
-## Admin Login
+## 🔐 Admin Login
 **URL:** /admin/login
 **Username:** admin
 **Password:** admin123
 
-## Customer Portal Login  
+## 👤 Customer Portal Login  
 **URL:** /portal/login
 **Test Accounts:**
 1. **Email:** john.smith@email.com
@@ -17,7 +17,22 @@
 3. **Email:** rob.davis@email.com
    **Password:** password123
 
-## Demo Features to Test:
+## ✨ Customer Registration
+**URL:** /portal/register
+- **Create new accounts** with full validation
+- **Automatic login** after registration
+- **Secure password hashing** with bcrypt
+- **Email validation** and duplicate checking
+- **Comprehensive form validation**
+
+## 🎯 Demo Features to Test:
+
+### Registration System (/portal/register)
+- Complete form validation
+- Email uniqueness checking  
+- Password strength requirements
+- Automatic authentication after signup
+- Account benefits display
 
 ### Admin Panel (/admin)
 - Dashboard analytics
@@ -34,21 +49,22 @@
 - Order history
 
 ### Public Features
-- Online booking system
+- Online booking system with account prompts
 - Service catalog
 - Product store
 - Contact forms
 - Gallery
 
-## Theme Switching
+## 🎨 Theme Switching
 - Use the theme selector in the top-right corner
 - Test all 5 professional themes
 - Themes persist across sessions
 
-## Mobile Testing
+## 📱 Mobile Testing
 - Fully responsive design
 - Touch-friendly interface
 - Mobile booking flow
 
 ---
-**Live URL:** https://modernmen-ar2xtjopo-agiaifys-projects.vercel.app
+**🌐 Live URL:** https://modernmen-ar2xtjopo-agiaifys-projects.vercel.app
+**🆕 Registration:** https://modernmen-ar2xtjopo-agiaifys-projects.vercel.app/portal/register

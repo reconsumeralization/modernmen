@@ -151,6 +151,34 @@ export default function BookPage() {
             to payment for the relevant service that was scheduled.
           </p>
         </motion.div>
+
+        {/* Customer Account CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          viewport={{ once: true }}
+          className="mt-6 p-6 bg-blue-50 border border-blue-200 rounded-lg"
+        >
+          <h3 className="text-lg font-bold text-gray-900 mb-2">🎯 Get More with Your Account</h3>
+          <p className="text-gray-700 mb-4">
+            Create a free account to manage appointments, track your visit history, earn loyalty points, and get exclusive member offers!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <a 
+              href="/portal/register"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium"
+            >
+              Create Free Account
+            </a>
+            <a 
+              href="/portal/login"
+              className="bg-white text-blue-600 border border-blue-600 px-6 py-2 rounded-lg hover:bg-blue-50 transition-colors text-center font-medium"
+            >
+              Sign In
+            </a>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

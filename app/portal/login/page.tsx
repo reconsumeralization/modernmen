@@ -126,8 +126,8 @@ export default function CustomerLogin() {
           <div className="mt-6 text-center space-y-2">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link href="/book" className="text-blue-600 hover:text-blue-500 font-medium">
-                Book an appointment
+              <Link href="/portal/register" className="text-blue-600 hover:text-blue-500 font-medium">
+                Create account
               </Link>
             </p>
             <p className="text-sm text-gray-600">
