@@ -1,44 +1,70 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const role = searchParams.get('role')
-  const active = searchParams.get('active')
+// Direct Prisma instance
+const prisma = new PrismaClient()
 
-  const where: any = {}
-  if (role) {
-    where.role = role.toUpperCase()
-  }
-  if (active !== undefined) {
-    where.isActive = active === 'true'
-  }
-
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const active = searchParams.get('active')
+
+    const where: any = {}
+    if (active !== null) {
+      where.isActive = active === 'true'
+    }
+
     const staff = await prisma.staff.findMany({
       where,
-      orderBy: { firstName: 'asc' },
+      orderBy: [
+        { firstName: 'asc' },
+        { lastName: 'asc' }
+      ]
     })
-    return NextResponse.json({ staff })
+
+    return NextResponse.json(staff)
+
   } catch (error) {
-    console.error('Failed to fetch staff:', error)
+    console.error('Staff fetch error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch staff' },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const data = await request.json()
-    const staff = await prisma.staff.create({ data })
+    const staffData = await request.json()
+
+    const staff = await prisma.staff.create({
+      data: {
+        firstName: staffData.firstName,
+        lastName: staffData.lastName,
+        email: staffData.email,
+        phone: staffData.phone,
+        role: staffData.role,
+        specialties: staffData.specialties || [],
+        workingDays: staffData.workingDays || [],
+        startTime: staffData.startTime,
+        endTime: staffData.endTime,
+        totalBookings: 0,
+        rating: 0,
+        isActive: true
+      }
+    })
+
     return NextResponse.json(staff, { status: 201 })
+
   } catch (error) {
-    console.error('Failed to create staff:', error)
+    console.error('Staff creation error:', error)
     return NextResponse.json(
-      { error: 'Failed to create staff' },
+      { error: 'Failed to create staff member' },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }

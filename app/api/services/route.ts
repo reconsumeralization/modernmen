@@ -1,44 +1,69 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const category = searchParams.get('category')
-  const active = searchParams.get('active')
+// Direct Prisma instance
+const prisma = new PrismaClient()
 
-  const where: any = {}
-  if (category) {
-    where.category = category
-  }
-  if (active !== undefined) {
-    where.isActive = active === 'true'
-  }
-
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const category = searchParams.get('category')
+    const active = searchParams.get('active')
+
+    const where: any = {}
+    if (category) {
+      where.category = category
+    }
+    if (active !== null) {
+      where.isActive = active === 'true'
+    }
+
     const services = await prisma.service.findMany({
       where,
-      orderBy: { name: 'asc' },
+      orderBy: [
+        { category: 'asc' },
+        { name: 'asc' }
+      ]
     })
-    return NextResponse.json({ services })
+
+    return NextResponse.json(services)
+
   } catch (error) {
-    console.error('Failed to fetch services:', error)
+    console.error('Services fetch error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch services' },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const data = await request.json()
-    const service = await prisma.service.create({ data })
+    const serviceData = await request.json()
+
+    const service = await prisma.service.create({
+      data: {
+        name: serviceData.name,
+        description: serviceData.description || '',
+        duration: serviceData.duration,
+        price: serviceData.price,
+        category: serviceData.category,
+        addOns: serviceData.addOns || [],
+        isActive: true
+      }
+    })
+
     return NextResponse.json(service, { status: 201 })
+
   } catch (error) {
-    console.error('Failed to create service:', error)
+    console.error('Service creation error:', error)
     return NextResponse.json(
       { error: 'Failed to create service' },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }

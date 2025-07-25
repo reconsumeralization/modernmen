@@ -684,4 +684,81 @@ export default function CustomerDashboard() {
       </div>
     </div>
   )
+}gray-800">
+                            {booking.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Profile Tab */}
+        {activeTab === 'profile' && user && (
+          <div className="bg-white rounded-lg shadow-sm border">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">Profile Information</h3>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    value={user.firstName}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    value={user.lastName}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={user.email}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    value={user.phone}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    readOnly
+                  />
+                </div>
+              </div>
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  💡 To update your profile information, please contact us at (306) 522-4111 or visit the salon.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }

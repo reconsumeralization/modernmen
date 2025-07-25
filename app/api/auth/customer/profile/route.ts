@@ -1,6 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/database'
-import { getTokenFromRequest, verifyToken } from '@/lib/auth'
+import { PrismaClient } from '@prisma/client'
+import jwt from 'jsonwebtoken'
+
+// Direct Prisma instance
+const prisma = new PrismaClient()
+
+const JWT_SECRET = process.env.JWT_SECRET || 'modernmen-barbershop-secret-key-2025'
+
+function getTokenFromRequest(request: NextRequest): string | null {
+  // Check Authorization header
+  const authHeader = request.headers.get('authorization')
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7)
+  }
+
+  // Check cookies
+  const tokenCookie = request.cookies.get('auth-token')
+  if (tokenCookie) {
+    return tokenCookie.value
+  }
+
+  return null
+}
+
+function verifyToken(token: string): any | null {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any
+    return {
+      id: decoded.id,
+      email: decoded.email,
+      name: decoded.name,
+      role: decoded.role
+    }
+  } catch (error) {
+    return null
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -62,5 +97,7 @@ export async function GET(request: NextRequest) {
       { error: 'Internal server error' },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }
