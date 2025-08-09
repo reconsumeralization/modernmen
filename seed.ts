@@ -1,21 +1,23 @@
-import { executeQuery } from './lib/database';
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export async function seedDatabase() {
-  console.log('🌱 Starting database seeding...');
+  console.log('🌱 Starting database seeding...')
   
   try {
     // Clear existing data (optional - be careful in production)
-    console.log('🧹 Clearing existing data...');
-    await executeQuery('DELETE FROM order_items');
-    await executeQuery('DELETE FROM orders');
-    await executeQuery('DELETE FROM bookings');
-    await executeQuery('DELETE FROM products');
-    await executeQuery('DELETE FROM services');
-    await executeQuery('DELETE FROM staff');
-    await executeQuery('DELETE FROM clients');
+    console.log('🧹 Clearing existing data...')
+    await prisma.orderItem.deleteMany()
+    await prisma.order.deleteMany()
+    await prisma.booking.deleteMany()
+    await prisma.product.deleteMany()
+    await prisma.service.deleteMany()
+    await prisma.staff.deleteMany()
+    await prisma.client.deleteMany()
 
     // Seed Services
-    console.log('✂️ Seeding services...');
+    console.log('✂️ Seeding services...')
     const services = [
       { name: 'Classic Haircut', description: 'Traditional scissor cut with styling', duration: 30, price: 35, category: 'Haircuts' },
       { name: 'Fade Cut', description: 'Modern fade with precise blending', duration: 45, price: 45, category: 'Haircuts' },
@@ -26,19 +28,27 @@ export async function seedDatabase() {
     ];
 
     for (const service of services) {
-      await executeQuery(
-        'INSERT INTO services (name, description, duration, price, category) VALUES ($1, $2, $3, $4, $5)',
-        [service.name, service.description, service.duration, service.price, service.category]
-      );
+      await prisma.service.create({
+        data: {
+          name: service.name,
+          description: service.description,
+          duration: service.duration,
+          price: service.price,
+          category: service.category,
+          addOns: [],
+          isActive: true
+        }
+      })
     }
+
     // Seed Staff
-    console.log('👨‍💼 Seeding staff...');
+    console.log('👨‍💼 Seeding staff...')
     const staff = [
       { 
         firstName: 'Marcus', 
         lastName: 'Johnson', 
         email: 'marcus@modernmen.com',
-        phone: '555-0101', 
+        phone: '(306) 555-0101', 
         role: 'BARBER',
         specialties: ['Fades', 'Modern Cuts'],
         workingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
@@ -49,7 +59,7 @@ export async function seedDatabase() {
         firstName: 'David', 
         lastName: 'Rodriguez', 
         email: 'david@modernmen.com',
-        phone: '555-0102', 
+        phone: '(306) 555-0102', 
         role: 'BARBER',
         specialties: ['Classic Cuts', 'Shaves'],
         workingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
@@ -60,7 +70,7 @@ export async function seedDatabase() {
         firstName: 'James', 
         lastName: 'Wilson', 
         email: 'james@modernmen.com',
-        phone: '555-0103', 
+        phone: '(306) 555-0103', 
         role: 'STYLIST',
         specialties: ['Beard Styling', 'Grooming'],
         workingDays: ['tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
@@ -71,7 +81,7 @@ export async function seedDatabase() {
         firstName: 'Antonio', 
         lastName: 'Garcia', 
         email: 'antonio@modernmen.com',
-        phone: '555-0104', 
+        phone: '(306) 555-0104', 
         role: 'MANAGER',
         specialties: ['All Services'],
         workingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
@@ -81,87 +91,110 @@ export async function seedDatabase() {
     ];
 
     for (const member of staff) {
-      await executeQuery(
-        'INSERT INTO staff (firstName, lastName, email, phone, role, specialties, workingDays, startTime, endTime) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-        [member.firstName, member.lastName, member.email, member.phone, member.role, member.specialties, member.workingDays, member.startTime, member.endTime]
-      );
+      await prisma.staff.create({
+        data: {
+          firstName: member.firstName,
+          lastName: member.lastName,
+          email: member.email,
+          phone: member.phone,
+          role: member.role as any,
+          specialties: member.specialties,
+          workingDays: member.workingDays,
+          startTime: member.startTime,
+          endTime: member.endTime,
+          totalBookings: 0,
+          rating: 0,
+          isActive: true
+        }
+      })
     }
+
     // Seed Clients
-    console.log('👥 Seeding clients...');
+    console.log('👥 Seeding clients...')
     const clients = [
       { 
         firstName: 'John',
         lastName: 'Smith',
         email: 'john.smith@email.com',
-        phone: '555-1001',
+        phone: '(306) 555-1001',
         notes: 'Likes fade cuts, prefers Marcus',
         preferredStylist: 'Marcus Johnson',
         totalVisits: 12,
         totalSpent: 420,
-        lastVisit: '2025-07-20'
+        lastVisit: new Date('2025-07-20')
       },
       { 
         firstName: 'Michael',
         lastName: 'Brown',
         email: 'mike.brown@email.com',
-        phone: '555-1002',
+        phone: '(306) 555-1002',
         notes: 'Regular customer, classic cuts only',
         totalVisits: 8,
         totalSpent: 280,
-        lastVisit: '2025-07-15'
+        lastVisit: new Date('2025-07-15')
       },
       { 
         firstName: 'Robert',
         lastName: 'Davis',
         email: 'rob.davis@email.com',
-        phone: '555-1003',
+        phone: '(306) 555-1003',
         notes: 'Beard maintenance specialist',
         preferredStylist: 'James Wilson',
         totalVisits: 15,
         totalSpent: 375,
-        lastVisit: '2025-07-18'
+        lastVisit: new Date('2025-07-18')
       },
       { 
         firstName: 'William',
         lastName: 'Miller',
         email: 'will.miller@email.com',
-        phone: '555-1004',
+        phone: '(306) 555-1004',
         notes: 'Monthly deluxe package',
         totalVisits: 6,
         totalSpent: 540,
-        lastVisit: '2025-07-10'
+        lastVisit: new Date('2025-07-10')
       },
       { 
         firstName: 'Christopher',
         lastName: 'Wilson',
         email: 'chris.wilson@email.com',
-        phone: '555-1005',
+        phone: '(306) 555-1005',
         notes: 'Quick cuts, busy schedule',
         totalVisits: 4,
         totalSpent: 140,
-        lastVisit: '2025-07-12'
+        lastVisit: new Date('2025-07-12')
       },
       { 
         firstName: 'Matthew',
         lastName: 'Taylor',
         email: 'matt.taylor@email.com',
-        phone: '555-1006',
+        phone: '(306) 555-1006',
         notes: 'Traditional shaves preferred',
         preferredStylist: 'David Rodriguez',
         totalVisits: 10,
         totalSpent: 500,
-        lastVisit: '2025-07-16'
+        lastVisit: new Date('2025-07-16')
       }
     ];
 
     for (const client of clients) {
-      await executeQuery(
-        'INSERT INTO clients (firstName, lastName, email, phone, notes, preferredStylist, totalVisits, totalSpent, lastVisit) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-        [client.firstName, client.lastName, client.email, client.phone, client.notes, client.preferredStylist, client.totalVisits, client.totalSpent, client.lastVisit]
-      );
+      await prisma.client.create({
+        data: {
+          firstName: client.firstName,
+          lastName: client.lastName,
+          email: client.email,
+          phone: client.phone,
+          notes: client.notes,
+          preferredStylist: client.preferredStylist,
+          totalVisits: client.totalVisits,
+          totalSpent: client.totalSpent,
+          lastVisit: client.lastVisit
+        }
+      })
     }
+
     // Seed Products
-    console.log('🧴 Seeding products...');
+    console.log('🧴 Seeding products...')
     const products = [
       { 
         name: 'Premium Pomade', 
@@ -243,38 +276,53 @@ export async function seedDatabase() {
     ];
 
     for (const product of products) {
-      await executeQuery(
-        'INSERT INTO products (name, brand, description, price, cost, inStock, category, sku, imageUrls) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-        [product.name, product.brand, product.description, product.price, product.cost, product.inStock, product.category, product.sku, product.imageUrls]
-      );
+      await prisma.product.create({
+        data: {
+          name: product.name,
+          brand: product.brand,
+          description: product.description,
+          price: product.price,
+          cost: product.cost,
+          category: product.category,
+          inStock: product.inStock,
+          minStock: 5,
+          sku: product.sku,
+          imageUrls: product.imageUrls,
+          isActive: true,
+          isFeatured: false
+        }
+      })
     }
-    console.log('✅ Database seeding completed successfully!');
-    console.log('📊 Seeded data summary:');
-    console.log('  - Services: 6');
-    console.log('  - Staff: 4');
-    console.log('  - Clients: 6'); 
-    console.log('  - Products: 7');
+
+    console.log('✅ Database seeding completed successfully!')
+    console.log('📊 Seeded data summary:')
+    console.log('  - Services: 6')
+    console.log('  - Staff: 4')
+    console.log('  - Clients: 6') 
+    console.log('  - Products: 7')
     
   } catch (error) {
-    console.error('❌ Error seeding database:', error);
-    throw error;
+    console.error('❌ Error seeding database:', error)
+    throw error
+  } finally {
+    await prisma.$disconnect()
   }
 }
 
 // Main execution
 async function main() {
   try {
-    await seedDatabase();
-    console.log('🎉 Seeding process completed!');
+    await seedDatabase()
+    console.log('🎉 Seeding process completed!')
   } catch (error) {
-    console.error('💥 Seeding failed:', error);
-    process.exit(1);
+    console.error('💥 Seeding failed:', error)
+    process.exit(1)
   }
 }
 
 // Run seeder if called directly
 if (require.main === module) {
-  main();
+  main()
 }
 
-export default seedDatabase;
+export default seedDatabase

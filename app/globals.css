@@ -2,30 +2,192 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap');
+
+/* Base Styles */
 @layer base {
-  html {
-    scroll-behavior: smooth;
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 255, 255, 255;
   }
-  
+
+  /* Removed invalid Tailwind utility 'border-border' */
+
   body {
-    padding-top: 80px; /* Account for fixed header */
+    @apply bg-white text-black;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight font-heading;
   }
 }
 
+/* Custom Button Styles */
 @layer components {
+  .section-heading {
+    @apply text-5xl md:text-7xl font-extrabold uppercase tracking-wider;
+  }
   .btn-primary {
-    @apply bg-orange-500 text-white px-6 py-3 rounded-md font-medium hover:bg-orange-600 transition-colors;
+    @apply px-8 py-4 bg-black text-white font-semibold hover:bg-gray-800 transition-all inline-flex items-center justify-center gap-2;
   }
-  
+
   .btn-secondary {
-    @apply border-2 border-gray-900 text-gray-900 px-6 py-3 rounded-md font-medium hover:bg-gray-900 hover:text-white transition-colors;
+    @apply px-8 py-4 border-2 border-black text-black font-semibold hover:bg-black hover:text-white transition-all inline-flex items-center justify-center gap-2;
   }
-  
-  .section-padding {
-    @apply py-16 px-6 lg:px-8;
+
+  .btn-white {
+    @apply px-8 py-4 bg-white text-black font-semibold hover:bg-gray-100 transition-all inline-flex items-center justify-center gap-2;
   }
-  
-  .container-max {
-    @apply max-w-7xl mx-auto;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection Styles */
+::selection {
+  background-color: #000;
+  color: #fff;
+}
+
+/* Focus Styles */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  @apply ring-2 ring-black ring-offset-2;
+}
+
+/* Loading Animation */
+@keyframes pulse-dot {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.loading-dot {
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+/* Chatbot Animations */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+/* Calendar Styles */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+/* Service Card Hover Effects */
+.service-card {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.service-card:hover {
+  @apply transform -translate-y-2 shadow-2xl;
+}
+
+/* Team Image Effects */
+.team-image {
+  @apply grayscale transition-all duration-500;
+}
+
+.team-image:hover {
+  @apply grayscale-0;
+}
+
+/* Header Scroll Effect */
+.header-scrolled {
+  @apply bg-white shadow-lg;
+}
+
+.header-transparent {
+  @apply bg-transparent;
+}
+
+/* Mobile Menu Animation */
+.mobile-menu-enter {
+  transform: translateX(100%);
+}
+
+.mobile-menu-enter-active {
+  transform: translateX(0);
+  transition: transform 300ms ease-out;
+}
+
+.mobile-menu-exit {
+  transform: translateX(0);
+}
+
+.mobile-menu-exit-active {
+  transform: translateX(100%);
+  transition: transform 300ms ease-in;
+}
+
+/* Form Styles */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+textarea,
+select {
+  @apply w-full px-4 py-3 border border-gray-300 focus:border-black focus:ring-2 focus:ring-black focus:ring-opacity-20 transition-all;
+}
+
+/* Utility Classes */
+.text-balance {
+  text-wrap: balance;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
   }
 }

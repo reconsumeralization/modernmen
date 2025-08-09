@@ -1,0 +1,368 @@
+{
+  "generatedAt": "2025-08-09T06:08:11.332Z",
+  "items": [
+    {
+      "file": "noname.jpg",
+      "slug": "barbershop-modern-cut-before-after",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/barbershop-modern-cut-before-after-lg.webp",
+          "jpg": "images/optimized/barbershop-modern-cut-before-after-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/barbershop-modern-cut-before-after-md.webp",
+          "jpg": "images/optimized/barbershop-modern-cut-before-after-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/barbershop-modern-cut-before-after-sm.webp",
+          "jpg": "images/optimized/barbershop-modern-cut-before-after-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/barbershop-modern-cut-before-after-xs.webp",
+          "jpg": "images/optimized/barbershop-modern-cut-before-after-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRgABAABXRUJQVlA4IPQAAADQBQCdASoYACAAPxF6tVOsJ6UiqAqpgCIJYwC7BagWztpALugVfnC8ohMthjz02b+sfiBc06MAAP6jIcWd6XkXwjxntQqyQDdSm21C9ddwJRsI2bqokzGqHHlQw90C86N0yksD9iGXYfk12RG9ujl3mBDAkrkUD4AloCA1WcxWRCOlFvI2UVtD1suYoj9yU8Q2F5UpsTv9r6suu1yxsEaQ9DzSYQv2xlpgSO9tuUGZ7Njs5HFjNfeBPnCLfu80GYUq1ge5AGFF5ClOCv4H/5Rc7bzJfM8H2o6IE/CU2VB7qewPLEIXsbV6qDfacJ1nyrVDAAAA",
+      "original": "images/noname.jpg",
+      "meta": {
+        "width": 360,
+        "height": 480,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_1.jpg",
+      "slug": "skin-fade-detail-razor-finish",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/skin-fade-detail-razor-finish-lg.webp",
+          "jpg": "images/optimized/skin-fade-detail-razor-finish-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/skin-fade-detail-razor-finish-md.webp",
+          "jpg": "images/optimized/skin-fade-detail-razor-finish-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/skin-fade-detail-razor-finish-sm.webp",
+          "jpg": "images/optimized/skin-fade-detail-razor-finish-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/skin-fade-detail-razor-finish-xs.webp",
+          "jpg": "images/optimized/skin-fade-detail-razor-finish-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRvYAAABXRUJQVlA4IOoAAACwBQCdASoYACAAPxF4s1IsJySisBgIAYAiCUAYmwIcz5glPNkcvOrdKPqf3Jh+PvmqK1VboAAA/nXRHBwyL4vxpo/QtS5O/cxBx5AeYfGllUXiv/eADzHsxnXJiifzJEQEy7KWdYd3U4vlgLuyOfBHcVdRGlRBpvd+J1U4vQ/y1E/gyilfZ2U5SAFg1uplzEN2b9NODnoru7ZDpNcSFcU7TEhIOirUHDgjdbSwcgsgEDKqwzb1Kitcf3Xa+obE00kVqAmwsGFG92HiPdhoQogeOSzjMtrOvPP0Y3ApDe1cfowpcmc2KRBcAAA=",
+      "original": "images/noname_1.jpg",
+      "meta": {
+        "width": 360,
+        "height": 480,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_10.jpg",
+      "slug": "modernmen-regina-exterior-sign",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/modernmen-regina-exterior-sign-lg.webp",
+          "jpg": "images/optimized/modernmen-regina-exterior-sign-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/modernmen-regina-exterior-sign-md.webp",
+          "jpg": "images/optimized/modernmen-regina-exterior-sign-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/modernmen-regina-exterior-sign-sm.webp",
+          "jpg": "images/optimized/modernmen-regina-exterior-sign-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/modernmen-regina-exterior-sign-xs.webp",
+          "jpg": "images/optimized/modernmen-regina-exterior-sign-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRkIBAABXRUJQVlA4IDYBAADwBQCdASoYACAAPwl2sVArp6SisBgMAXAhCWYApyX6o3gXB2RWFuh5poFHqVxkzHfZI5xinF/XWgD94gSaG1HOfI7EfvQfZkTTlodcQztNQXd+In1Qf/9yb0uqeU0K63qvjY3/kizQ7UVlDcuB4T1RGjnqAyOdnhTXPaIly/YfTOH7kRXGaVxVpfcHa/oBGTmxSzgO43+eg6fmeHGJK91Af3k8393HyuFXnr6lfXmkVXCz0PqlBXzdqDMgp3YszPp6875Yg80ofHNpEZnZrvfsp6QztBT39Urf8+DiBZz26O36dEpwBfagBuLXyGTCWqtpbW2uvZ5T5EAVfOE3cfceEMMakhDnV7TbhsnT8Df787EjKuUSxLwIAg+6gv2DJVMMD4QOYMpQxBGwk/3Wvso1Xm/nkAAA",
+      "original": "images/noname_10.jpg",
+      "meta": {
+        "width": 360,
+        "height": 480,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_2.jpg",
+      "slug": "beard-trim-line-up-hot-towel",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/beard-trim-line-up-hot-towel-lg.webp",
+          "jpg": "images/optimized/beard-trim-line-up-hot-towel-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/beard-trim-line-up-hot-towel-md.webp",
+          "jpg": "images/optimized/beard-trim-line-up-hot-towel-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/beard-trim-line-up-hot-towel-sm.webp",
+          "jpg": "images/optimized/beard-trim-line-up-hot-towel-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/beard-trim-line-up-hot-towel-xs.webp",
+          "jpg": "images/optimized/beard-trim-line-up-hot-towel-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRhABAABXRUJQVlA4IAQBAADwBQCdASoYACAAPxF4t1MsJyWiqAqpgCIJQBertQYy7UHVJHTdYoPJV4YrV0d33nywCP//aPmdIAD3ZEZlIGxfDXW/ZVCgoPdcipNlf8zzDJwhcy798yIq7wwRSnT2C0PQMTWs8kbuu2pe8IMUiabwr99uAE/eOwkJsMLZJKQDsuZXn1ZKagvLQbaocfn39pcvUzf90Tgdmp9ImHZAu29jY3RlXWDFWYjMIisgirVoY+yxop300sDniKZf/gaksDVndSzCHCu/GjgXPvQ84X/3/Oq8Vstj+3v5zQ0Vadc89gxwJexq7urM6OLlpc3/YVMpLh8T+lZB2GU+FLfg4VxssrgAAA==",
+      "original": "images/noname_2.jpg",
+      "meta": {
+        "width": 360,
+        "height": 480,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_3.jpg",
+      "slug": "hot-towel-shave-classic-ritual",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/hot-towel-shave-classic-ritual-lg.webp",
+          "jpg": "images/optimized/hot-towel-shave-classic-ritual-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/hot-towel-shave-classic-ritual-md.webp",
+          "jpg": "images/optimized/hot-towel-shave-classic-ritual-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/hot-towel-shave-classic-ritual-sm.webp",
+          "jpg": "images/optimized/hot-towel-shave-classic-ritual-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/hot-towel-shave-classic-ritual-xs.webp",
+          "jpg": "images/optimized/hot-towel-shave-classic-ritual-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRvIAAABXRUJQVlA4IOYAAACwBQCdASoYACAAPxF4slIsJySisBgIAYAiCUAXnAXEebpHT6BQ3fDzUwwx3vsleNfizGpMwYAA+31+kZW7kzjcK4ZTbxbunBa3HHWO6HD5nvrAvPsMRN1R5WwEE3h8M1qaEfbXvly8R+npuWp4UO3ddQE5YpCnflRTfxsuXGZgIoHPDBOWxGwtjduHgUoFa7jbz0MVs28GdGQnbx2hqe2VhbawHE21C6bvsC3GR6/pfy2ksInIFZl4gq1Qu+aExQxSs/RcMcCWiRaAFPoIgH2pLjzguv3LqjADq13gwprjQ3wYlvAAAA==",
+      "original": "images/noname_3.jpg",
+      "meta": {
+        "width": 360,
+        "height": 480,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_4.jpg",
+      "slug": "taper-fade-clean-edges",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/taper-fade-clean-edges-lg.webp",
+          "jpg": "images/optimized/taper-fade-clean-edges-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/taper-fade-clean-edges-md.webp",
+          "jpg": "images/optimized/taper-fade-clean-edges-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/taper-fade-clean-edges-sm.webp",
+          "jpg": "images/optimized/taper-fade-clean-edges-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/taper-fade-clean-edges-xs.webp",
+          "jpg": "images/optimized/taper-fade-clean-edges-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRv4AAABXRUJQVlA4IPIAAAAQBQCdASoYACAAPxF6sVIsJ6SisBgIAYAiCUAWcAaKSETICypbJOg8rOdUNCUK+8igAP5b1l25MetaRJs3tua3eviDZFDt9GJM7Xmo2FeCYPYwQf/G7D2r/s0Acn3zY7BneuWKgl2mTTDrYrbY1z5OrfIp72KZ/j2UfMtk+8LoFmszX+m9zHy80a/1zi1Q+ujthiRd/uFLYi9/FvROIcaXFmNAfOxq6DkguFKaZS6EGGJBGo83JIsjG/y8/9VJb9eRgzf+UrMYrK2+oeeqxgmkoNOFkGtqJBbwGm9Z72oAn5EuEEutKGyAOEy8If1hOkMAAA==",
+      "original": "images/noname_4.jpg",
+      "meta": {
+        "width": 360,
+        "height": 480,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_5.jpg",
+      "slug": "kids-cut-clean-style",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/kids-cut-clean-style-lg.webp",
+          "jpg": "images/optimized/kids-cut-clean-style-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/kids-cut-clean-style-md.webp",
+          "jpg": "images/optimized/kids-cut-clean-style-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/kids-cut-clean-style-sm.webp",
+          "jpg": "images/optimized/kids-cut-clean-style-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/kids-cut-clean-style-xs.webp",
+          "jpg": "images/optimized/kids-cut-clean-style-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRg4BAABXRUJQVlA4IAIBAADQBQCdASoYACAAPxF4slIsJySisBgIAYAiCUAU4rGY68YEf/b/Chm6CbIufBaThyyVvHNA8CKAAP1okvNrp+TjL70fDHPSkKhvYx86/iwkZU9Gayh0bB+3JBCjzX2bmmTm9/n23OTqlMcLy2L6/+Vn2DVqpd3aWVTblN2ll4mzLoDbQIbf7xMQuqQBqfxvaHGnfeSuZjomciisAx9hgwiyKL3ikm+9AOwKiag7Lp/35hC4taDk3mgxoz61JcHyV8VdOSLgmkyxpkjrBMPVAmfDTsImv1MuGwVGntLmvaHPo/70LT3UmkJieyGPWxhZGXnLTZHjw/EN7O7itqNghtAdQAA=",
+      "original": "images/noname_5.jpg",
+      "meta": {
+        "width": 360,
+        "height": 480,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_6.jpg",
+      "slug": "buzz-cut-clipper-only",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/buzz-cut-clipper-only-lg.webp",
+          "jpg": "images/optimized/buzz-cut-clipper-only-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/buzz-cut-clipper-only-md.webp",
+          "jpg": "images/optimized/buzz-cut-clipper-only-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/buzz-cut-clipper-only-sm.webp",
+          "jpg": "images/optimized/buzz-cut-clipper-only-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/buzz-cut-clipper-only-xs.webp",
+          "jpg": "images/optimized/buzz-cut-clipper-only-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRvQAAABXRUJQVlA4IOgAAAAQBQCdASoYACAAPxF6slIsJ6SisBgIAYAiCWUAxN610W+GxiMKlT460G/VbWddKF6MAPxiMdx+BUcT0r6LZ9X461txHxJmlia6uck2YUHDeA3wN15aikATIngoBMbQatBknPJ6V96yyWdvL3BDn522pNBNKsRMxKjbp9VngMG5F+mynpeM4AYjpR0cuIIR/KJKPTozGyk33YX8wEX0Cl2GVu9gTNp6bKG2Utx8tUmu5LJunvcmjlNRgf/VHQgEnZG8dRpNtyPXSZTy7H6gCZwOaNIbm1mCg6jNHLcrynsitMM3u8SQAAAA",
+      "original": "images/noname_6.jpg",
+      "meta": {
+        "width": 480,
+        "height": 640,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_7.jpg",
+      "slug": "barber-chair-interior-cinematic",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/barber-chair-interior-cinematic-lg.webp",
+          "jpg": "images/optimized/barber-chair-interior-cinematic-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/barber-chair-interior-cinematic-md.webp",
+          "jpg": "images/optimized/barber-chair-interior-cinematic-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/barber-chair-interior-cinematic-sm.webp",
+          "jpg": "images/optimized/barber-chair-interior-cinematic-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/barber-chair-interior-cinematic-xs.webp",
+          "jpg": "images/optimized/barber-chair-interior-cinematic-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRgwBAABXRUJQVlA4IAABAAAQBQCdASoYACAAPxF6sVIsJ6SisBgIAYAiCWIAuLn4ABMb0WxjscF/rAAVWo5sF88AAO6FBBUNFPd/huFoIaPOb1HlmVe/EaiidNSpsFazpexum5iC1O4KNGgnhsoy9URJ3p2RwiYp0lLRN/Umj9CF76w9mk3fIgfWb87BPabG6jq2ZnRYXWCabpzzlcMA0i4FELkGsSXsEWWjebwXsYZDIdraIVlNJlX6AdkT5wPKA5eJL9QqpfTMXD40euqwPKk2yf/gFI6orlxiVeBsTmwhTPO8KVxQ4EdPg6r1e8HKEs3hEVNT5CJobJnyGC41f6DWmRHPmmKlg+sbFHCk2cAA",
+      "original": "images/noname_7.jpg",
+      "meta": {
+        "width": 360,
+        "height": 480,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_8.jpg",
+      "slug": "barbershop-tools-scissors-comb",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/barbershop-tools-scissors-comb-lg.webp",
+          "jpg": "images/optimized/barbershop-tools-scissors-comb-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/barbershop-tools-scissors-comb-md.webp",
+          "jpg": "images/optimized/barbershop-tools-scissors-comb-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/barbershop-tools-scissors-comb-sm.webp",
+          "jpg": "images/optimized/barbershop-tools-scissors-comb-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/barbershop-tools-scissors-comb-xs.webp",
+          "jpg": "images/optimized/barbershop-tools-scissors-comb-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRu4AAABXRUJQVlA4IOIAAACQBQCdASoYACAAPxF6tlOsJ6UiqAqpgCIJQBdgAjOSDM8fZuS/UjPn1Q5Il4ai3WzxzIgowAD6mahu2f+B2vwydBmeyxiq1K8sjW0mcKjsIUeOOTVGILoilRatukSWR4U+9FMwXT2yJcdFiGt/9/dzfe4K4GLvGDLczqBTzkxL8XI2/YKjMn4IFc+73d6VeDrsg22pNUCXuGGCdczt1bLf/V1hOMYpgXo9n502HMMIHKBIOHT7j5jF2lxPidHhLYiAyPJXe6ogptJojNLrSqn8fNF04O2xoOjaTDi7YkgHXAAA",
+      "original": "images/noname_8.jpg",
+      "meta": {
+        "width": 360,
+        "height": 480,
+        "format": "jpeg"
+      }
+    },
+    {
+      "file": "noname_9.jpg",
+      "slug": "before-after-slider-result",
+      "sources": [
+        {
+          "size": "lg",
+          "webp": "images/optimized/before-after-slider-result-lg.webp",
+          "jpg": "images/optimized/before-after-slider-result-lg.jpg"
+        },
+        {
+          "size": "md",
+          "webp": "images/optimized/before-after-slider-result-md.webp",
+          "jpg": "images/optimized/before-after-slider-result-md.jpg"
+        },
+        {
+          "size": "sm",
+          "webp": "images/optimized/before-after-slider-result-sm.webp",
+          "jpg": "images/optimized/before-after-slider-result-sm.jpg"
+        },
+        {
+          "size": "xs",
+          "webp": "images/optimized/before-after-slider-result-xs.webp",
+          "jpg": "images/optimized/before-after-slider-result-xs.jpg"
+        }
+      ],
+      "blurDataURL": "data:image/webp;base64,UklGRhgBAABXRUJQVlA4IAwBAABQBgCdASoYACAAPxF0slKsJiSisBgIAYAiCWIAuDQKGfM7mV0lEoOJ7NPP6uupqEhBPg/4AbxpiisywAD+mm/dtSc0YxvIvJ65VKt1q8MeA/pUQpQ4rb3x/0b5yNI3WkRCshhdK74mjvOJdT/S1jE2W7M0WGiJMF3WaMfuDrsErzZVPlhUkYe5Hj0mCzAlUikFWAKl6by3wV38wAfU+21dQABcfwqub601hRdp/WDvPF30wfmJag7hC1fBVn714v0ATNIUw8oa/KppQWY4B8zkCHTOOHux6pR4Dittnmd/1kk6I8CmgPWk1bbZrAx5iDJ/nclZop2OBXrnoV2AFBOtegQPPqyybfBTAAAA",
+      "original": "images/noname_9.jpg",
+      "meta": {
+        "width": 240,
+        "height": 320,
+        "format": "jpeg"
+      }
+    }
+  ]
+}
