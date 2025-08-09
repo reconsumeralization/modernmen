@@ -75,7 +75,7 @@ export default function ServicesPage() {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/60 z-10" />
           <img
-            src="https://images.unsplash.com/photo-1594751543129-6701ad444a57?w=1920&auto=format&fit=crop&q=70"
+            src="/images/optimized/barber-chair-interior-cinematic-lg.jpg"
             alt="Barber services"
             className="w-full h-full object-cover"
           />

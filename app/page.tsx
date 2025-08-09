@@ -192,7 +192,7 @@ export default function HomePage() {
               className="relative"
             >
               <img
-                src="https://images.unsplash.com/photo-1605515682347-4d8de3d3fa19?w=1200&auto=format&fit=crop&q=70"
+                src="/images/optimized/hot-towel-shave-classic-ritual-lg.jpg"
                 alt="Signature ritual"
                 className="w-full h-[600px] object-cover"
               />
