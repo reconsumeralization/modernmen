@@ -1,14 +1,17 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Modern Men Hair Salon - Regina, Saskatchewan',
-  description: 'At Modern Men Salon we take Men\'s Grooming to the highest level of experience and satisfaction.',
+  title: {
+    default: 'Modernmen Barbershop – Regina | Precision Cuts & Hot Towel Shaves',
+    template: '%s | Modernmen Barbershop'
+  },
+  description: "Classic craft, modern results. Men's haircuts, hot towel shaves, and beard trims in Regina.",
   keywords: 'mens haircut, barber, hair salon, Regina, Saskatchewan, mens grooming',
   openGraph: {
-    title: 'Modern Men Hair Salon - Regina, Saskatchewan',
-    description: 'Professional mens grooming and haircuts in Regina, SK',
+    title: 'Modernmen Barbershop – Regina, SK',
+    description: 'Professional men\'s grooming and haircuts in Regina, SK',
     type: 'website',
     locale: 'en_CA',
-    siteName: 'Modern Men Hair Salon',
+    siteName: 'Modernmen',
   },
 }

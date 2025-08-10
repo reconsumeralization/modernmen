@@ -9,23 +9,30 @@ interface TimeSlot {
   time: string
   datetime: string
   available: boolean
+  availableStaff?: { id: string; name: string }[]
 }
 
 interface AvailabilityCalendarProps {
   staffId: string
   serviceId: string
   onSelectSlot: (date: string, time: string) => void
+  onSwitchToAny?: () => void
+  onSwitchToStaff?: (id: string) => void
 }
 
 export default function AvailabilityCalendar({ 
   staffId, 
   serviceId, 
-  onSelectSlot 
+  onSelectSlot,
+  onSwitchToAny,
+  onSwitchToStaff
 }: AvailabilityCalendarProps) {
   const [selectedDate, setSelectedDate] = useState(startOfToday())
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
+  const [altStaff, setAltStaff] = useState<{ id: string; name: string }[] | null>(null)
+  const [checkingAlt, setCheckingAlt] = useState(false)
   
   // Fetch availability when date/staff/service changes
   useEffect(() => {
@@ -71,6 +78,38 @@ export default function AvailabilityCalendar({
   const handleSlotSelect = (slot: TimeSlot) => {
     setSelectedSlot(slot.time)
     onSelectSlot(format(selectedDate, 'yyyy-MM-dd'), slot.time)
+    // If user chose a specific barber, check if other barbers are available at this exact time
+    if (staffId !== 'any') {
+      void fetchAltForTime(slot.time)
+    } else {
+      // If user chose 'any', derive alt list from slot data if present
+      if (slot.availableStaff && slot.availableStaff.length > 1) {
+        setAltStaff(slot.availableStaff)
+      } else {
+        setAltStaff(null)
+      }
+    }
+  }
+
+  const fetchAltForTime = async (time: string) => {
+    try {
+      setCheckingAlt(true)
+      const dateStr = format(selectedDate, 'yyyy-MM-dd')
+      const res = await fetch(`/api/availability?date=${dateStr}&staffId=any&serviceId=${serviceId}`)
+      if (res.ok) {
+        const data = await res.json()
+        const match = (data.slots || []).find((s: TimeSlot) => s.time === time)
+        if (match && match.availableStaff && match.availableStaff.length > 0) {
+          setAltStaff(match.availableStaff)
+        } else {
+          setAltStaff(null)
+        }
+      }
+    } catch (e) {
+      setAltStaff(null)
+    } finally {
+      setCheckingAlt(false)
+    }
   }
   
   // Generate week view
@@ -144,9 +183,18 @@ export default function AvailabilityCalendar({
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           </div>
         ) : timeSlots.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">
-            No available slots for this date
-          </p>
+          <div className="text-center py-8">
+            <p className="text-gray-600 mb-3">No available slots for this date{staffId !== 'any' ? ' with your selected barber' : ''}.</p>
+            {staffId !== 'any' && (
+              <button
+                type="button"
+                onClick={onSwitchToAny}
+                className="px-4 py-2 text-sm font-medium border-2 border-black hover:bg-black hover:text-white transition-colors"
+              >
+                Show availability with any barber
+              </button>
+            )}
+          </div>
         ) : (
           <div className="grid grid-cols-4 gap-2">
             <AnimatePresence mode="popLayout">              {timeSlots.map((slot) => (
@@ -171,6 +219,38 @@ export default function AvailabilityCalendar({
           </div>
         )}
       </div>
+
+      {/* Alternate staff suggestion */}
+      {staffId !== 'any' && selectedSlot && altStaff && altStaff.length > 0 && (
+        <div className="mt-6 p-3 rounded-md border border-amber-300 bg-amber-50 text-amber-900 text-sm">
+          <p className="font-medium mb-2">This time is available with {altStaff.length} {altStaff.length === 1 ? 'barber' : 'barbers'}:</p>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {altStaff.map((s) => (
+              <span key={s.id} className="px-2 py-1 rounded border border-amber-300 bg-white text-amber-900">{s.name}</span>
+            ))}
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onSwitchToAny}
+              className="px-4 py-2 text-sm font-medium border-2 border-black hover:bg-black hover:text-white transition-colors"
+              disabled={checkingAlt}
+            >
+              {checkingAlt ? 'Checking…' : 'Book with any barber'}
+            </button>
+            {altStaff[0] && (
+              <button
+                type="button"
+                onClick={() => onSwitchToStaff && onSwitchToStaff(altStaff[0].id)}
+                className="px-4 py-2 text-sm font-medium border-2 border-amber-300 bg-white hover:bg-amber-100 text-amber-900 transition-colors"
+              >
+                Book with {altStaff[0].name}
+              </button>
+            )}
+            <span className="text-xs text-amber-800">You can still specify a preference after switching.</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

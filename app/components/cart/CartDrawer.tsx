@@ -1,208 +1,179 @@
 'use client'
-
-import React, { useState } from 'react'
-import { X, Plus, Minus, ShoppingBag, MapPin, Truck } from 'lucide-react'
+import { useState } from 'react'
+import { X, Trash2, ShoppingBag } from 'lucide-react'
+import Image from 'next/image'
 import { useCart } from '@/app/contexts/CartContext'
-import getStripe from '@/lib/stripe/client'
 
-interface CartDrawerProps {
-  isOpen: boolean
-  onClose: () => void
-}
+export default function CartDrawer({ isOpen, onCloseAction }: { isOpen: boolean; onCloseAction: () => void }) {
+  const { state, removeItem, updateQuantity, clearCart } = useCart()
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const [giftCardCode, setGiftCardCode] = useState('')
 
-const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
-  const { state, removeItem, updateQuantity, setPickup } = useCart()
-  const [loading, setLoading] = useState(false)
-
-  const shippingCost = !state.isPickup && state.total < 75 ? 9.99 : 0
-  const tax = (state.total + shippingCost) * 0.10
-  const finalTotal = state.total + shippingCost + tax
+  const subtotal = state.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
+  const tax = subtotal * 0.10 // 10% GST
+  const total = subtotal + tax
 
   const handleCheckout = async () => {
     if (state.items.length === 0) return
 
-    setLoading(true)
+    setIsCheckingOut(true)
     try {
       const response = await fetch('/api/payment/create-session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          items: state.items.map(item => ({
+          items: state.items.map((item: any) => ({
             id: item.id,
             quantity: item.quantity,
-            price: item.price
+            price: Number(item.price)
           })),
-          isPickup: state.isPickup,
-          shippingAddress: state.shippingAddress
-        })
+          clientId: 'guest', // Will be updated when user auth is implemented
+          isPickup: true,
+          giftCardCode: giftCardCode || undefined
+        }),
       })
 
-      const { url, error } = await response.json()
-      
-      if (error) {
-        alert(error)
+      const data = await response.json()
+
+      if (data.error) {
+        alert(data.error)
         return
       }
 
-      if (url) {
-        window.location.href = url
+      if (data.paidByGiftCard) {
+        // Gift card covered the full amount
+        alert('Order completed with gift card!')
+        clearCart()
+        onCloseAction()
+        return
+      }
+
+      if (data.url) {
+        window.location.href = data.url
       }
     } catch (error) {
-      console.error('Checkout error:', error)
+      console.error('Checkout failed:', error)
       alert('Checkout failed. Please try again.')
     } finally {
-      setLoading(false)
+      setIsCheckingOut(false)
     }
   }
 
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
-      
+    <div className={`fixed inset-0 z-50 ${isOpen ? 'block' : 'hidden'}`}>
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onCloseAction} />
       <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
         <div className="flex h-full flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-lg font-semibold flex items-center">
-              <ShoppingBag className="w-5 h-5 mr-2" />
-              Cart ({state.itemCount})
-            </h2>
-            <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded">
-              <X className="w-5 h-5" />
+          <div className="flex items-center justify-between border-b px-6 py-4">
+            <h2 className="text-lg font-semibold">Shopping Cart</h2>
+            <button onClick={onCloseAction} className="text-gray-400 hover:text-gray-600">
+              <X size={24} />
             </button>
           </div>
 
-          {/* Delivery Options */}
-          <div className="p-4 border-b bg-gray-50">
-            <div className="flex space-x-4">
-              <button
-                onClick={() => setPickup(true)}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg border ${
-                  state.isPickup 
-                    ? 'border-blue-500 bg-blue-50 text-blue-700' 
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
-              >
-                <MapPin className="w-4 h-4" />
-                <span className="text-sm">Pickup</span>
-              </button>
-              <button
-                onClick={() => setPickup(false)}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg border ${
-                  !state.isPickup 
-                    ? 'border-blue-500 bg-blue-50 text-blue-700' 
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
-              >
-                <Truck className="w-4 h-4" />
-                <span className="text-sm">Shipping</span>
-              </button>
-            </div>
-            {!state.isPickup && state.total < 75 && (
-              <p className="text-sm text-amber-600 mt-2">
-                Add ${(75 - state.total).toFixed(2)} more for free shipping
-              </p>
-            )}
-          </div>          {/* Cart Items */}
-          <div className="flex-1 overflow-y-auto p-4">
+          {/* Cart Items */}
+          <div className="flex-1 overflow-y-auto p-6">
             {state.items.length === 0 ? (
-              <div className="text-center text-gray-500 mt-8">
-                <ShoppingBag className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>Your cart is empty</p>
+              <div className="flex flex-col items-center justify-center py-12">
+                <ShoppingBag size={48} className="text-gray-300 mb-4" />
+                <p className="text-gray-500">Your cart is empty</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {state.items.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-3 border-b pb-4">
-                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                      {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover rounded-lg" />
-                      ) : (
-                        <ShoppingBag className="w-6 h-6 text-gray-400" />
-                      )}
+                {state.items.map((item: any) => (
+                  <div key={item.id} className="flex items-center space-x-4 border-b pb-4">
+                    <div className="relative h-16 w-16 flex-shrink-0">
+                      <Image
+                        src={item.imageUrl || '/images/placeholder.jpg'}
+                        alt={item.name}
+                        fill
+                        className="rounded object-cover"
+                      />
                     </div>
-                    
                     <div className="flex-1">
-                      <h3 className="font-medium text-sm">{item.brand} {item.name}</h3>
+                      <h3 className="font-medium">{item.name}</h3>
                       <p className="text-sm text-gray-500">${item.price}</p>
-                      
                       <div className="flex items-center space-x-2 mt-2">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                          className="w-6 h-6 rounded border text-center text-sm hover:bg-gray-100"
                         >
-                          <Minus className="w-3 h-3" />
+                          -
                         </button>
-                        <span className="w-8 text-center text-sm">{item.quantity}</span>
+                        <span className="w-8 text-center">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          disabled={item.quantity >= item.inStock}
-                          className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50"
+                          className="w-6 h-6 rounded border text-center text-sm hover:bg-gray-100"
                         >
-                          <Plus className="w-3 h-3" />
-                        </button>
-                        <button
-                          onClick={() => removeItem(item.id)}
-                          className="ml-4 text-red-500 hover:text-red-700"
-                        >
-                          <X className="w-4 h-4" />
+                          +
                         </button>
                       </div>
                     </div>
-                    
-                    <div className="text-right">
-                      <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-                    </div>
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
+          {/* Gift Card Input */}
+          {state.items.length > 0 && (
+            <div className="border-t px-6 py-4">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Gift Card Code (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={giftCardCode}
+                  onChange={(e) => setGiftCardCode(e.target.value.toUpperCase())}
+                  placeholder="Enter gift card code"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent"
+                />
+              </div>
+            </div>
+          )}
+
           {/* Footer */}
           {state.items.length > 0 && (
-            <div className="border-t p-4 space-y-4">
-              <div className="space-y-2 text-sm">
+            <div className="border-t px-6 py-4 space-y-4">
+              <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span>${state.total.toFixed(2)}</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
-                {!state.isPickup && (
-                  <div className="flex justify-between">
-                    <span>Shipping:</span>
-                    <span>{shippingCost === 0 ? 'Free' : `$${shippingCost.toFixed(2)}`}</span>
-                  </div>
-                )}
                 <div className="flex justify-between">
-                  <span>Tax (10%):</span>
+                  <span>Tax (10% GST):</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                <div className="flex justify-between font-semibold text-lg">
                   <span>Total:</span>
-                  <span>${finalTotal.toFixed(2)}</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
               </div>
               
               <button
                 onClick={handleCheckout}
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                disabled={isCheckingOut}
+                className="w-full bg-brand-red text-white py-3 px-4 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                ) : (
-                  'Checkout'
-                )}
+                {isCheckingOut ? 'Processing...' : 'Checkout'}
               </button>
               
-              <p className="text-xs text-gray-500 text-center">
-                {state.isPickup 
-                  ? 'Items will be ready for pickup within 2-3 business days'
-                  : 'Standard shipping: 5-7 business days'
-                }
-              </p>
+              <button
+                onClick={clearCart}
+                className="w-full text-gray-500 py-2 px-4 rounded-md hover:bg-gray-100"
+              >
+                Clear Cart
+              </button>
             </div>
           )}
         </div>
@@ -210,5 +181,3 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     </div>
   )
 }
-
-export default CartDrawer

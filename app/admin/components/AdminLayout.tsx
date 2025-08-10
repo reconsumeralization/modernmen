@@ -40,10 +40,16 @@ export default function AdminLayout({ children, currentPage }: AdminLayoutProps)
   const router = useRouter()
 
   useEffect(() => {
-    // Check authentication status
-    const checkAuth = () => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/admin/auth/me', { cache: 'no-store' })
+        if (res.ok) {
+          setIsAuthenticated(true)
+          setIsLoading(false)
+          return
+        }
+      } catch {}
       const token = localStorage.getItem('adminToken')
-      
       if (token) {
         setIsAuthenticated(true)
       } else {
@@ -51,7 +57,6 @@ export default function AdminLayout({ children, currentPage }: AdminLayoutProps)
       }
       setIsLoading(false)
     }
-
     checkAuth()
   }, [router])
 

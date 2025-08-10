@@ -8,7 +8,9 @@ export async function POST(request: Request) {
       items, 
       clientId, 
       isPickup = true, 
-      shippingAddress 
+      shippingAddress,
+      depositAmountCents,
+      giftCardCode
     } = await request.json()
 
     if (!items || items.length === 0) {
@@ -73,8 +75,9 @@ export async function POST(request: Request) {
     }
 
     // Calculate tax (10% GST for Saskatchewan)
-    const tax = (subtotal + shippingCost) * 0.10
-    const total = subtotal + shippingCost + tax
+    const amountBasis = depositAmountCents ? depositAmountCents / 100 : (subtotal + shippingCost)
+    const tax = amountBasis * 0.10
+    const total = amountBasis + tax
 
     // Create order in database
     const orderNumber = `MM-${Date.now()}`
@@ -99,10 +102,36 @@ export async function POST(request: Request) {
       }
     })
 
-    // Create Stripe checkout session
+    // Optional: apply gift card toward total
+    let redeemCents = 0
+    if (giftCardCode) {
+      const gc = await (prisma as any).giftCard?.findUnique?.({ where: { code: giftCardCode } })
+      if (gc && gc.status === 'ACTIVE') {
+        const balanceCents = Math.round(Number(gc.balance) * 100)
+        const totalCents = Math.round(total * 100)
+        redeemCents = Math.min(balanceCents, totalCents)
+        if (redeemCents >= totalCents) {
+          // fully covered
+          const newBalance = (balanceCents - redeemCents) / 100
+          await (prisma as any).giftCard.update({ where: { code: giftCardCode }, data: { balance: newBalance.toString(), status: newBalance === 0 ? 'REDEEMED' : 'ACTIVE' } })
+          await (prisma as any).giftCardRedemption.create({ data: { giftCardId: gc.id, amount: (redeemCents/100).toString(), context: 'ORDER', referenceId: order.id } })
+          await prisma.order.update({ where: { id: order.id }, data: { paymentStatus: 'PAID', status: 'PROCESSING', paymentMethod: 'gift-card' } })
+          return NextResponse.json({ sessionId: null, orderId: order.id, url: null, paidByGiftCard: true })
+        }
+      }
+    }
+
+    // Create Stripe checkout session (deposit if provided)
+    // Read settings to decide provider & deposit default (for now, we still use Stripe)
+    const settings = await (prisma as any).businessSetting?.findUnique?.({ where: { id: 'default' } })
+    const provider = settings?.paymentProvider || 'STRIPE'
+    const remainderCents = Math.max(0, Math.round(total * 100) - redeemCents)
+    const useAggregateLine = !!depositAmountCents || redeemCents > 0
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: lineItems,
+      line_items: useAggregateLine
+        ? [{ price_data: { currency: 'cad', product_data: { name: depositAmountCents ? 'Appointment Deposit (Balance Due In-Store)' : 'Order Balance' }, unit_amount: remainderCents }, quantity: 1 }]
+        : lineItems,
       mode: 'payment',
       success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}&order_id=${order.id}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/cancel?order_id=${order.id}`,
@@ -110,6 +139,10 @@ export async function POST(request: Request) {
         orderId: order.id,
         orderNumber,
         isPickup: isPickup.toString(),
+        isDeposit: (!!depositAmountCents).toString(),
+        depositAmountCents: depositAmountCents ? String(depositAmountCents) : '0',
+        giftCardCode: giftCardCode || '',
+        giftCardRedeemCents: String(redeemCents)
       },
       shipping_address_collection: isPickup ? undefined : {
         allowed_countries: ['CA', 'US'],

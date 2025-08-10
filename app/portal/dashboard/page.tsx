@@ -42,6 +42,8 @@ export default function CustomerDashboard() {
   const [loyaltyPoints, setLoyaltyPoints] = useState(0)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('bookings')
+  const [giftCardCode, setGiftCardCode] = useState('')
+  const [giftCardInfo, setGiftCardInfo] = useState<any | null>(null)
   
   useEffect(() => {
     // Check if user is logged in
@@ -108,7 +110,8 @@ export default function CustomerDashboard() {
     { id: 'bookings', name: 'My Bookings', icon: CalendarIcon },
     { id: 'profile', name: 'Profile', icon: UserCircleIcon },
     { id: 'loyalty', name: 'Loyalty Points', icon: SparklesIcon },
-    { id: 'history', name: 'Service History', icon: ClockIcon }
+    { id: 'history', name: 'Service History', icon: ClockIcon },
+    { id: 'giftcards', name: 'Gift Cards', icon: CreditCardIcon },
   ]
   
   if (loading) {
@@ -320,6 +323,59 @@ export default function CustomerDashboard() {
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Service History</h2>
             <p className="text-gray-600">Your complete service history will appear here.</p>
+          </motion.div>
+        )}
+
+        {/* Gift Cards Tab */}
+        {activeTab === 'giftcards' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-lg shadow-sm p-6"
+          >
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Manage Gift Cards</h2>
+            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end mb-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Gift Card Code</label>
+                <input
+                  className="border px-3 py-2 w-64"
+                  value={giftCardCode}
+                  onChange={(e) => setGiftCardCode(e.target.value.toUpperCase())}
+                  placeholder="ENTER CODE"
+                />
+              </div>
+              <button
+                className="px-4 py-2 border-2 border-black hover:bg-black hover:text-white"
+                onClick={async () => {
+                  if (!giftCardCode) return
+                  const res = await fetch(`/api/gift-cards?code=${giftCardCode}`)
+                  const data = await res.json()
+                  if (res.ok) setGiftCardInfo(data)
+                  else {
+                    setGiftCardInfo(null)
+                    alert(data.error || 'Lookup failed')
+                  }
+                }}
+              >
+                Check Balance
+              </button>
+            </div>
+            {giftCardInfo && (
+              <div className="border rounded p-4 bg-gray-50">
+                <div className="text-sm text-gray-600">Code</div>
+                <div className="font-semibold mb-2">{giftCardInfo.code}</div>
+                <div className="text-sm text-gray-600">Balance</div>
+                <div className="font-semibold">${Number(giftCardInfo.balance).toFixed(2)} CAD</div>
+                <div className="text-sm text-gray-600 mt-2">Status</div>
+                <div className="font-semibold">{giftCardInfo.status}</div>
+                {giftCardInfo.expiresAt && (
+                  <div className="text-sm text-gray-600 mt-2">Expires</div>
+                )}
+                {giftCardInfo.expiresAt && (
+                  <div className="font-semibold">{new Date(giftCardInfo.expiresAt).toLocaleDateString()}</div>
+                )}
+              </div>
+            )}
           </motion.div>
         )}
       </main>

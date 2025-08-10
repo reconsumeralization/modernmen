@@ -5,7 +5,10 @@ import Footer from './components/Footer'
 import { CartProvider } from './contexts/CartContext'
 
 export const metadata: Metadata = {
-  title: 'Modernmen Barbershop – Regina | Precision Cuts, Hot Towel Shaves, Beard Trims',
+  title: {
+    default: 'Modernmen Barbershop – Regina | Precision Cuts, Hot Towel Shaves, Beard Trims',
+    template: '%s | Modernmen Barbershop'
+  },
   description: "Classic craft, modern results. Precision men's haircuts, hot towel shaves, and beard trims in Regina. Book online.",
 }
 
@@ -99,7 +102,7 @@ export default function RootLayout({
         />
         <CartProvider>
           <Header />
-          {children}
+          <main className="pt-[72px] sm:pt-[80px]">{children}</main>
           <Footer />
           {/* Sticky mobile booking bar */}
           <div className="fixed inset-x-0 bottom-0 z-50 sm:hidden">

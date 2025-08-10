@@ -25,6 +25,33 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold tracking-tight font-heading;
   }
+
+  /* Subtle divider using brand silver at 30% */
+  .divider {
+    border-color: rgba(184,184,184,0.3);
+  }
+
+  /* Framed image style: black outer with thin red inner */
+  .framed {
+    outline: 2px solid #000;
+    box-shadow: inset 0 0 0 2px #C00000;
+  }
+
+  /* Heading accent underline */
+  .heading-accent {
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+  .heading-accent::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 90px;
+    height: 3px;
+    background: #C00000;
+  }
 }
 
 /* Custom Button Styles */
@@ -42,6 +69,10 @@
 
   .btn-white {
     @apply px-8 py-4 bg-white text-black font-semibold hover:bg-gray-100 transition-all inline-flex items-center justify-center gap-2;
+  }
+
+  .btn-accent {
+    @apply px-8 py-4 bg-red-600 text-white font-semibold hover:opacity-90 transition-all inline-flex items-center justify-center gap-2;
   }
 }
 

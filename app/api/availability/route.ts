@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { startOfDay, endOfDay, addMinutes, format, parse, isWithinInterval } from 'date-fns'
+import { startOfDay, endOfDay, addMinutes, format, parse, isWithinInterval, isAfter, isBefore } from 'date-fns'
 
 // Get available time slots for a specific date and staff member
 export async function GET(request: NextRequest) {
@@ -30,10 +30,100 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    // Get staff member's schedule
-    const staff = await prisma.staff.findUnique({
-      where: { id: staffId },
+    // Helper to compute slots for one staff
+    const buildStaffSlots = async (staff: any) => {
+      const requestedDate = new Date(date)
+      const dayOfWeek = format(requestedDate, 'EEEE').toLowerCase()
+      if (!staff.workingDays.includes(dayOfWeek)) return [] as any[]
+
+      const dayStart = startOfDay(requestedDate)
+      const dayEnd = endOfDay(requestedDate)
+      const existingBookings = await prisma.booking.findMany({
+        where: {
+          staffId: staff.id,
+          date: { gte: dayStart, lte: dayEnd },
+          status: { in: ['CONFIRMED', 'IN_PROGRESS'] }
+        },
+        orderBy: { date: 'asc' }
+      })
+
+      const slots: any[] = []
+      const slotDuration = 15
+      const serviceDuration = service.duration
+      const workStart = parse(staff.startTime, 'HH:mm', requestedDate)
+      const workEnd = parse(staff.endTime, 'HH:mm', requestedDate)
+      const breakStart = staff.breakStart ? parse(staff.breakStart, 'HH:mm', requestedDate) : null
+      const breakEnd = staff.breakEnd ? parse(staff.breakEnd, 'HH:mm', requestedDate) : null
+
+      let currentSlot = workStart
+      while (currentSlot <= workEnd) {
+        const slotEnd = addMinutes(currentSlot, serviceDuration)
+        if (isAfter(slotEnd, workEnd)) break
+
+        const overlapsBreak = breakStart && breakEnd && (
+          isWithinInterval(currentSlot, { start: breakStart, end: breakEnd }) ||
+          isWithinInterval(slotEnd, { start: breakStart, end: breakEnd }) ||
+          (isBefore(currentSlot, breakStart) && isAfter(slotEnd, breakEnd))
+        )
+
+        const hasConflict = existingBookings.some(booking => {
+          const bookingStart = new Date(booking.date)
+          const bookingEnd = addMinutes(bookingStart, booking.duration || 30)
+          return (
+            isWithinInterval(currentSlot, { start: bookingStart, end: bookingEnd }) ||
+            isWithinInterval(slotEnd, { start: bookingStart, end: bookingEnd }) ||
+            (isBefore(currentSlot, bookingStart) && isAfter(slotEnd, bookingEnd))
+          )
+        })
+
+        if (!overlapsBreak && !hasConflict) {
+          slots.push({
+            time: format(currentSlot, 'HH:mm'),
+            datetime: currentSlot.toISOString(),
+            available: true
+          })
+        }
+
+        currentSlot = addMinutes(currentSlot, slotDuration)
+      }
+      return slots
+    }
+
+    const requestedDate = new Date(date)
+    if (staffId !== 'any') {
+      const staff = await prisma.staff.findUnique({
+        where: { id: staffId },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          startTime: true,
+          endTime: true,
+          breakStart: true,
+          breakEnd: true,
+          workingDays: true
+        }
+      })
+      if (!staff) {
+        return NextResponse.json({ error: 'Staff member not found' }, { status: 404 })
+      }
+      const staffSlots = await buildStaffSlots(staff)
+      return NextResponse.json({
+        available: staffSlots.length > 0,
+        date,
+        staffId,
+        serviceId,
+        slots: staffSlots
+      })
+    }
+
+    // Aggregate availability for all active staff when 'any'
+    const activeStaff = await prisma.staff.findMany({
+      where: { isActive: true },
       select: {
+        id: true,
+        firstName: true,
+        lastName: true,
         startTime: true,
         endTime: true,
         breakStart: true,
@@ -41,103 +131,32 @@ export async function GET(request: NextRequest) {
         workingDays: true
       }
     })
-    
-    if (!staff) {
-      return NextResponse.json(
-        { error: 'Staff member not found' },
-        { status: 404 }
-      )
-    }    
-    // Check if the requested date is a working day
-    const requestedDate = new Date(date)
-    const dayOfWeek = format(requestedDate, 'EEEE').toLowerCase()
-    
-    if (!staff.workingDays.includes(dayOfWeek)) {
-      return NextResponse.json({
-        available: false,
-        message: 'Staff member does not work on this day',
-        slots: []
-      })
-    }
-    
-    // Get existing bookings for the day
-    const dayStart = startOfDay(requestedDate)
-    const dayEnd = endOfDay(requestedDate)
-    
-    const existingBookings = await prisma.booking.findMany({
-      where: {
-        staffId,
-        date: {
-          gte: dayStart,
-          lte: dayEnd
-        },
-        status: {
-          in: ['CONFIRMED', 'IN_PROGRESS']
+
+    const availabilityByTime: Record<string, { datetime: string; staff: { id: string; name: string }[] }> = {}
+    for (const s of activeStaff) {
+      const sSlots = await buildStaffSlots(s)
+      for (const slot of sSlots) {
+        if (!availabilityByTime[slot.time]) {
+          availabilityByTime[slot.time] = { datetime: slot.datetime, staff: [] }
         }
-      },
-      orderBy: {
-        date: 'asc'
+        availabilityByTime[slot.time].staff.push({ id: s.id, name: `${s.firstName} ${s.lastName}`.trim() })
       }
-    })
-    
-    // Generate time slots
-    const slots = []
-    const slotDuration = 15 // 15-minute intervals
-    const serviceDuration = service.duration    
-    // Parse staff working hours
-    const workStart = parse(staff.startTime, 'HH:mm', requestedDate)
-    const workEnd = parse(staff.endTime, 'HH:mm', requestedDate)
-    const breakStart = staff.breakStart ? parse(staff.breakStart, 'HH:mm', requestedDate) : null
-    const breakEnd = staff.breakEnd ? parse(staff.breakEnd, 'HH:mm', requestedDate) : null
-    
-    // Generate slots from start to end time
-    let currentSlot = workStart
-    
-    while (currentSlot <= workEnd) {
-      const slotEnd = addMinutes(currentSlot, serviceDuration)
-      
-      // Check if slot extends beyond working hours
-      if (slotEnd > workEnd) {
-        break
-      }
-      
-      // Check if slot overlaps with break time
-      const overlapsBreak = breakStart && breakEnd && (
-        isWithinInterval(currentSlot, { start: breakStart, end: breakEnd }) ||
-        isWithinInterval(slotEnd, { start: breakStart, end: breakEnd }) ||
-        (currentSlot <= breakStart && slotEnd >= breakEnd)
-      )
-      
-      // Check if slot conflicts with existing bookings
-      const hasConflict = existingBookings.some(booking => {
-        const bookingStart = new Date(booking.date)
-        const bookingEnd = addMinutes(bookingStart, booking.duration || 30)
-        
-        return (
-          isWithinInterval(currentSlot, { start: bookingStart, end: bookingEnd }) ||
-          isWithinInterval(slotEnd, { start: bookingStart, end: bookingEnd }) ||
-          (currentSlot <= bookingStart && slotEnd >= bookingEnd)
-        )
-      })      
-      // Add slot if it's available
-      if (!overlapsBreak && !hasConflict) {
-        slots.push({
-          time: format(currentSlot, 'HH:mm'),
-          datetime: currentSlot.toISOString(),
-          available: true
-        })
-      }
-      
-      // Move to next slot
-      currentSlot = addMinutes(currentSlot, slotDuration)
     }
-    
+    const slots = Object.keys(availabilityByTime)
+      .sort()
+      .map((t) => ({
+        time: t,
+        datetime: availabilityByTime[t].datetime,
+        available: availabilityByTime[t].staff.length > 0,
+        availableStaff: availabilityByTime[t].staff
+      }))
+
     return NextResponse.json({
       available: slots.length > 0,
-      date: date,
-      staffId: staffId,
-      serviceId: serviceId,
-      slots: slots
+      date,
+      staffId,
+      serviceId,
+      slots
     })
     
   } catch (error) {

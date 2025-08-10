@@ -212,6 +212,40 @@ model OrderItem {
   @@map("order_items")
 }
 
+// Gift Cards
+model GiftCard {
+  id             String      @id @default(cuid())
+  code           String      @unique
+  currency       String      @default("CAD")
+  amount         Decimal
+  balance        Decimal
+  status         GiftCardStatus @default(PENDING)
+  recipientEmail String
+  purchaserEmail String
+  message        String?
+  activatedAt    DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  redemptions    GiftCardRedemption[]
+
+  @@map("gift_cards")
+}
+
+model GiftCardRedemption {
+  id           String   @id @default(cuid())
+  giftCardId   String
+  amount       Decimal
+  context      String   // 'ORDER' | 'BOOKING'
+  referenceId  String?  // orderId or bookingId
+  createdAt    DateTime @default(now())
+
+  giftCard     GiftCard @relation(fields: [giftCardId], references: [id])
+
+  @@map("gift_card_redemptions")
+}
+
 // Staff Availability
 model StaffAvailability {
   id        String   @id @default(cuid())
@@ -284,6 +318,18 @@ model BusinessMetric {
   @@map("business_metrics")
 }
 
+// Business Settings (single row)
+model BusinessSetting {
+  id                  String           @id @default("default")
+  paymentProvider     PaymentProvider  @default(STRIPE)
+  giftCardMode        GiftCardMode     @default(INTERNAL)
+  depositAmountCents  Int              @default(0)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  @@map("business_settings")
+}
+
 // Waitlist Entries
 model WaitlistEntry {
   id              String         @id @default(cuid())
@@ -351,4 +397,23 @@ enum WaitlistStatus {
   NOTIFIED
   BOOKED
   CANCELLED
+}
+
+enum GiftCardStatus {
+  PENDING
+  ACTIVE
+  REDEEMED
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  STRIPE
+  SQUARE
+  PAYPAL
+}
+
+enum GiftCardMode {
+  INTERNAL
+  PROVIDER
 }
