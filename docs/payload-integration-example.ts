@@ -176,7 +176,7 @@ export default buildConfig({
     // Custom 
     
     
-    css: '/styles/payload-custom.css',
+
 
     // Custom components (you can override defaults)
     components: {
