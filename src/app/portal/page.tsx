@@ -171,7 +171,7 @@ export default function PortalPage() {
           <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-200">
             <CardHeader className="bg-gradient-to-r from-blue-800 to-amber-700 text-white rounded-t-lg">
               <CardTitle className="flex items-center space-x-2">
-                <Icons.user className="h-5 w-5" />
+                <Icons.users className="h-5 w-5" />
                 <span>My Profile</span>
               </CardTitle>
               <CardDescription className="text-blue-100">
