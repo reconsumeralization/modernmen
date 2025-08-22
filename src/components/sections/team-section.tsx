@@ -204,8 +204,11 @@ export function TeamSection() {
                     </p>
                   )}
 
-                  <p className="text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3">
-                    {formatBio(stylist.bio)}
+                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                    {formatBio(stylist.bio).length > 100
+                      ? `${formatBio(stylist.bio).substring(0, 100)}...`
+                      : formatBio(stylist.bio)
+                    }
                   </p>
 
                   {stylist.performance?.totalAppointments && (

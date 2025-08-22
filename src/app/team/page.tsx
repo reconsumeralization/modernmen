@@ -255,8 +255,11 @@ export default function TeamPage() {
                         </p>
                       )}
 
-                      <p className="text-sm text-gray-700 text-center mb-4 line-clamp-3">
-                        {formatBio(stylist.bio)}
+                      <p className="text-sm text-gray-700 text-center mb-4">
+                        {formatBio(stylist.bio).length > 80
+                          ? `${formatBio(stylist.bio).substring(0, 80)}...`
+                          : formatBio(stylist.bio)
+                        }
                       </p>
 
                       {stylist.performance?.totalAppointments && (
