@@ -161,9 +161,7 @@ export default buildConfig({
   }),
 
   // Disable Payload's built-in auth since you're using your own
-  auth: {
-    disableLocalStrategy: true,
-  },
+  auth: false,
 
   // Admin panel configuration
   admin: {
@@ -177,7 +175,9 @@ export default buildConfig({
       favicon: '/favicon.ico'
     },
 
-    // Custom styling
+    // Custom 
+    
+    
     css: '/styles/payload-custom.css',
 
     // Custom components (you can override defaults)
