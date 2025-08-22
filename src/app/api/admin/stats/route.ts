@@ -55,14 +55,17 @@ export async function GET(request: NextRequest) {
 
     const { data: activeUsers } = await supabase
       .from('sessions')
-      .select('userId', { distinct: true })
+      .select('userId')
       .gte('expires', sevenDaysAgo.toISOString())
+
+    // Get unique user IDs by using a Set
+    const uniqueUserIds = [...new Set(activeUsers?.map(session => session.userId) || [])]
 
     const stats = {
       totalUsers: totalUsers || 0,
       adminUsers: adminUsers || 0,
       newUsersToday: newUsersToday || 0,
-      activeUsers: activeUsers?.length || 0,
+      activeUsers: uniqueUserIds.length || 0,
     }
 
     return NextResponse.json(stats)
