@@ -169,9 +169,8 @@ export default buildConfig({
 
     // Custom branding for Modern Men
     meta: {
-      title: 'Modern Men CRM',
-      description: 'Hair Salon Management System',
-      favicon: '/favicon.ico'
+         title: 'Modern Men CRM',
+   description: 'Hair Salon Management System'
     },
 
     // Custom 
