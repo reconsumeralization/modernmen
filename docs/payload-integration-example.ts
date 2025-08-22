@@ -185,13 +185,13 @@ export default buildConfig({
   },
 
   // Collections for your CRM
-  collections: [
-    Customers,
-    Appointments,
-    Services,
-    Stylists,
-    // Add more collections as needed
-  ],
+  // collections: [
+  //   Customers,
+  //   Appointments,
+  //   Services,
+  //   Stylists,
+  //   // Add more collections as needed
+  // ],
 
   // Rich text editor
   editor: lexicalEditor(),
