@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { Icons } from '@/components/ui/icons'
 
-export default function SignInPage() {
+export default function PortalLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -19,8 +19,7 @@ export default function SignInPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-
-  const callbackUrl = searchParams?.get('callbackUrl') || '/'
+  const callbackUrl = searchParams?.get('callbackUrl') || '/portal'
   const error = searchParams?.get('error')
 
   useEffect(() => {
@@ -84,92 +83,93 @@ export default function SignInPage() {
               Sign in to your account
             </CardDescription>
           </CardHeader>
-        <CardContent className="space-y-4">
-          {/* OAuth Providers */}
-          {providers && Object.values(providers)
-            .filter((provider: any) => provider.id !== 'credentials')
-            .map((provider: any) => (
-              <Button
-                key={provider.name}
-                variant="outline"
-                onClick={() => handleProviderSignIn(provider.id)}
-                className="w-full border-amber-200 hover:border-amber-300 hover:bg-amber-50 text-gray-700"
-                disabled={isLoading}
-              >
-                {provider.id === 'google' && <Icons.google className="mr-2 h-4 w-4" />}
-                {provider.id === 'github' && <Icons.gitHub className="mr-2 h-4 w-4" />}
-                Continue with {provider.name}
-              </Button>
-            ))}
-
-          {/* Divider */}
-          {providers && Object.values(providers).length > 1 && (
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-amber-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-amber-700 font-medium">Or continue with</span>
-              </div>
-            </div>
-          )}
-
-          {/* Credentials Form */}
-          {providers && Object.values(providers).some((p: any) => p.id === 'credentials') && (
-            <form onSubmit={handleCredentialsSignIn} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+          <CardContent className="space-y-4">
+            {/* OAuth Providers */}
+            {providers && Object.values(providers)
+              .filter((provider: any) => provider.id !== 'credentials')
+              .map((provider: any) => (
+                <Button
+                  key={provider.name}
+                  variant="outline"
+                  onClick={() => handleProviderSignIn(provider.id)}
+                  className="w-full border-amber-200 hover:border-amber-300 hover:bg-amber-50 text-gray-700"
                   disabled={isLoading}
-                  className="border-amber-200 focus:border-amber-400 focus:ring-amber-400"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                    Password
-                  </Label>
-                  <Link
-                    href="/auth/forgot-password"
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Forgot password?
-                  </Link>
+                >
+                  {provider.id === 'google' && <Icons.google className="mr-2 h-4 w-4" />}
+                  {provider.id === 'github' && <Icons.gitHub className="mr-2 h-4 w-4" />}
+                  Continue with {provider.name}
+                </Button>
+              ))}
+
+            {/* Divider */}
+            {providers && Object.values(providers).length > 1 && (
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-amber-200" />
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="border-amber-200 focus:border-amber-400 focus:ring-amber-400"
-                />
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-amber-700 font-medium">Or continue with</span>
+                </div>
               </div>
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  'Sign In'
-                )}
-              </Button>
-            </form>
+            )}
+
+            {/* Credentials Form */}
+            {providers && Object.values(providers).some((p: any) => p.id === 'credentials') && (
+              <form onSubmit={handleCredentialsSignIn} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={isLoading}
+                    className="border-amber-200 focus:border-amber-400 focus:ring-amber-400"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                      Password
+                    </Label>
+                    <Link
+                      href="/auth/forgot-password"
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={isLoading}
+                    className="border-amber-200 focus:border-amber-400 focus:ring-amber-400"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      Signing in...
+                    </>
+                  ) : (
+                    'Sign In'
+                  )}
+                </Button>
+              </form>
+            )}
 
             {/* Demo Accounts Section */}
             <div className="mt-8 p-4 bg-gradient-to-r from-amber-50 to-blue-50 rounded-lg border border-amber-200">
@@ -207,27 +207,27 @@ export default function SignInPage() {
                 </button>
               </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Footer */}
-      <div className="mt-8 text-center space-y-4">
-        <p className="text-sm text-gray-600">
-          Don't have an account?{' '}
-          <Link href="/auth/signup" className="text-blue-600 hover:text-blue-800 font-medium">
-            Create account
-          </Link>
-        </p>
-        <p className="text-sm">
-          <Link href="/" className="text-amber-600 hover:text-amber-700 font-medium">
-            ← Back to website
-          </Link>
-        </p>
-        <div className="pt-4 border-t border-amber-200">
-          <p className="text-xs text-gray-500">
-            © 2025 Modern Men Barbershop. All rights reserved.
+        {/* Footer */}
+        <div className="mt-8 text-center space-y-4">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <Link href="/auth/signup" className="text-blue-600 hover:text-blue-800 font-medium">
+              Create account
+            </Link>
           </p>
+          <p className="text-sm">
+            <Link href="/" className="text-amber-600 hover:text-amber-700 font-medium">
+              ← Back to website
+            </Link>
+          </p>
+          <div className="pt-4 border-t border-amber-200">
+            <p className="text-xs text-gray-500">
+              © 2025 Modern Men Barbershop. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </div>
