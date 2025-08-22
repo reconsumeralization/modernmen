@@ -161,7 +161,9 @@ export default buildConfig({
   }),
 
   // Disable Payload's built-in auth since you're using your own
-  auth: false,
+  auth: {
+    disableLocalStrategy: true,
+  },
 
   // Admin panel configuration
   admin: {
