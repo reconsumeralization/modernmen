@@ -1,7 +1,7 @@
 // Example: Integrating Payload CMS with existing authentication system
 // This shows how to use Payload as CRM data layer while keeping your auth
 
-import { buildConfig } from 'payload/config'
+import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
