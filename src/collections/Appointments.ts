@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload/types'
+import { CollectionConfig } from 'payload'
 
 export const Appointments: CollectionConfig = {
   slug: 'appointments',
@@ -465,11 +465,19 @@ export const Appointments: CollectionConfig = {
       if (user.role === 'admin' || user.role === 'manager') return true
       // Customers can see their own appointments
       if (user.role === 'customer') {
-        return { customer: { equals: user.id } }
+        return {
+          customer: {
+            equals: user.id
+          }
+        }
       }
       // Stylists can see their assigned appointments
       if (user.role === 'stylist') {
-        return { stylist: { equals: user.id } }
+        return {
+          stylist: {
+            equals: user.id
+          }
+        }
       }
       return false
     },
