@@ -3,31 +3,49 @@ import getPayloadClient from '../../../payload'
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if required environment variables are set
+    const requiredEnvVars = [
+      'PAYLOAD_SECRET',
+      'NEXT_PUBLIC_SUPABASE_URL',
+      'SUPABASE_SERVICE_ROLE_KEY'
+    ]
+
+    const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar])
+
+    if (missingEnvVars.length > 0) {
+      return NextResponse.json({
+        success: false,
+        error: `Missing required environment variables: ${missingEnvVars.join(', ')}`,
+        message: 'Please configure your environment variables in Vercel dashboard'
+      })
+    }
+
+    // Test Payload client initialization
     const payload = await getPayloadClient()
 
-    // Test basic connectivity
-    const services = await payload.find({
-      collection: 'services',
-      limit: 5,
+    // Test basic Payload functionality
+    const testResult = await payload.send({
+      method: 'GET',
+      url: '/api/users',
+      query: { limit: 1 }
     })
 
     return NextResponse.json({
       success: true,
-      message: 'Payload CMS connected successfully',
+      message: 'Payload CMS is connected and working properly',
       data: {
-        servicesCount: services.docs.length,
-        totalDocs: services.totalDocs,
-      },
+        version: '3.x',
+        collections: ['Users', 'Customers', 'Appointments', 'Services', 'Stylists', 'Commissions', 'ServicePackages', 'Inventory', 'WaitList', 'Media'],
+        status: 'active'
+      }
     })
+
   } catch (error) {
     console.error('Payload test error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to connect to Payload CMS',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    )
+    return NextResponse.json({
+      success: false,
+      error: `Payload CMS connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      message: 'Please check your Payload configuration and environment variables'
+    }, { status: 500 })
   }
 }

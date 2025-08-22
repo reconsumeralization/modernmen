@@ -2,233 +2,258 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Icons } from '@/components/ui/icons'
+import { toast } from 'sonner'
+
+interface PayloadStatus {
+  success: boolean
+  message?: string
+  error?: string
+  data?: any
+}
 
 export default function AdminPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [payloadStatus, setPayloadStatus] = useState<PayloadStatus | null>(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (status === 'loading') return
     if (!session) {
       router.push('/portal/login')
+      return
     }
+
+    // Check if user has admin role
+    if (session.user?.role !== 'admin') {
+      toast.error('Access denied. Admin privileges required.')
+      router.push('/portal')
+      return
+    }
+
+    checkPayloadStatus()
   }, [session, status, router])
+
+  const checkPayloadStatus = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/payload-test')
+      const data = await response.json()
+      setPayloadStatus(data)
+    } catch (error) {
+      setPayloadStatus({
+        success: false,
+        error: 'Failed to connect to Payload CMS'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleAdminAccess = () => {
     window.location.href = '/admin'
   }
 
-  if (status === 'loading') {
+  const handlePayloadAction = async (action: string) => {
+    try {
+      const response = await fetch(`/api/admin/${action}`)
+      const data = await response.json()
+
+      if (response.ok) {
+        toast.success(`${action} completed successfully`)
+      } else {
+        toast.error(`Failed to ${action}: ${data.error}`)
+      }
+    } catch (error) {
+      toast.error(`Error performing ${action}`)
+    }
+  }
+
+  if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-blue-50 flex items-center justify-center">
         <div className="flex items-center space-x-2">
           <Icons.spinner className="h-6 w-6 animate-spin text-amber-600" />
-          <span className="text-gray-600">Loading...</span>
+          <span className="text-gray-600">Loading admin dashboard...</span>
         </div>
       </div>
     )
   }
 
-  if (!session) {
-    return null
+  if (!session || session.user?.role !== 'admin') {
+    return null // Will redirect in useEffect
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-blue-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-amber-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+      <div className="bg-gradient-to-r from-blue-600 to-amber-600 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-amber-600 to-blue-800 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-xl text-white font-bold">✂</span>
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">✂</span>
+                <h1 className="text-2xl font-bold">Modern Men Salon</h1>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-amber-600 to-blue-800 bg-clip-text text-transparent">
-                  Salon Management System
-                </h1>
-                <p className="text-sm text-gray-600">Access the admin dashboard</p>
-              </div>
+              <span className="text-blue-200">|</span>
+              <span className="text-blue-100">Admin Dashboard</span>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => router.push('/portal')}
-              className="border-amber-200 hover:border-amber-300 hover:bg-amber-50"
-            >
-              Back to Portal
-            </Button>
+            <div className="flex items-center space-x-4">
+              <span className="text-blue-100">Welcome, {session.user?.name || session.user?.email}</span>
+              <Button
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-blue-600"
+                onClick={() => router.push('/portal')}
+              >
+                Back to Portal
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">
-            Modern Men Salon Management
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Access the comprehensive management system to handle customers, appointments,
-            services, stylists, and business operations.
-          </p>
-        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Payload Status Card */}
+        <Card className="mb-8 border-0 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-t-lg">
+            <CardTitle className="flex items-center space-x-2">
+              <Icons.database className="h-5 w-5" />
+              <span>Payload CMS Status</span>
+            </CardTitle>
+            <CardDescription className="text-green-100">
+              Content Management System Integration
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {payloadStatus ? (
+              <div className="space-y-4">
+                <div className={`flex items-center space-x-2 ${payloadStatus.success ? 'text-green-600' : 'text-red-600'}`}>
+                  {payloadStatus.success ? <Icons.info className="h-5 w-5" /> : <Icons.x className="h-5 w-5" />}
+                  <span className="font-medium">
+                    {payloadStatus.success ? 'Connected' : 'Connection Failed'}
+                  </span>
+                </div>
+                {payloadStatus.message && (
+                  <p className="text-gray-600">{payloadStatus.message}</p>
+                )}
+                {payloadStatus.error && (
+                  <p className="text-red-600">{payloadStatus.error}</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-600">Loading Payload CMS status...</p>
+            )}
+          </CardContent>
+        </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        {/* Quick Actions Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-200">
             <CardHeader className="bg-gradient-to-r from-blue-600 to-amber-600 text-white rounded-t-lg">
               <CardTitle className="flex items-center space-x-2">
-                <Icons.users className="h-5 w-5" />
-                <span>Customer Management</span>
+                <Icons.settings className="h-5 w-5" />
+                <span>Management System</span>
               </CardTitle>
               <CardDescription className="text-blue-100">
-                Manage customer profiles and information
+                Access the full Payload CMS admin panel
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <span>Customer profiles and history</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <span>Loyalty program management</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <span>Customer preferences</span>
-                </li>
-              </ul>
+              <p className="text-gray-600 mb-4">
+                Manage customers, appointments, services, stylists, and all salon data through the comprehensive admin interface.
+              </p>
+              <Button
+                onClick={handleAdminAccess}
+                className="w-full bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700 text-white"
+              >
+                Open Admin Panel
+              </Button>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-200">
             <CardHeader className="bg-gradient-to-r from-amber-600 to-blue-600 text-white rounded-t-lg">
               <CardTitle className="flex items-center space-x-2">
-                <Icons.calendar className="h-5 w-5" />
-                <span>Appointment System</span>
+                <Icons.users className="h-5 w-5" />
+                <span>Customer Data</span>
               </CardTitle>
               <CardDescription className="text-amber-100">
-                Schedule and manage appointments
+                Manage customer profiles and information
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Appointment scheduling</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Calendar management</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Stylist availability</span>
-                </li>
-              </ul>
+              <p className="text-gray-600 mb-4">
+                View and edit customer profiles, appointment history, and loyalty program data.
+              </p>
+              <Button
+                onClick={() => handlePayloadAction('customers')}
+                className="w-full bg-gradient-to-r from-amber-600 to-blue-600 hover:from-amber-700 hover:to-blue-700 text-white"
+              >
+                Manage Customers
+              </Button>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-200">
             <CardHeader className="bg-gradient-to-r from-blue-800 to-amber-700 text-white rounded-t-lg">
               <CardTitle className="flex items-center space-x-2">
-                <Icons.scissors className="h-5 w-5" />
-                <span>Services & Stylists</span>
+                <Icons.calendar className="h-5 w-5" />
+                <span>Appointments</span>
               </CardTitle>
               <CardDescription className="text-blue-100">
-                Manage services and staff
+                Schedule and manage appointments
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <span>Service catalog management</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <span>Stylist profiles and schedules</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
-                  <span>Pricing and packages</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-200">
-            <CardHeader className="bg-gradient-to-r from-amber-700 to-blue-800 text-white rounded-t-lg">
-              <CardTitle className="flex items-center space-x-2">
-                <Icons.barChart3 className="h-5 w-5" />
-                <span>Business Analytics</span>
-              </CardTitle>
-              <CardDescription className="text-amber-100">
-                Reports and business insights
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Revenue and commission reports</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Customer analytics</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>Performance metrics</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Access Admin System */}
-        <div className="text-center">
-          <Card className="border-0 shadow-lg max-w-md mx-auto">
-            <CardHeader className="bg-gradient-to-r from-blue-600 via-amber-600 to-blue-800 text-white rounded-t-lg">
-              <CardTitle>Access Management System</CardTitle>
-              <CardDescription className="text-blue-100">
-                Secure admin dashboard for salon management
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <p className="text-gray-600 mb-6">
-                Access the comprehensive Payload CMS management system to handle all aspects
-                of your salon operations.
+              <p className="text-gray-600 mb-4">
+                Create, modify, and track customer appointments with our booking system.
               </p>
               <Button
-                onClick={handleAdminAccess}
-                className="w-full bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+                onClick={() => handlePayloadAction('appointments')}
+                className="w-full bg-gradient-to-r from-blue-800 to-amber-700 hover:from-blue-900 hover:to-amber-800 text-white"
               >
-                <Icons.settings className="mr-2 h-5 w-5" />
-                Access Admin Dashboard
+                Manage Appointments
               </Button>
-              <p className="text-xs text-gray-500 mt-4">
-                Requires administrator privileges
-              </p>
             </CardContent>
           </Card>
         </div>
-      </div>
 
-      {/* Footer */}
-      <div className="mt-16 bg-white border-t border-amber-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-sm text-gray-500">
-              © 2025 Modern Men Barbershop. All rights reserved.
-            </p>
-          </div>
-        </div>
+        {/* System Information */}
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-t-lg">
+            <CardTitle className="flex items-center space-x-2">
+              <Icons.barChart3 className="h-5 w-5" />
+              <span>System Information</span>
+            </CardTitle>
+            <CardDescription className="text-gray-300">
+              Current deployment and system status
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-800">Next.js</div>
+                <div className="text-sm text-gray-600">Framework</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-800">Payload CMS</div>
+                <div className="text-sm text-gray-600">Content Management</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-800">Supabase</div>
+                <div className="text-sm text-gray-600">Database</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-800">Vercel</div>
+                <div className="text-sm text-gray-600">Deployment</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
