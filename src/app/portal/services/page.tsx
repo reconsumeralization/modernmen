@@ -221,7 +221,7 @@ export default function ServicesPage() {
           <Card className="border-0 shadow-lg">
             <CardHeader className="bg-gradient-to-r from-blue-800 to-amber-700 text-white rounded-t-lg">
               <CardTitle className="flex items-center space-x-2">
-                <Icons.user className="h-5 w-5" />
+                <Icons.users className="h-5 w-5" />
                 <span>Beard & Grooming</span>
               </CardTitle>
               <CardDescription className="text-blue-100">

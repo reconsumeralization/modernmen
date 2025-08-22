@@ -240,7 +240,7 @@ export default function PortalPage() {
               variant="outline"
               className="h-20 flex flex-col items-center justify-center space-y-2 border-amber-200 hover:border-amber-300 hover:bg-amber-50"
             >
-              <Icons.user className="h-6 w-6 text-amber-600" />
+              <Icons.users className="h-6 w-6 text-amber-600" />
               <span className="text-sm font-medium">Update Profile</span>
             </Button>
             <Button

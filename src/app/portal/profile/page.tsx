@@ -125,7 +125,7 @@ export default function ProfilePage() {
             <Card className="border-0 shadow-lg">
               <CardHeader className="bg-gradient-to-r from-blue-600 to-amber-600 text-white rounded-t-lg">
                 <CardTitle className="flex items-center space-x-2">
-                  <Icons.user className="h-5 w-5" />
+                  <Icons.users className="h-5 w-5" />
                   <span>Profile Overview</span>
                 </CardTitle>
               </CardHeader>
