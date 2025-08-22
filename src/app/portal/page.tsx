@@ -86,10 +86,40 @@ export default function PortalPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <p className="text-gray-600 mb-4">You have no upcoming appointments.</p>
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700 text-white">
-                Book Appointment
-              </Button>
+              <div className="space-y-3 mb-4">
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-blue-50 rounded-lg border border-amber-100">
+                  <div>
+                    <p className="font-semibold text-gray-800">Classic Haircut</p>
+                    <p className="text-sm text-gray-600">March 15, 2025 - 10:00 AM</p>
+                  </div>
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                    Confirmed
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-blue-50 rounded-lg border border-amber-100">
+                  <div>
+                    <p className="font-semibold text-gray-800">Beard Trim</p>
+                    <p className="text-sm text-gray-600">April 2, 2025 - 2:30 PM</p>
+                  </div>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
+                    Upcoming
+                  </span>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  onClick={() => router.push('/portal/book')}
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700 text-white"
+                >
+                  Book New
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-amber-200 hover:border-amber-300 hover:bg-amber-50"
+                >
+                  View All
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -105,10 +135,35 @@ export default function PortalPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <p className="text-gray-600 mb-4">Discover our premium hair care services.</p>
-              <Button className="w-full bg-gradient-to-r from-amber-600 to-blue-600 hover:from-amber-700 hover:to-blue-700 text-white">
-                View Services
-              </Button>
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center p-2 bg-gradient-to-r from-amber-50 to-blue-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-800">Classic Haircut</span>
+                  <span className="text-sm font-bold text-blue-600">$35</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-gradient-to-r from-amber-50 to-blue-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-800">Hair Coloring</span>
+                  <span className="text-sm font-bold text-blue-600">$85</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-gradient-to-r from-amber-50 to-blue-50 rounded-lg">
+                  <span className="text-sm font-medium text-gray-800">Beard Trim</span>
+                  <span className="text-sm font-bold text-blue-600">$25</span>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  onClick={() => router.push('/portal/services')}
+                  className="flex-1 bg-gradient-to-r from-amber-600 to-blue-600 hover:from-amber-700 hover:to-blue-700 text-white"
+                >
+                  View All Services
+                </Button>
+                <Button
+                  onClick={() => router.push('/portal/book')}
+                  variant="outline"
+                  className="border-amber-200 hover:border-amber-300 hover:bg-amber-50"
+                >
+                  Book Now
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -124,19 +179,41 @@ export default function PortalPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="space-y-2 mb-4">
-                <p className="text-sm text-gray-600">
-                  <strong>Email:</strong> {session.user?.email}
-                </p>
-                {session.user?.name && (
-                  <p className="text-sm text-gray-600">
-                    <strong>Name:</strong> {session.user.name}
-                  </p>
-                )}
+              <div className="text-center mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 via-amber-600 to-blue-800 rounded-full flex items-center justify-center shadow-lg mx-auto mb-3">
+                  <span className="text-xl text-white font-bold">
+                    {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </span>
+                </div>
+                <h4 className="font-semibold text-gray-800 mb-1">
+                  {session.user?.name || 'User'}
+                </h4>
+                <p className="text-sm text-gray-600">{session.user?.email}</p>
               </div>
-              <Button variant="outline" className="w-full border-amber-200 hover:border-amber-300 hover:bg-amber-50">
-                Edit Profile
-              </Button>
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center p-2 bg-gradient-to-r from-amber-50 to-blue-50 rounded-lg">
+                  <span className="text-sm text-gray-600">Member Status</span>
+                  <span className="text-sm font-bold text-blue-600">Gold Member</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-gradient-to-r from-amber-50 to-blue-50 rounded-lg">
+                  <span className="text-sm text-gray-600">Loyalty Points</span>
+                  <span className="text-sm font-bold text-amber-600">450 pts</span>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  onClick={() => router.push('/portal/profile')}
+                  className="flex-1 bg-gradient-to-r from-blue-800 to-amber-700 hover:from-blue-900 hover:to-amber-800 text-white"
+                >
+                  View Profile
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-amber-200 hover:border-amber-300 hover:bg-amber-50"
+                >
+                  Settings
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -12,8 +12,12 @@
       "maxDuration": 30
     },
     "pages/api/**/*.ts": {
-      "runtime": "@vercel/node@3.0.0", 
+      "runtime": "@vercel/node@3.0.0",
       "maxDuration": 30
+    },
+    "app/api/admin/**/*.ts": {
+      "runtime": "@vercel/node@3.0.0",
+      "maxDuration": 60
     }
   },
   "headers": [
@@ -46,6 +50,10 @@
     {
       "source": "/api/health",
       "destination": "/api/healthcheck"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/api/admin/$1"
     }
   ]
 }

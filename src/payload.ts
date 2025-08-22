@@ -28,6 +28,11 @@ const getPayloadClient = async () => {
   return cached.client
 }
 
+// Vercel-specific initialization
+if (typeof globalThis !== 'undefined') {
+  globalThis.payload = cached
+}
+
 export default getPayloadClient
 
 // Add type declaration for global

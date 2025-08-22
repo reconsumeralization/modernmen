@@ -2,210 +2,234 @@
 
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { LoadingSpinner } from '@/components/ui/loading'
 import { Icons } from '@/components/ui/icons'
 
-interface UserStats {
-  totalUsers: number
-  activeUsers: number
-  newUsersToday: number
-  adminUsers: number
-}
-
-interface RecentUser {
-  id: string
-  name: string
-  email: string
-  role: string
-  created_at: string
-  lastLogin?: string
-}
-
-export default function AdminDashboard() {
+export default function AdminPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [stats, setStats] = useState<UserStats | null>(null)
-  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (status === 'loading') return
-
-    if (!session || session.user?.role !== 'admin') {
-      router.push('/auth/signin')
-      return
+    if (!session) {
+      router.push('/portal/login')
     }
-
-    fetchDashboardData()
   }, [session, status, router])
 
-  const fetchDashboardData = async () => {
-    try {
-      const [statsResponse, usersResponse] = await Promise.all([
-        fetch('/api/admin/stats'),
-        fetch('/api/admin/users/recent')
-      ])
-
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json()
-        setStats(statsData)
-      }
-
-      if (usersResponse.ok) {
-        const usersData = await usersResponse.json()
-        setRecentUsers(usersData.users || [])
-      }
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error)
-    } finally {
-      setLoading(false)
-    }
+  const handleAdminAccess = () => {
+    window.location.href = '/admin'
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
-
-  if (status === 'loading' || loading) {
+  if (status === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner />
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-blue-50 flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Icons.spinner className="h-6 w-6 animate-spin text-amber-600" />
+          <span className="text-gray-600">Loading...</span>
+        </div>
       </div>
     )
   }
 
-  if (!session || session.user?.role !== 'admin') {
-    return null // Will redirect in useEffect
+  if (!session) {
+    return null
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Admin Dashboard
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300 mt-2">
-          Welcome back, {session.user?.name}! Here's what's happening with your system.
-        </p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Icons.user className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
-            <p className="text-xs text-muted-foreground">All registered users</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <Icons.activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.activeUsers || 0}</div>
-            <p className="text-xs text-muted-foreground">Users with recent activity</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">New Today</CardTitle>
-            <Icons.trendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.newUsersToday || 0}</div>
-            <p className="text-xs text-muted-foreground">Registrations today</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Admin Users</CardTitle>
-            <Icons.shield className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.adminUsers || 0}</div>
-            <p className="text-xs text-muted-foreground">Users with admin role</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Users */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Users</CardTitle>
-          <CardDescription>Latest user registrations and activity</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {recentUsers.length === 0 ? (
-            <p className="text-center text-gray-500 py-4">No users found</p>
-          ) : (
-            <div className="space-y-4">
-              {recentUsers.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                      {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <h3 className="font-medium">{user.name || 'Unnamed User'}</h3>
-                      <p className="text-sm text-gray-500">{user.email}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant={user.role === 'admin' ? 'destructive' : 'secondary'}>
-                      {user.role}
-                    </Badge>
-                    <span className="text-sm text-gray-500">
-                      {formatDate(user.created_at)}
-                    </span>
-                  </div>
-                </div>
-              ))}
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-blue-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b border-amber-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-amber-600 to-blue-800 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-xl text-white font-bold">✂</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-amber-600 to-blue-800 bg-clip-text text-transparent">
+                  Salon Management System
+                </h1>
+                <p className="text-sm text-gray-600">Access the admin dashboard</p>
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Quick Actions */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Common administrative tasks</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="justify-start">
-              <Icons.users className="mr-2 h-4 w-4" />
-              Manage Users
-            </Button>
-            <Button variant="outline" className="justify-start">
-              <Icons.settings className="mr-2 h-4 w-4" />
-              System Settings
-            </Button>
-            <Button variant="outline" className="justify-start">
-              <Icons.barChart3 className="mr-2 h-4 w-4" />
-              View Analytics
+            <Button
+              variant="outline"
+              onClick={() => router.push('/portal')}
+              className="border-amber-200 hover:border-amber-300 hover:bg-amber-50"
+            >
+              Back to Portal
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+            Modern Men Salon Management
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Access the comprehensive management system to handle customers, appointments,
+            services, stylists, and business operations.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-200">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-amber-600 text-white rounded-t-lg">
+              <CardTitle className="flex items-center space-x-2">
+                <Icons.users className="h-5 w-5" />
+                <span>Customer Management</span>
+              </CardTitle>
+              <CardDescription className="text-blue-100">
+                Manage customer profiles and information
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  <span>Customer profiles and history</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  <span>Loyalty program management</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  <span>Customer preferences</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-200">
+            <CardHeader className="bg-gradient-to-r from-amber-600 to-blue-600 text-white rounded-t-lg">
+              <CardTitle className="flex items-center space-x-2">
+                <Icons.calendar className="h-5 w-5" />
+                <span>Appointment System</span>
+              </CardTitle>
+              <CardDescription className="text-amber-100">
+                Schedule and manage appointments
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  <span>Appointment scheduling</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  <span>Calendar management</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  <span>Stylist availability</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-200">
+            <CardHeader className="bg-gradient-to-r from-blue-800 to-amber-700 text-white rounded-t-lg">
+              <CardTitle className="flex items-center space-x-2">
+                <Icons.scissors className="h-5 w-5" />
+                <span>Services & Stylists</span>
+              </CardTitle>
+              <CardDescription className="text-blue-100">
+                Manage services and staff
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  <span>Service catalog management</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  <span>Stylist profiles and schedules</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  <span>Pricing and packages</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-200">
+            <CardHeader className="bg-gradient-to-r from-amber-700 to-blue-800 text-white rounded-t-lg">
+              <CardTitle className="flex items-center space-x-2">
+                <Icons.barChart3 className="h-5 w-5" />
+                <span>Business Analytics</span>
+              </CardTitle>
+              <CardDescription className="text-amber-100">
+                Reports and business insights
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  <span>Revenue and commission reports</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  <span>Customer analytics</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  <span>Performance metrics</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Access Admin System */}
+        <div className="text-center">
+          <Card className="border-0 shadow-lg max-w-md mx-auto">
+            <CardHeader className="bg-gradient-to-r from-blue-600 via-amber-600 to-blue-800 text-white rounded-t-lg">
+              <CardTitle>Access Management System</CardTitle>
+              <CardDescription className="text-blue-100">
+                Secure admin dashboard for salon management
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <p className="text-gray-600 mb-6">
+                Access the comprehensive Payload CMS management system to handle all aspects
+                of your salon operations.
+              </p>
+              <Button
+                onClick={handleAdminAccess}
+                className="w-full bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <Icons.settings className="mr-2 h-5 w-5" />
+                Access Admin Dashboard
+              </Button>
+              <p className="text-xs text-gray-500 mt-4">
+                Requires administrator privileges
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-16 bg-white border-t border-amber-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <p className="text-sm text-gray-500">
+              © 2025 Modern Men Barbershop. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
