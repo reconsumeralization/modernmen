@@ -10,6 +10,7 @@ import { Icons } from '@/components/ui/icons'
 import { UserManagement } from '@/components/admin/UserManagement'
 import { EmployeeManagement } from '@/components/admin/EmployeeManagement'
 import { AuditLogs } from '@/components/admin/AuditLogs'
+import { PayloadHealthCheck } from '@/components/admin/PayloadHealthCheck'
 import { NotificationCenter } from '@/components/ui/NotificationCenter'
 import { motion } from 'framer-motion'
 
@@ -218,6 +219,18 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Payload CMS Health Check */}
+        {isAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mb-8"
+          >
+            <PayloadHealthCheck />
+          </motion.div>
+        )}
 
         {/* User Management Section */}
         <motion.div

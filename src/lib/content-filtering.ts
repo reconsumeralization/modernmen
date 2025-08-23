@@ -45,35 +45,11 @@ export function filterContentByRole(
   const { includeRestricted = false, showPlaceholders = false } = options
 
   return content.filter(item => {
-    // Check role-based access
-    if (item.metadata.roles.length > 0) {
-      const hasRoleAccess = user && item.metadata.roles.includes(user.role)
-      if (!hasRoleAccess && !includeRestricted) {
-        return false
-      }
+    if (includeRestricted) {
+      return true // Include all content when explicitly requested
     }
-
-    // Check permission-based access
-    if (item.metadata.permissions.length > 0) {
-      const hasPermissionAccess = user && item.metadata.permissions.some(
-        permission => user.permissions.includes(permission)
-      )
-      if (!hasPermissionAccess && !includeRestricted) {
-        return false
-      }
-    }
-
-    // Check section-based access
-    if (item.metadata.sections.length > 0) {
-      const hasSectionAccess = user && item.metadata.sections.some(
-        section => hasDocumentationPermission(user.role, section, 'read')
-      )
-      if (!hasSectionAccess && !includeRestricted) {
-        return false
-      }
-    }
-
-    return true
+    
+    return canUserAccessContent(item, user)
   }).map(item => {
     // Add placeholder content for restricted items if requested
     if (showPlaceholders && !canUserAccessContent(item, user)) {
@@ -111,11 +87,12 @@ export function canUserAccessContent(
     return false
   }
 
+  // If any access method passes, user can access content
+  let hasAccess = false
+
   // Check role access
   if (content.metadata.roles.length > 0) {
-    if (!content.metadata.roles.includes(user.role)) {
-      return false
-    }
+    hasAccess = hasAccess || content.metadata.roles.includes(user.role)
   }
 
   // Check permission access
@@ -123,9 +100,7 @@ export function canUserAccessContent(
     const hasPermission = content.metadata.permissions.some(
       permission => user.permissions.includes(permission)
     )
-    if (!hasPermission) {
-      return false
-    }
+    hasAccess = hasAccess || hasPermission
   }
 
   // Check section access
@@ -133,12 +108,19 @@ export function canUserAccessContent(
     const hasSectionAccess = content.metadata.sections.some(
       section => hasDocumentationPermission(user.role, section, 'read')
     )
-    if (!hasSectionAccess) {
-      return false
-    }
+    hasAccess = hasAccess || hasSectionAccess
   }
 
-  return true
+  // If no restrictions are specified but we got here, default to accessible
+  if (
+    content.metadata.roles.length === 0 &&
+    content.metadata.permissions.length === 0 &&
+    content.metadata.sections.length === 0
+  ) {
+    hasAccess = true
+  }
+
+  return hasAccess
 }
 
 /**

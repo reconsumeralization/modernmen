@@ -37,8 +37,9 @@ describe('AccessControl', () => {
   it('shows loading state when session is loading', () => {
     mockUseSession.mockReturnValue({
       data: null,
-      status: 'loading'
-    })
+      status: 'loading',
+      update: jest.fn()
+    } as any)
 
     render(
       <AccessControl>
@@ -46,7 +47,7 @@ describe('AccessControl', () => {
       </AccessControl>
     )
 
-    expect(screen.getByRole('status')).toBeInTheDocument()
+    expect(document.querySelector('.animate-spin')).toBeInTheDocument()
   })
 
   it('shows content when user has required role', () => {
@@ -57,8 +58,9 @@ describe('AccessControl', () => {
           permissions: ['documentation.read']
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <AccessControl requiredRole="developer">
@@ -77,8 +79,9 @@ describe('AccessControl', () => {
           permissions: []
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <AccessControl requiredRole="developer">
@@ -98,8 +101,9 @@ describe('AccessControl', () => {
           permissions: ['documentation.edit']
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <AccessControl requiredPermission="documentation.edit">
@@ -118,8 +122,9 @@ describe('AccessControl', () => {
           permissions: ['documentation.read']
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <AccessControl requiredPermission="documentation.edit">
@@ -139,8 +144,9 @@ describe('AccessControl', () => {
           permissions: []
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <AccessControl 
@@ -228,8 +234,9 @@ describe('RoleGuard', () => {
           permissions: []
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <RoleGuard roles="developer">
@@ -248,8 +255,9 @@ describe('RoleGuard', () => {
           permissions: []
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <RoleGuard roles={['salon_owner', 'system_admin']}>
@@ -268,7 +276,8 @@ describe('RoleGuard', () => {
           permissions: []
         }
       },
-      status: 'authenticated'
+      status: 'authenticated',
+      update: jest.fn()
     })
 
     render(
@@ -290,8 +299,9 @@ describe('AdminOnly', () => {
           permissions: ['documentation.admin']
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <AdminOnly>
@@ -310,8 +320,9 @@ describe('AdminOnly', () => {
           permissions: []
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <AdminOnly>
@@ -352,8 +363,9 @@ describe('DeveloperOnly', () => {
           permissions: []
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <DeveloperOnly>
@@ -372,8 +384,9 @@ describe('DeveloperOnly', () => {
           permissions: []
         }
       },
-      status: 'authenticated'
-    })
+      status: 'authenticated',
+      update: jest.fn()
+    } as any)
 
     render(
       <DeveloperOnly>

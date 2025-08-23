@@ -10,12 +10,12 @@ import { getUserFromSession, canAccessPath, getAccessDeniedMessage, getDefaultLa
 import { UserRole } from '@/types/documentation'
 
 interface AccessControlProps {
-  children: React.ReactNode
-  requiredRole?: UserRole | UserRole[]
-  requiredPermission?: string
-  path?: string
-  fallback?: React.ReactNode
-  showFallback?: boolean
+    children: React.ReactNode
+    requiredRole?: UserRole | UserRole[]
+    requiredPermission?: string
+    path?: string
+    fallback?: React.ReactNode
+    showFallback?: boolean
 }
 
 /**
@@ -23,116 +23,116 @@ interface AccessControlProps {
  * Wraps content and shows/hides based on user permissions
  */
 export function AccessControl({
-  children,
-  requiredRole,
-  requiredPermission,
-  path,
-  fallback,
-  showFallback = true
-}: AccessControlProps) {
-  const { data: session, status } = useSession()
-  
-  // Loading state
-  if (status === 'loading') {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
-      </div>
-    )
-  }
+    children,
+    requiredRole,
+    requiredPermission,
+    path,
+    fallback,
+    showFallback = true
+}: AccessControlProps): JSX.Element | null {
+    const { data: session, status } = useSession() as any
 
-  const user = getUserFromSession(session)
-  
-  // Check path-based access
-  if (path && !canAccessPath(user, path)) {
-    return showFallback ? (
-      fallback || <AccessDeniedFallback user={user} path={path} />
-    ) : null
-  }
-  
-  // Check role-based access
-  if (requiredRole) {
-    const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole]
-    if (!user || !roles.includes(user.role)) {
-      return showFallback ? (
-        fallback || <AccessDeniedFallback user={user} requiredRole={roles} />
-      ) : null
+    // Loading state
+    if (status === 'loading') {
+        return (
+            <div className="flex items-center justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+            </div>
+        )
     }
-  }
-  
-  // Check permission-based access
-  if (requiredPermission) {
-    if (!user || !user.permissions.includes(requiredPermission)) {
-      return showFallback ? (
-        fallback || <AccessDeniedFallback user={user} requiredPermission={requiredPermission} />
-      ) : null
+
+    const user = getUserFromSession(session)
+
+    // Check path-based access
+    if (path && !canAccessPath(user, path)) {
+        return showFallback ? (
+            fallback ? <>{fallback}</> : <AccessDeniedFallback user={user} path={path} />
+        ) : null
     }
-  }
-  
-  return <>{children}</>
+
+    // Check role-based access
+    if (requiredRole) {
+        const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole]
+        if (!user || !roles.includes(user.role)) {
+            return showFallback ? (
+                fallback ? <>{fallback}</> : <AccessDeniedFallback user={user} requiredRole={roles} />
+            ) : null
+        }
+    }
+
+    // Check permission-based access
+    if (requiredPermission) {
+        if (!user || !user.permissions.includes(requiredPermission)) {
+            return showFallback ? (
+                fallback ? <>{fallback}</> : <AccessDeniedFallback user={user} requiredPermission={requiredPermission} />
+            ) : null
+        }
+    }
+
+    return <>{children}</>
 }
 
 interface AccessDeniedFallbackProps {
-  user: any
-  path?: string
-  requiredRole?: UserRole[]
-  requiredPermission?: string
+    user: any
+    path?: string
+    requiredRole?: UserRole[]
+    requiredPermission?: string
 }
 
 function AccessDeniedFallback({ user, path, requiredRole, requiredPermission }: AccessDeniedFallbackProps) {
-  const getMessage = () => {
-    if (path) {
-      return getAccessDeniedMessage(user, path)
-    }
-    
-    if (requiredRole) {
-      const roleNames = requiredRole.map(role => 
-        role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
-      ).join(', ')
-      return `This content requires one of the following roles: ${roleNames}`
-    }
-    
-    if (requiredPermission) {
-      return `This content requires the permission: ${requiredPermission}`
-    }
-    
-    return "You don't have permission to access this content."
-  }
+    const getMessage = () => {
+        if (path) {
+            return getAccessDeniedMessage(user, path)
+        }
 
-  const getRedirectPath = () => {
-    if (user) {
-      return getDefaultLandingPage(user)
-    }
-    return '/auth/signin'
-  }
+        if (requiredRole) {
+            const roleNames = requiredRole.map(role =>
+                role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+            ).join(', ')
+            return `This content requires one of the following roles: ${roleNames}`
+        }
 
-  return (
-    <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
-          <Lock className="h-5 w-5" />
-          Access Restricted
-        </CardTitle>
-        <CardDescription className="text-amber-700 dark:text-amber-300">
-          {getMessage()}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex gap-2">
-          {!user && (
-            <Button asChild size="sm">
-              <a href="/auth/signin">Sign In</a>
-            </Button>
-          )}
-          <Button asChild variant="outline" size="sm">
-            <a href={getRedirectPath()}>
-              {user ? 'Go to Your Dashboard' : 'Back to Documentation'}
-            </a>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  )
+        if (requiredPermission) {
+            return `This content requires the permission: ${requiredPermission}`
+        }
+
+        return "You don't have permission to access this content."
+    }
+
+    const getRedirectPath = () => {
+        if (user) {
+            return getDefaultLandingPage(user)
+        }
+        return '/auth/signin'
+    }
+
+    return (
+        <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
+                    <Lock className="h-5 w-5" />
+                    Access Restricted
+                </CardTitle>
+                <CardDescription className="text-amber-700 dark:text-amber-300">
+                    {getMessage()}
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex gap-2">
+                    {!user && (
+                        <Button asChild size="sm">
+                            <a href="/auth/signin">Sign In</a>
+                        </Button>
+                    )}
+                    <Button asChild variant="outline" size="sm">
+                        <a href={getRedirectPath()}>
+                            {user ? 'Go to Your Dashboard' : 'Back to Documentation'}
+                        </a>
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    )
 }
 
 /**
@@ -140,21 +140,21 @@ function AccessDeniedFallback({ user, path, requiredRole, requiredPermission }: 
  * Simple wrapper that shows/hides content based on permissions
  */
 interface PermissionGateProps {
-  children: React.ReactNode
-  permission: string
-  fallback?: React.ReactNode
+    children: React.ReactNode
+    permission: string
+    fallback?: React.ReactNode
 }
 
 export function PermissionGate({ children, permission, fallback }: PermissionGateProps) {
-  return (
-    <AccessControl 
-      requiredPermission={permission} 
-      fallback={fallback}
-      showFallback={!!fallback}
-    >
-      {children}
-    </AccessControl>
-  )
+    return (
+        <AccessControl
+            requiredPermission={permission}
+            fallback={fallback}
+            showFallback={!!fallback}
+        >
+            {children}
+        </AccessControl>
+    )
 }
 
 /**
@@ -162,21 +162,21 @@ export function PermissionGate({ children, permission, fallback }: PermissionGat
  * Simple wrapper that shows/hides content based on user role
  */
 interface RoleGuardProps {
-  children: React.ReactNode
-  roles: UserRole | UserRole[]
-  fallback?: React.ReactNode
+    children: React.ReactNode
+    roles: UserRole | UserRole[]
+    fallback?: React.ReactNode
 }
 
 export function RoleGuard({ children, roles, fallback }: RoleGuardProps) {
-  return (
-    <AccessControl 
-      requiredRole={roles} 
-      fallback={fallback}
-      showFallback={!!fallback}
-    >
-      {children}
-    </AccessControl>
-  )
+    return (
+        <AccessControl
+            requiredRole={roles}
+            fallback={fallback}
+            showFallback={!!fallback}
+        >
+            {children}
+        </AccessControl>
+    )
 }
 
 /**
@@ -184,16 +184,16 @@ export function RoleGuard({ children, roles, fallback }: RoleGuardProps) {
  * Convenience wrapper for admin-only content
  */
 interface AdminOnlyProps {
-  children: React.ReactNode
-  fallback?: React.ReactNode
+    children: React.ReactNode
+    fallback?: React.ReactNode
 }
 
 export function AdminOnly({ children, fallback }: AdminOnlyProps) {
-  return (
-    <RoleGuard roles="system_admin" fallback={fallback}>
-      {children}
-    </RoleGuard>
-  )
+    return (
+        <RoleGuard roles="system_admin" fallback={fallback}>
+            {children}
+        </RoleGuard>
+    )
 }
 
 /**
@@ -201,16 +201,16 @@ export function AdminOnly({ children, fallback }: AdminOnlyProps) {
  * Convenience wrapper for developer-only content
  */
 interface DeveloperOnlyProps {
-  children: React.ReactNode
-  fallback?: React.ReactNode
+    children: React.ReactNode
+    fallback?: React.ReactNode
 }
 
 export function DeveloperOnly({ children, fallback }: DeveloperOnlyProps) {
-  return (
-    <RoleGuard roles={['developer', 'system_admin']} fallback={fallback}>
-      {children}
-    </RoleGuard>
-  )
+    return (
+        <RoleGuard roles={['developer', 'system_admin']} fallback={fallback}>
+            {children}
+        </RoleGuard>
+    )
 }
 
 /**
@@ -218,19 +218,19 @@ export function DeveloperOnly({ children, fallback }: DeveloperOnlyProps) {
  * Convenience wrapper for business user content
  */
 interface BusinessOnlyProps {
-  children: React.ReactNode
-  fallback?: React.ReactNode
+    children: React.ReactNode
+    fallback?: React.ReactNode
 }
 
 export function BusinessOnly({ children, fallback }: BusinessOnlyProps) {
-  return (
-    <RoleGuard 
-      roles={['salon_owner', 'salon_employee', 'salon_customer', 'system_admin']} 
-      fallback={fallback}
-    >
-      {children}
-    </RoleGuard>
-  )
+    return (
+        <RoleGuard
+            roles={['salon_owner', 'salon_employee', 'salon_customer', 'system_admin']}
+            fallback={fallback}
+        >
+            {children}
+        </RoleGuard>
+    )
 }
 
 /**
@@ -238,31 +238,31 @@ export function BusinessOnly({ children, fallback }: BusinessOnlyProps) {
  * Shows content only to authenticated users
  */
 interface AuthenticatedOnlyProps {
-  children: React.ReactNode
-  fallback?: React.ReactNode
+    children: React.ReactNode
+    fallback?: React.ReactNode
 }
 
 export function AuthenticatedOnly({ children, fallback }: AuthenticatedOnlyProps) {
-  const { data: session, status } = useSession()
-  
-  if (status === 'loading') {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-500"></div>
-      </div>
-    )
-  }
-  
-  if (!session) {
-    return fallback ? <>{fallback}</> : (
-      <Alert>
-        <Shield className="h-4 w-4" />
-        <AlertDescription>
-          Please sign in to access this content.
-        </AlertDescription>
-      </Alert>
-    )
-  }
-  
-  return <>{children}</>
+    const { data: session, status } = useSession() as any
+
+    if (status === 'loading') {
+        return (
+            <div className="flex items-center justify-center p-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-500"></div>
+            </div>
+        )
+    }
+
+    if (!session) {
+        return fallback ? <>{fallback}</> : (
+            <Alert>
+                <Shield className="h-4 w-4" />
+                <AlertDescription>
+                    Please sign in to access this content.
+                </AlertDescription>
+            </Alert>
+        )
+    }
+
+    return <>{children}</>
 }

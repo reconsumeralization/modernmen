@@ -27,7 +27,12 @@
     "docker:run": "docker run -p 3000:3000 modernmen",
     "payload": "payload",
     "payload:dev": "payload dev",
-    "payload:generate": "payload generate"
+    "payload:generate": "payload generate",
+    "payload:generate-types": "payload generate:types",
+    "payload:init": "curl http://localhost:3000/api/payload/init?action=init",
+    "payload:seed": "curl http://localhost:3000/api/payload/init?action=seed",
+    "payload:setup": "curl -X POST http://localhost:3000/api/payload/init -H 'Content-Type: application/json' -d '{\"action\":\"full-setup\"}'",
+    "payload:health": "curl http://localhost:3000/api/payload/init?action=health"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.0.0",
