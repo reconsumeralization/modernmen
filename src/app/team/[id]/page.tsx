@@ -8,6 +8,20 @@ import { Badge } from '@/components/ui/badge'
 import { motion } from 'framer-motion'
 import { Icons } from '@/components/ui/icons'
 import { toast } from 'sonner'
+import { InstagramFeed } from '@/components/ui/instagram-feed'
+import { Testimonials } from '@/components/ui/testimonials'
+import { TestimonialForm } from '@/components/ui/testimonial-form'
+
+interface Testimonial {
+  id: string
+  clientName: string
+  clientImage?: string
+  service: string
+  rating: number
+  review: string
+  date: string
+  verified?: boolean
+}
 
 interface Stylist {
   id: string
@@ -45,6 +59,7 @@ export default function StylistProfilePage() {
   const [error, setError] = useState<string | null>(null)
   const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<any | null>(null)
   const [showPortfolioModal, setShowPortfolioModal] = useState(false)
+  const [showTestimonialForm, setShowTestimonialForm] = useState(false)
 
   useEffect(() => {
     if (id) {
@@ -395,6 +410,47 @@ export default function StylistProfilePage() {
               </motion.div>
             )}
 
+            {/* Instagram Feed */}
+            {stylist.socialMedia?.instagram && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <InstagramFeed
+                  stylistName={stylist.name}
+                  username={stylist.socialMedia.instagram.split('/').pop()?.replace('@', '')}
+                  className="mb-6"
+                />
+              </motion.div>
+            )}
+
+            {/* Testimonials */}
+            {stylist.testimonials && stylist.testimonials.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-800">Client Reviews</h4>
+                        <Button
+                          onClick={() => setShowTestimonialForm(true)}
+                          className="bg-amber-600 hover:bg-amber-700 text-white text-sm"
+                        >
+                          <Icons.info className="h-4 w-4 mr-2" />
+                          Write Review
+                        </Button>
+                      </div>
+                      <Testimonials
+                        testimonials={stylist.testimonials}
+                        stylistName={stylist.name}
+                      />
+                    </div>
+              </motion.div>
+            )}
+
             {/* Social Media */}
             {stylist.socialMedia && (
               <motion.div
@@ -478,6 +534,42 @@ export default function StylistProfilePage() {
               {selectedPortfolioItem.description && (
                 <p className="text-gray-700">{selectedPortfolioItem.description}</p>
               )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Testimonial Form Modal */}
+      {showTestimonialForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-gray-800">
+                  Share Your Experience with {stylist?.name}
+                </h3>
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowTestimonialForm(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <Icons.x className="h-6 w-6" />
+                </Button>
+              </div>
+
+              <TestimonialForm
+                stylistId={stylist?.id || ''}
+                stylistName={stylist?.name || ''}
+                onSuccess={() => {
+                  setShowTestimonialForm(false)
+                  fetchStylist() // Refresh to show new testimonial
+                }}
+                onCancel={() => setShowTestimonialForm(false)}
+              />
             </div>
           </motion.div>
         </div>
