@@ -264,11 +264,11 @@ export const ServicePackages: CollectionConfig = {
           const services = await req.payload.find({
             collection: 'services',
             where: {
-              id: { in: data.services.map(s => s.service) },
+              id: { in: data.services.map((s: any) => s.service) },
             },
           })
 
-          const individualTotal = services.docs.reduce((total, service, index) => {
+          const individualTotal = services.docs.reduce((total: number, service: any, index: number) => {
             const quantity = data.services[index]?.quantity || 1
             return total + (service.price * quantity)
           }, 0)
@@ -283,11 +283,11 @@ export const ServicePackages: CollectionConfig = {
           const services = await req.payload.find({
             collection: 'services',
             where: {
-              id: { in: data.services.map(s => s.service) },
+              id: { in: data.services.map((s: any) => s.service) },
             },
           })
 
-          const totalDuration = services.docs.reduce((total, service, index) => {
+          const totalDuration = services.docs.reduce((total: number, service: any, index: number) => {
             const quantity = data.services[index]?.quantity || 1
             const customDuration = data.services[index]?.customDuration
             const duration = customDuration || service.duration || 0
@@ -303,15 +303,18 @@ export const ServicePackages: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req: { user } }: AccessArgs) => {
+    create: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin' || user.role === 'manager'
     },
-    update: ({ req: { user } }: AccessArgs) => {
+    update: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin' || user.role === 'manager'
     },
-    delete: ({ req: { user } }: AccessArgs) => {
+    delete: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin'
     },

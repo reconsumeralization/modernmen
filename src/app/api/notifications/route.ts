@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       totalPages: notifications.totalPages,
       hasNext: notifications.hasNextPage,
       hasPrev: notifications.hasPrevPage,
-      unreadCount: notifications.docs.filter(n => !n.read).length
+      unreadCount: notifications.docs.filter((n: any) => !n.read).length
     })
 
   } catch (error) {

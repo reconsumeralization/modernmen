@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPayloadClient } from '../../../payload'
+import getPayloadClient from '../../../payload'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { sendAdminNotification, sendUserNotification } from '@/lib/notificationService'
+import { validateRequestBody, createValidationErrorResponse } from '@/lib/validation-utils'
+import { createEmployeeSchema } from '@/lib/validations'
 
 interface EmployeeFilters {
   isActive?: boolean
@@ -77,7 +80,7 @@ export async function GET(request: NextRequest) {
 
     // Enhance with additional data
     const enhancedEmployees = await Promise.all(
-      employees.docs.map(async (employee) => {
+      employees.docs.map(async (employee: any) => {
         // Get recent appointments count
         const recentAppointments = await payload.find({
           collection: 'appointments',
@@ -141,24 +144,40 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
+    // Get original request body for legacy fields
+    const originalBody = await request.json()
+
+    // Validate request body (clone request for validation)
+    const validationRequest = new Request(request.url, {
+      method: request.method,
+      headers: request.headers,
+      body: JSON.stringify(originalBody)
+    })
+
+    const validation = await validateRequestBody(validationRequest, createEmployeeSchema)
+    if (!validation.success) {
+      return createValidationErrorResponse(validation.errors!)
+    }
+
     const {
-      name,
+      firstName,
+      lastName,
       email,
       phone,
       bio,
       specializations,
-      schedule,
-      pricing,
-      profileImage
-    } = body
+      hourlyRate,
+      profileImage,
+      experience,
+      certifications,
+      availability
+    } = validation.data!
 
-    if (!name || !email) {
-      return NextResponse.json(
-        { error: 'Name and email are required' },
-        { status: 400 }
-      )
-    }
+    // Extract legacy fields from original body
+    const schedule = originalBody.schedule
+    const pricing = originalBody.pricing
+
+    const name = `${firstName} ${lastName}` // Combine first and last name
 
     const payload = await getPayloadClient()
 
@@ -166,7 +185,7 @@ export async function POST(request: NextRequest) {
     let user = await payload.find({
       collection: 'users',
       where: { email: { equals: email } }
-    }).then(result => result.docs[0])
+    }).then((result: any) => result.docs[0])
 
     if (!user) {
       // Create user with stylist role
@@ -222,6 +241,33 @@ export async function POST(request: NextRequest) {
     })
 
     console.log(`New stylist created: ${name} (${email})`)
+
+    // Send notifications
+    await sendAdminNotification({
+      type: 'employee_created',
+      title: 'New Employee Created',
+      message: `Stylist ${name} has been added to the team`,
+      data: {
+        employeeId: newStylist.id,
+        employeeName: name,
+        employeeEmail: email
+      },
+      priority: 'medium'
+    })
+
+    // Send welcome notification to the new employee
+    await sendUserNotification({
+      userId: user.id,
+      type: 'system_alert',
+      title: 'Welcome to the Team!',
+      message: `Your stylist profile has been created. Please complete your portfolio and set your availability.`,
+      data: {
+        profileSetupRequired: true,
+        portfolioSetup: true,
+        scheduleSetup: true
+      },
+      priority: 'high'
+    })
 
     return NextResponse.json({
       stylist: newStylist,

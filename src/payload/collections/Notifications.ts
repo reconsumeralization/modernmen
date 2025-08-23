@@ -200,7 +200,7 @@ export const Notifications: CollectionConfig = {
       async ({ doc, req, operation }) => {
         if (operation === 'create') {
           // Trigger real-time notification
-          const { notificationEmitter } = await import('../../app/api/notifications/stream/route')
+          const { notificationEmitter } = await import('../../lib/notificationEmitter')
 
           const notificationPayload = {
             id: doc.id,
@@ -226,30 +226,34 @@ export const Notifications: CollectionConfig = {
     ],
   },
   access: {
-    read: ({ req: { user } }) => {
+    read: ({ req }) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin') return true
 
-      // Users can only see their own notifications
+      // Users can only see their own notifications or broadcast notifications
       return {
         or: [
           { user: { equals: user.id } },
           { broadcast: { equals: true } }
         ]
-      }
+      } as any
     },
-    create: ({ req: { user } }) => {
+    create: ({ req }) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin' || user.role === 'manager'
     },
-    update: ({ req: { user } }) => {
+    update: ({ req }) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin') return true
 
       // Users can only update their own notifications (mark as read)
       return { user: { equals: user.id } }
     },
-    delete: ({ req: { user } }) => {
+    delete: ({ req }) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin'
     },

@@ -12,7 +12,7 @@ const errorMessages: Record<string, string> = {
   Default: 'An error occurred during authentication.',
 }
 
-export default function AuthErrorPage() {
+const AuthErrorPage = () => {
   const searchParams = useSearchParams()
   const error = searchParams?.get('error') || 'Default'
 
@@ -45,3 +45,5 @@ export default function AuthErrorPage() {
     </div>
   )
 }
+
+export default AuthErrorPage

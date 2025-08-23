@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload/types'
+import { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -101,14 +101,14 @@ export const Media: CollectionConfig = {
   ],
   access: {
     read: () => true, // Public read access for media files
-    create: ({ req: { user } }) => {
-      return user?.role === 'admin' || user?.role === 'manager' || user?.role === 'staff'
+    create: ({ req }) => {
+      return req.user?.role === 'admin' || req.user?.role === 'manager' || req.user?.role === 'staff'
     },
-    update: ({ req: { user } }) => {
-      return user?.role === 'admin' || user?.role === 'manager'
+    update: ({ req }) => {
+      return req.user?.role === 'admin' || req.user?.role === 'manager'
     },
-    delete: ({ req: { user } }) => {
-      return user?.role === 'admin'
+    delete: ({ req }) => {
+      return req.user?.role === 'admin'
     },
   },
 }

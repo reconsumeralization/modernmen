@@ -5,7 +5,7 @@ import { authOptions } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,9 +17,10 @@ export async function GET(
       )
     }
 
+    const { id } = await params
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || '30' // days
-    const stylistId = params.id
+    const stylistId = id
 
     const payload = await getPayloadClient()
 
@@ -118,7 +119,7 @@ export async function GET(
       trends: calculateTrends(dailyStats),
       recommendations: generateRecommendations({
         totalAppointments,
-        completionRate: parseFloat(completionRate),
+        completionRate: parseFloat((totalAppointments > 0 ? (completedAppointments / totalAppointments * 100).toFixed(1) : '0')),
         averageServiceTime,
         customerRating: customerStats.averageRating
       })

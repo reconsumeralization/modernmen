@@ -25,12 +25,6 @@ interface HookContext {
   operation: 'create' | 'update' | 'delete'
 }
 
-interface AfterChangeContext {
-  doc: User
-  req: Request
-  operation: 'create' | 'update' | 'delete'
-}
-
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
@@ -291,7 +285,7 @@ export const Users: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      ({ data, operation }: HookContext) => {
+      ({ data, operation }) => {
         if (operation === 'create') {
           // Set default role for new users
           if (!data.role) {
@@ -308,7 +302,7 @@ export const Users: CollectionConfig = {
       },
     ],
     afterChange: [
-      ({ doc, operation }: AfterChangeContext) => {
+      ({ doc, operation }) => {
         if (operation === 'create') {
           // Send welcome email
           console.log(`New user created: ${doc.name} (${doc.email})`)
@@ -317,21 +311,25 @@ export const Users: CollectionConfig = {
     ],
   },
   access: {
-    read: ({ req: { user } }: AccessArgs) => {
+    read: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin') return true
       return { id: { equals: user.id } }
     },
-    create: ({ req: { user } }: AccessArgs) => {
+    create: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin' || user.role === 'manager'
     },
-    update: ({ req: { user } }: AccessArgs) => {
+    update: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin') return true
       return { id: { equals: user.id } }
     },
-    delete: ({ req: { user } }: AccessArgs) => {
+    delete: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin'
     },

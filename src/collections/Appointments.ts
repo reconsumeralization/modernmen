@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload'
+import { CollectionConfig, Where, AccessArgs } from 'payload'
 
 export const Appointments: CollectionConfig = {
   slug: 'appointments',
@@ -460,7 +460,8 @@ export const Appointments: CollectionConfig = {
     ],
   },
   access: {
-    read: ({ req: { user } }) => {
+    read: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin' || user.role === 'manager') return true
       // Customers can see their own appointments
@@ -469,7 +470,7 @@ export const Appointments: CollectionConfig = {
           customer: {
             equals: user.id
           }
-        }
+        } as Where
       }
       // Stylists can see their assigned appointments
       if (user.role === 'stylist') {
@@ -477,15 +478,16 @@ export const Appointments: CollectionConfig = {
           stylist: {
             equals: user.id
           }
-        }
+        } as Where
       }
       return false
     },
-    create: ({ req: { user } }) => {
+    create: ({ req }) => {
       // Allow authenticated users to create appointments
-      return !!user
+      return !!req.user
     },
-    update: ({ req: { user } }) => {
+    update: ({ req }) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin' || user.role === 'manager') return true
       // Only allow updates to pending/confirmed appointments
@@ -493,8 +495,8 @@ export const Appointments: CollectionConfig = {
         status: { in: ['pending', 'confirmed'] },
       }
     },
-    delete: ({ req: { user } }) => {
-      return user?.role === 'admin' || user?.role === 'manager'
+    delete: ({ req }) => {
+      return req.user?.role === 'admin' || req.user?.role === 'manager'
     },
   },
   timestamps: true,

@@ -54,7 +54,7 @@ class EmailService {
         }
       }
     } else {
-      this.transporter = nodemailer.createTransporter(config)
+      this.transporter = nodemailer.createTransport(config)
     }
   }
 

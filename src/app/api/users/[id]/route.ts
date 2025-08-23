@@ -5,7 +5,7 @@ import { authOptions } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,8 +17,9 @@ export async function GET(
       )
     }
 
+    const { id } = await params
     const payload = await getPayloadClient()
-    const userId = params.id
+    const userId = id
 
     // Check permissions
     const canViewUser = session.user?.role === 'admin' ||
@@ -58,7 +59,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -70,8 +71,9 @@ export async function PUT(
       )
     }
 
+    const { id } = await params
     const payload = await getPayloadClient()
-    const userId = params.id
+    const userId = id
     const body = await request.json()
 
     // Check permissions
@@ -119,7 +121,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -131,8 +133,9 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
     const payload = await getPayloadClient()
-    const userId = params.id
+    const userId = id
 
     // Prevent deleting own account
     if (session.user?.id === userId) {

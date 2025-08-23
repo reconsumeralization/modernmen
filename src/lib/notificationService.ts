@@ -1,4 +1,4 @@
-import { notificationEmitter } from '../app/api/notifications/stream/route'
+import { notificationEmitter } from './notificationEmitter'
 import { sendWelcomeEmail, sendPasswordResetEmail, sendAppointmentNotification, sendSystemAlert } from './emailService'
 import { sendWelcomeSMS, sendSystemAlertSMS } from './smsService'
 

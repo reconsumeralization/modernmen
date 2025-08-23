@@ -1,4 +1,4 @@
-import { Loader2, Users, Calendar, Scissors, Settings, Database, ExternalLink, RefreshCw, Info, BarChart3, Phone, Edit, X, Save, ArrowLeft } from 'lucide-react'
+import { Loader2, Users, Calendar, Scissors, Settings, Database, ExternalLink, RefreshCw, Info, BarChart3, Phone, Edit, X, Save, ArrowLeft, Download, Clock, Mail } from 'lucide-react'
 
 export const Icons = {
   spinner: Loader2,
@@ -16,6 +16,9 @@ export const Icons = {
   x: X,
   save: Save,
   arrowLeft: ArrowLeft,
+  download: Download,
+  clock: Clock,
+  mail: Mail,
   google: ({ className }: { className?: string }) => (
     <svg className={className} viewBox="0 0 24 24">
       <path

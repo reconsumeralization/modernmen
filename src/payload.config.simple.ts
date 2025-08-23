@@ -10,6 +10,7 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  secret: process.env.PAYLOAD_SECRET || 'your-secret-here',
   admin: {
     meta: {
       title: 'Modern Men Salon - Simple',

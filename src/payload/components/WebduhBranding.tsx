@@ -1,5 +1,4 @@
 import React from 'react'
-import { Card } from '@payloadcms/ui'
 
 interface MetricCardProps {
   title: string
@@ -14,7 +13,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, trend, ic
                     trend === 'down' ? 'text-red-600' : 'text-gray-600'
 
   return (
-    <Card className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+    <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>
@@ -27,7 +26,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, trend, ic
         </div>
         {icon && <div className="text-3xl">{icon}</div>}
       </div>
-    </Card>
+    </div>
   )
 }
 
@@ -62,7 +61,7 @@ export const WebduhBranding: React.FC = () => {
       </div>
 
       {/* Mission Statement */}
-      <Card className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200">
+      <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-purple-900 mb-3">
             Our Mission
@@ -70,11 +69,11 @@ export const WebduhBranding: React.FC = () => {
           <p className="text-purple-800 leading-relaxed">
             At Webduh, we believe that great design and technology should be accessible to everyone.
             Our goal is to create digital solutions that not only look beautiful but also make a positive
-            impact on people's lives. Every project we work on is an opportunity to unite technology
-            with humanity's needs.
+            impact on people&apos;s lives. Every project we work on is an opportunity to unite technology
+            with humanity&apos;s needs.
           </p>
         </div>
-      </Card>
+      </div>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -110,7 +109,7 @@ export const WebduhBranding: React.FC = () => {
 
       {/* Services Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             🎯 Our Services
           </h3>
@@ -144,9 +143,9 @@ export const WebduhBranding: React.FC = () => {
               </div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             💡 Our Values
           </h3>
@@ -180,11 +179,11 @@ export const WebduhBranding: React.FC = () => {
               </div>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Quick Actions */}
-      <Card className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           🚀 Quick Actions
         </h3>
@@ -202,7 +201,7 @@ export const WebduhBranding: React.FC = () => {
             ⚙ Settings
           </button>
         </div>
-      </Card>
+      </div>
     </div>
   )
 }

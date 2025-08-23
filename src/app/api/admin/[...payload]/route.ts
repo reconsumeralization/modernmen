@@ -18,9 +18,9 @@ export async function GET(request: NextRequest) {
 
     return Response.json(response)
   } catch (error) {
-    console.error('Payload API error:', error)
+    console.error('Payload API GET error:', error)
     return Response.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to retrieve data from Payload CMS' },
       { status: 500 }
     )
   }

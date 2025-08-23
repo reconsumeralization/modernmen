@@ -429,7 +429,8 @@ export const Customers: CollectionConfig = {
     ],
   },
   access: {
-    read: ({ req: { user } }) => {
+    read: ({ req }) => {
+      const user = req.user
       if (!user) return false
       // Customers can read their own data, staff can read all
       if (user.role === 'customer') {
@@ -437,18 +438,19 @@ export const Customers: CollectionConfig = {
       }
       return true
     },
-    create: ({ req: { user } }) => {
+    create: ({ req }) => {
       // Allow customers to create their own accounts via frontend
       return true
     },
-    update: ({ req: { user } }) => {
+    update: ({ req }) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin' || user.role === 'manager' || user.role === 'staff') return true
       // Customers can update their own data
       return { id: { equals: user.id } }
     },
-    delete: ({ req: { user } }) => {
-      return user?.role === 'admin'
+    delete: ({ req }) => {
+      return req.user?.role === 'admin'
     },
   },
   timestamps: true,

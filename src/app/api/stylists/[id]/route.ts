@@ -66,11 +66,11 @@ function generateSampleInstagramPosts() {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const payload = await getPayloadClient()
-    const { id } = params
+    const { id } = await params
 
     const stylist = await payload.findByID({
       collection: 'stylists',

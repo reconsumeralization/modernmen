@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Menu, X, Phone, Calendar } from 'lucide-react'
+import { Menu, X, Phone, Calendar, Search } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navigation = [
@@ -11,6 +11,7 @@ const navigation = [
   { name: 'Services', href: '#services' },
   { name: 'About', href: '#about' },
   { name: 'Our Team', href: '#team' },
+  { name: 'Editor', href: '/editor' },
   { name: 'Contact', href: '#contact' },
 ]
 
@@ -45,6 +46,11 @@ export function Navbar() {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/search">
+                <Search className="h-4 w-4" />
+              </Link>
+            </Button>
             <Button variant="outline" size="sm">
               <Phone className="h-4 w-4 mr-2" />
               (306) 522-4111
@@ -92,6 +98,18 @@ export function Navbar() {
                 </Link>
               ))}
               <div className="pt-4 pb-2 space-y-3">
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <Link href="/search" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Search className="h-4 w-4 mr-2" />
+                    Search Documentation
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" className="w-full" asChild>
+                  <Link href="/editor" onClick={() => setIsMobileMenuOpen(false)}>
+                    <span className="text-2xl mr-2">🎨</span>
+                    Image Editor
+                  </Link>
+                </Button>
                 <Button variant="outline" size="sm" className="w-full">
                   <Phone className="h-4 w-4 mr-2" />
                   (306) 522-4111

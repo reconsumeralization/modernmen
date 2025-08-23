@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Modal, Text, Heading, Select } from '@payloadcms/ui'
+import { Button, Modal, Heading, Select } from '@payloadcms/ui'
 
 interface BulkActionModalProps {
   isOpen: boolean
@@ -76,9 +76,9 @@ export const AppointmentBulkActions: React.FC<BulkActionModalProps> = ({
 
         <div className="space-y-4">
           <div>
-            <Text className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Select Action
-            </Text>
+            </label>
             <Select
               value={action}
               onChange={(value) => setAction(value)}
@@ -94,9 +94,9 @@ export const AppointmentBulkActions: React.FC<BulkActionModalProps> = ({
 
           {action === 'status' && (
             <div>
-              <Text className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 New Status
-              </Text>
+              </label>
               <Select
                 value={newStatus}
                 onChange={(value) => setNewStatus(value)}
@@ -112,9 +112,9 @@ export const AppointmentBulkActions: React.FC<BulkActionModalProps> = ({
 
           {action === 'stylist' && (
             <div>
-              <Text className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 New Stylist
-              </Text>
+              </label>
               <Select
                 value={newStylist}
                 onChange={(value) => setNewStylist(value)}

@@ -19,6 +19,7 @@ import { Commissions } from './payload/collections/Commissions'
 import { ServicePackages } from './payload/collections/ServicePackages'
 import { Inventory } from './payload/collections/Inventory'
 import { WaitList } from './payload/collections/WaitList'
+import { Notifications } from './payload/collections/Notifications'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -39,7 +40,12 @@ export default buildConfig({
     Customers,
     Appointments,
     Stylists,
-    Media
+    Media,
+    Commissions,
+    ServicePackages,
+    Inventory,
+    WaitList,
+    Notifications
   ],
   cors: [
     process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',

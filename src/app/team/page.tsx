@@ -7,6 +7,21 @@ import { Badge } from '@/components/ui/badge'
 import { motion } from 'framer-motion'
 import { Icons } from '@/components/ui/icons'
 import { toast } from 'sonner'
+import { TeamFilters } from '@/components/ui/team-filters'
+import { InstagramFeed } from '@/components/ui/instagram-feed'
+import { Testimonials } from '@/components/ui/testimonials'
+import Image from 'next/image'
+
+interface Testimonial {
+  id: string
+  clientName: string
+  clientImage?: string
+  service: string
+  rating: number
+  review: string
+  date: string
+  verified?: boolean
+}
 
 interface Stylist {
   id: string
@@ -32,6 +47,12 @@ interface Stylist {
   featured?: boolean
   isActive?: boolean
   portfolio?: any[]
+  testimonials?: Testimonial[]
+  pricing?: {
+    customPricing?: any[]
+    hourlyRate?: number
+  }
+  displayOrder?: number
 }
 
 interface StylistResponse {
@@ -45,10 +66,13 @@ interface StylistResponse {
 
 export default function TeamPage() {
   const [stylists, setStylists] = useState<Stylist[]>([])
+  const [filteredStylists, setFilteredStylists] = useState<Stylist[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedStylist, setSelectedStylist] = useState<Stylist | null>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
+  const [currentFilters, setCurrentFilters] = useState<any>({})
+  const [availableSpecializations, setAvailableSpecializations] = useState<string[]>([])
 
   useEffect(() => {
     fetchAllStylists()
@@ -63,6 +87,19 @@ export default function TeamPage() {
       }
       const data: StylistResponse = await response.json()
       setStylists(data.stylists)
+      setFilteredStylists(data.stylists)
+
+      // Extract unique specializations
+      const specs = new Set<string>()
+      data.stylists.forEach(stylist => {
+        if (stylist.specializations) {
+          stylist.specializations.forEach(spec => {
+            const specName = spec.name || spec.title || spec
+            if (specName) specs.add(specName)
+          })
+        }
+      })
+      setAvailableSpecializations(Array.from(specs))
     } catch (err) {
       console.error('Error fetching stylists:', err)
       setError(err instanceof Error ? err.message : 'Failed to load team members')
@@ -70,6 +107,55 @@ export default function TeamPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleFilterChange = (filters: any) => {
+    setCurrentFilters(filters)
+    let filtered = [...stylists]
+
+    // Apply filters
+    if (filters.specialization) {
+      filtered = filtered.filter(stylist =>
+        stylist.specializations?.some(spec =>
+          (spec.name || spec.title || spec).toLowerCase().includes(filters.specialization.toLowerCase())
+        )
+      )
+    }
+
+    if (filters.minExperience) {
+      filtered = filtered.filter(stylist =>
+        (stylist.experience?.yearsExperience || 0) >= filters.minExperience
+      )
+    }
+
+    if (filters.minRating) {
+      filtered = filtered.filter(stylist =>
+        (stylist.performance?.rating || 0) >= filters.minRating
+      )
+    }
+
+    // Apply sorting
+    if (filters.sortBy) {
+      switch (filters.sortBy) {
+        case 'name':
+          filtered.sort((a, b) => a.name.localeCompare(b.name))
+          break
+        case 'rating':
+          filtered.sort((a, b) => (b.performance?.rating || 0) - (a.performance?.rating || 0))
+          break
+        case 'experience':
+          filtered.sort((a, b) => (b.experience?.yearsExperience || 0) - (a.experience?.yearsExperience || 0))
+          break
+        case 'appointments':
+          filtered.sort((a, b) => (b.performance?.totalAppointments || 0) - (a.performance?.totalAppointments || 0))
+          break
+        case 'displayOrder':
+          filtered.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+          break
+      }
+    }
+
+    setFilteredStylists(filtered)
   }
 
   const formatBio = (bio: any) => {
@@ -188,11 +274,26 @@ export default function TeamPage() {
 
       {/* Team Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {stylists.length === 0 ? (
+        {filteredStylists.length === 0 ? (
           <div className="text-center py-16">
             <Icons.users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">No Team Members Found</h2>
-            <p className="text-gray-600 mb-4">We're working on building our team. Check back soon!</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              {stylists.length === 0 ? 'No Team Members Found' : 'No Matches Found'}
+            </h2>
+            <p className="text-gray-600 mb-4">
+              {stylists.length === 0
+                ? "We're working on building our team. Check back soon!"
+                : 'Try adjusting your filters to see more stylists.'
+              }
+            </p>
+            {stylists.length > 0 && (
+              <Button
+                onClick={() => handleFilterChange({})}
+                className="mr-2 bg-amber-600 hover:bg-amber-700 text-white"
+              >
+                Clear Filters
+              </Button>
+            )}
             <Button
               onClick={() => window.location.href = '/'}
               variant="outline"
@@ -203,14 +304,21 @@ export default function TeamPage() {
           </div>
         ) : (
           <>
+            <TeamFilters
+              onFilterChange={handleFilterChange}
+              availableSpecializations={availableSpecializations}
+              className="mb-6"
+            />
+
             <div className="mb-8 text-center">
               <p className="text-gray-600">
-                Showing {stylists.length} team {stylists.length === 1 ? 'member' : 'members'}
+                Showing {filteredStylists.length} of {stylists.length} team {stylists.length === 1 ? 'member' : 'members'}
+                {Object.keys(currentFilters).length > 0 && ' (filtered)'}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {stylists.map((stylist, index) => (
+              {filteredStylists.map((stylist, index) => (
                 <motion.div
                   key={stylist.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -220,9 +328,11 @@ export default function TeamPage() {
                   <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 group">
                     <CardHeader className="pb-4">
                       <div className="relative">
-                        <img
+                        <Image
                           src={getProfileImage(stylist)}
                           alt={stylist.name}
+                          width={96}
+                          height={96}
                           className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-amber-600 group-hover:border-amber-400 transition-colors duration-300"
                         />
                         {stylist.featured && (
@@ -315,9 +425,11 @@ export default function TeamPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Profile Image and Basic Info */}
                 <div className="lg:col-span-1">
-                  <img
+                  <Image
                     src={getProfileImage(selectedStylist)}
                     alt={selectedStylist.name}
+                    width={192}
+                    height={192}
                     className="w-48 h-48 rounded-full mx-auto object-cover border-4 border-amber-600 mb-4"
                   />
 
@@ -423,6 +535,24 @@ export default function TeamPage() {
                       </div>
                     )}
 
+                    {/* Instagram Feed */}
+                    {selectedStylist.socialMedia?.instagram && (
+                      <InstagramFeed
+                        stylistName={selectedStylist.name}
+                        username={selectedStylist.socialMedia.instagram.split('/').pop()?.replace('@', '')}
+                        className="mb-6"
+                      />
+                    )}
+
+                    {/* Testimonials */}
+                    {selectedStylist.testimonials && selectedStylist.testimonials.length > 0 && (
+                      <Testimonials
+                        testimonials={selectedStylist.testimonials}
+                        stylistName={selectedStylist.name}
+                        className="mb-6"
+                      />
+                    )}
+
                     {/* Social Media */}
                     {selectedStylist.socialMedia && (
                       <div>
@@ -433,7 +563,7 @@ export default function TeamPage() {
                               href={selectedStylist.socialMedia.instagram}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-pink-600 transition-colors"
+                              className="flex items-center justify-center w-12 h-12 bg-pink-600 text-white rounded-full hover:bg-pink-700 transition-colors"
                             >
                               <Icons.phone className="h-6 w-6" />
                             </a>
@@ -443,7 +573,7 @@ export default function TeamPage() {
                               href={selectedStylist.socialMedia.facebook}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-blue-600 transition-colors"
+                              className="flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
                             >
                               <Icons.users className="h-6 w-6" />
                             </a>
@@ -453,7 +583,7 @@ export default function TeamPage() {
                               href={selectedStylist.socialMedia.website}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-600 hover:text-green-600 transition-colors"
+                              className="flex items-center justify-center w-12 h-12 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors"
                             >
                               <Icons.externalLink className="h-6 w-6" />
                             </a>

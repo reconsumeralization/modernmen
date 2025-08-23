@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import { InstagramFeed } from '@/components/ui/instagram-feed'
 import { Testimonials } from '@/components/ui/testimonials'
 import { TestimonialForm } from '@/components/ui/testimonial-form'
+import Image from 'next/image'
 
 interface Testimonial {
   id: string
@@ -49,6 +50,7 @@ interface Stylist {
   portfolio?: any[]
   schedule?: any
   pricing?: any
+  testimonials?: Testimonial[]
 }
 
 export default function StylistProfilePage() {
@@ -61,13 +63,7 @@ export default function StylistProfilePage() {
   const [showPortfolioModal, setShowPortfolioModal] = useState(false)
   const [showTestimonialForm, setShowTestimonialForm] = useState(false)
 
-  useEffect(() => {
-    if (id) {
-      fetchStylist()
-    }
-  }, [id])
-
-  const fetchStylist = async () => {
+  const fetchStylist = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch(`/api/stylists/${id}`)
@@ -86,7 +82,13 @@ export default function StylistProfilePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id])
+
+  useEffect(() => {
+    if (id) {
+      fetchStylist()
+    }
+  }, [id, fetchStylist])
 
   const formatBio = (bio: any) => {
     if (!bio) return 'Professional stylist dedicated to exceptional service.'
@@ -209,10 +211,12 @@ export default function StylistProfilePage() {
             </Button>
           </div>
           <div className="flex items-center space-x-4">
-            <img
+            <Image
               src={getProfileImage(stylist)}
               alt={stylist.name}
-              className="w-20 h-20 rounded-full border-4 border-white"
+              width={80}
+              height={80}
+              className="w-20 h-20 rounded-full border-4 border-white object-cover"
             />
             <div>
               <h1 className="text-3xl font-bold">{stylist.name}</h1>
@@ -295,9 +299,11 @@ export default function StylistProfilePage() {
                           className="relative group cursor-pointer"
                           onClick={() => handleViewPortfolioItem(item)}
                         >
-                          <img
+                          <Image
                             src={getPortfolioImage(item)}
                             alt={item.title || 'Portfolio item'}
+                            width={300}
+                            height={192}
                             className="w-full h-48 object-cover rounded-lg transition-transform duration-200 group-hover:scale-105"
                           />
                           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-lg flex items-center justify-center">
@@ -525,9 +531,11 @@ export default function StylistProfilePage() {
                 </Button>
               </div>
 
-              <img
+              <Image
                 src={getPortfolioImage(selectedPortfolioItem)}
                 alt={selectedPortfolioItem.title || 'Portfolio item'}
+                width={800}
+                height={384}
                 className="w-full h-96 object-cover rounded-lg mb-4"
               />
 

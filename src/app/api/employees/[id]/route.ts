@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPayloadClient } from '../../../../payload'
+import getPayloadClient from '../../../../payload'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,8 +17,9 @@ export async function GET(
       )
     }
 
+    const { id } = await params
     const payload = await getPayloadClient()
-    const stylistId = params.id
+    const stylistId = id
 
     const stylist = await payload.findByID({
       collection: 'stylists',
@@ -52,20 +53,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session || (session.user?.role !== 'admin' && session.user?.role !== 'manager')) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
+    const { id } = await params
     const payload = await getPayloadClient()
-    const stylistId = params.id
+    const stylistId = id
     const body = await request.json()
 
     // Get current stylist to check ownership
@@ -81,12 +76,41 @@ export async function PUT(
       )
     }
 
-    // If stylist is updating their own profile, restrict certain fields
-    if (session.user?.role === 'stylist' && currentStylist.user !== session.user?.id) {
+    // Check authorization based on user role and ownership
+    if (!session) {
       return NextResponse.json(
-        { error: 'Forbidden' },
-        { status: 403 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       )
+    }
+
+    const userRole = session.user?.role
+    const isStylistOwner = userRole === 'stylist' && currentStylist.user === session.user.id
+    const isManagerOrAdmin = userRole === 'admin' || userRole === 'manager'
+
+    if (!isStylistOwner && !isManagerOrAdmin) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // If stylist is updating their own profile, restrict certain fields
+    if (isStylistOwner) {
+      // Only allow updating bio, schedule, and pricing
+      const allowedFields = ['bio', 'schedule', 'pricing']
+      const updatedFields = Object.keys(body)
+      const invalidFields = updatedFields.filter(field => !allowedFields.includes(field))
+      
+      if (invalidFields.length > 0) {
+        return NextResponse.json(
+          { 
+            error: 'Forbidden',
+            message: `Cannot update fields: ${invalidFields.join(', ')}`
+          },
+          { status: 403 }
+        )
+      }
     }
 
     const updatedStylist = await payload.update({
@@ -95,7 +119,7 @@ export async function PUT(
       data: body
     })
 
-    console.log(`Employee updated: ${updatedStylist.name} (${stylistId}) by ${session.user?.name}`)
+    console.log(`Employee updated: ${updatedStylist.name} (${stylistId}) by ${session.user.name}`)
 
     return NextResponse.json({
       employee: updatedStylist,
@@ -113,7 +137,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -125,8 +149,9 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
     const payload = await getPayloadClient()
-    const stylistId = params.id
+    const stylistId = id
 
     // Get stylist info for logging
     const stylist = await payload.findByID({
@@ -146,7 +171,7 @@ export async function DELETE(
       id: stylistId
     })
 
-    console.log(`Employee deleted: ${stylist.name} (${stylistId}) by ${session.user?.name}`)
+    console.log(`Employee deleted: ${stylist.name} (${stylistId}) by ${session.user.name}`)
 
     return NextResponse.json({
       message: 'Employee deleted successfully'

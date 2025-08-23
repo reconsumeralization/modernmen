@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Icons } from '@/components/ui/icons'
 import { UserManagement } from '@/components/admin/UserManagement'
 import { EmployeeManagement } from '@/components/admin/EmployeeManagement'
 import { AuditLogs } from '@/components/admin/AuditLogs'
+import { NotificationCenter } from '@/components/ui/NotificationCenter'
 import { motion } from 'framer-motion'
 
 export default function AdminDashboard() {
@@ -62,6 +64,7 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-blue-100">Welcome, {session.user?.name}</span>
+              <NotificationCenter userId={session.user?.id || ''} />
               <Button
                 variant="outline"
                 className="border-white text-white hover:bg-white hover:text-blue-600"

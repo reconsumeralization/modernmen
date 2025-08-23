@@ -2,14 +2,7 @@ import { NextRequest } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getPayloadClient } from '../../../../payload'
-import { EventEmitter } from 'events'
-
-// Global event emitter for notifications
-const notificationEmitter = new EventEmitter()
-notificationEmitter.setMaxListeners(1000)
-
-// Store active connections
-const activeConnections = new Map<string, WritableStreamDefaultWriter>()
+import { notificationEmitter, activeConnections } from '@/lib/notificationEmitter'
 
 interface Notification {
   id: string
@@ -53,7 +46,6 @@ export async function GET(request: NextRequest) {
         const notificationHandler = (notification: Notification) => {
           if (notification.userId === userId || notification.userId === 'all') {
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-              type: 'notification',
               ...notification
             })}\n\n`))
           }
@@ -106,16 +98,10 @@ async function sendRecentNotifications(
       timestamp: new Date().toISOString(),
       read: false
     }
-
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-      type: 'notification',
-      ...sampleNotification
-    })}\n\n`))
+    controller.enqueue(encoder.encode(`data: ${JSON.stringify(sampleNotification)}\n\n`))
 
   } catch (error) {
     console.error('Error sending recent notifications:', error)
   }
 }
 
-// Export emitter for use in other parts of the application
-export { notificationEmitter }

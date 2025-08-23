@@ -429,24 +429,28 @@ export const Commissions: CollectionConfig = {
     ],
   },
   access: {
-    read: ({ req: { user } }: AccessArgs) => {
+    read: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       const userData = user as unknown as UserData
       if (userData.role === 'admin' || userData.role === 'manager') return true
       // Stylists can only see their own commissions
       return { stylist: { equals: userData.id } }
     },
-    create: ({ req: { user } }: AccessArgs) => {
+    create: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       const userData = user as unknown as UserData
       return userData.role === 'admin' || userData.role === 'manager'
     },
-    update: ({ req: { user } }: AccessArgs) => {
+    update: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       const userData = user as unknown as UserData
       return userData.role === 'admin' || userData.role === 'manager'
     },
-    delete: ({ req: { user } }: AccessArgs) => {
+    delete: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       const userData = user as unknown as UserData
       return userData.role === 'admin'

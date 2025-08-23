@@ -51,9 +51,12 @@ export const Services: CollectionConfig = {
         description: 'Price in cents (e.g., 3500 = $35.00)',
         step: 100,
       },
-      validate: (value: number) => {
-        if (value < 0) return 'Price cannot be negative'
-        if (value > 100000) return 'Price seems too high (max $1,000)'
+      validate: (value: number | null | undefined) => {
+        if (value == null) return true // Allow empty values
+        if (typeof value === 'number') {
+          if (value < 0) return 'Price cannot be negative'
+          if (value > 100000) return 'Price seems too high (max $1,000)'
+        }
         return true
       },
     },
@@ -67,9 +70,12 @@ export const Services: CollectionConfig = {
         description: 'Duration in minutes',
         step: 5,
       },
-      validate: (value: number) => {
-        if (value < 5) return 'Duration must be at least 5 minutes'
-        if (value > 480) return 'Duration cannot exceed 8 hours'
+      validate: (value: number | null | undefined) => {
+        if (value == null) return true // Allow empty values
+        if (typeof value === 'number') {
+          if (value < 5) return 'Duration must be at least 5 minutes'
+          if (value > 480) return 'Duration cannot exceed 8 hours'
+        }
         return true
       },
     },
@@ -110,6 +116,14 @@ export const Services: CollectionConfig = {
       admin: {
         description: 'Minutes needed to prepare for this service',
       },
+      validate: (value: number | null | undefined) => {
+        if (value == null) return true // Allow empty values
+        if (typeof value === 'number') {
+          if (value < 0) return 'Preparation time cannot be negative'
+          if (value > 60) return 'Preparation time cannot exceed 60 minutes'
+        }
+        return true
+      },
     },
     {
       name: 'bufferTime',
@@ -119,6 +133,14 @@ export const Services: CollectionConfig = {
       max: 60,
       admin: {
         description: 'Buffer time after service (cleanup, etc.)',
+      },
+      validate: (value: number | null | undefined) => {
+        if (value == null) return true // Allow empty values
+        if (typeof value === 'number') {
+          if (value < 0) return 'Buffer time cannot be negative'
+          if (value > 60) return 'Buffer time cannot exceed 60 minutes'
+        }
+        return true
       },
     },
     {
@@ -318,14 +340,14 @@ export const Services: CollectionConfig = {
   },
   access: {
     read: () => true, // Public read access for frontend
-    create: ({ req: { user } }) => {
-      return user?.role === 'admin' || user?.role === 'manager'
+    create: ({ req }) => {
+      return req.user?.role === 'admin' || req.user?.role === 'manager'
     },
-    update: ({ req: { user } }) => {
-      return user?.role === 'admin' || user?.role === 'manager'
+    update: ({ req }) => {
+      return req.user?.role === 'admin' || req.user?.role === 'manager'
     },
-    delete: ({ req: { user } }) => {
-      return user?.role === 'admin'
+    delete: ({ req }) => {
+      return req.user?.role === 'admin'
     },
   },
   timestamps: true,

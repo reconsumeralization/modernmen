@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Test script to demonstrate authentication system functionality
  * This file is excluded from TypeScript compilation but provides

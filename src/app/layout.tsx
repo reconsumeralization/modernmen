@@ -2,9 +2,11 @@ import type { Metadata } from 'next'
 import { Inter, Roboto, Roboto_Mono } from 'next/font/google'
 import { Providers } from '@/providers/providers'
 import { Toaster } from '@/components/ui/sonner'
+import { GlobalErrorBoundary } from '@/components/ui/global-error-boundary'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
+import { MonitoringInit } from '@/components/monitoring/MonitoringInit'
 
 const inter = Inter({ subsets: ['latin'] })
 const roboto = Roboto({
@@ -64,15 +66,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} ${roboto.variable} ${robotoMono.variable}`}>
-        <Providers>
-          <div className="relative min-h-screen bg-background">
-            <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
-            <main className="relative">
-              {children}
-            </main>
-          </div>
-          <Toaster position="top-right" richColors />
-        </Providers>
+        <MonitoringInit />
+        <GlobalErrorBoundary>
+          <Providers>
+            <div className="relative min-h-screen bg-background">
+              <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+              <main className="relative">
+                {children}
+              </main>
+            </div>
+            <Toaster position="top-right" richColors />
+          </Providers>
+        </GlobalErrorBoundary>
         <Analytics />
         <SpeedInsights />
       </body>

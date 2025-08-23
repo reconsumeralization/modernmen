@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Transform the data for frontend consumption
-    const transformedStylists = stylists.docs.map(stylist => ({
+    const transformedStylists = stylists.docs.map((stylist: any) => ({
       id: stylist.id,
       name: stylist.name,
       bio: stylist.bio,

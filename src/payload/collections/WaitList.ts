@@ -373,23 +373,26 @@ export const WaitList: CollectionConfig = {
     ],
   },
   access: {
-    read: ({ req: { user } }: AccessArgs) => {
+    read: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin' || user.role === 'manager') return true
       // Customers can see their own wait list entries
       return { customer: { equals: user.id } }
     },
-    create: ({ req: { user } }: AccessArgs) => {
+    create: ({ req }: AccessArgs) => {
       // Allow customers to add themselves to wait list
       return true
     },
-    update: ({ req: { user } }: AccessArgs) => {
+    update: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin' || user.role === 'manager' || user.role === 'staff') return true
       // Customers can update their own entries
       return { customer: { equals: user.id } }
     },
-    delete: ({ req: { user } }: AccessArgs) => {
+    delete: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin' || user.role === 'manager'
     },

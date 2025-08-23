@@ -207,7 +207,7 @@ export function NotificationSettings({ userId, className = '' }: NotificationSet
               <Switch
                 id={`email-${key}`}
                 checked={value}
-                onCheckedChange={(checked) => updatePreference('email', key, checked)}
+                onCheckedChange={(checked: boolean) => updatePreference('email', key, checked)}
               />
             </div>
           ))}
@@ -250,7 +250,7 @@ export function NotificationSettings({ userId, className = '' }: NotificationSet
               <Switch
                 id={`sms-${key}`}
                 checked={value}
-                onCheckedChange={(checked) => updatePreference('sms', key, checked)}
+                onCheckedChange={(checked: boolean) => updatePreference('sms', key, checked)}
               />
             </div>
           ))}
@@ -293,7 +293,7 @@ export function NotificationSettings({ userId, className = '' }: NotificationSet
               <Switch
                 id={`push-${key}`}
                 checked={value}
-                onCheckedChange={(checked) => updatePreference('push', key, checked)}
+                onCheckedChange={(checked: boolean) => updatePreference('push', key, checked)}
               />
             </div>
           ))}
@@ -340,7 +340,7 @@ export function NotificationSettings({ userId, className = '' }: NotificationSet
               <Switch
                 id="quiet-hours"
                 checked={preferences.frequency.quietHours.enabled}
-                onCheckedChange={(checked) => updatePreference('frequency', 'enabled', checked)}
+                onCheckedChange={(checked: boolean) => updatePreference('frequency', 'enabled', checked)}
               />
               <Label htmlFor="quiet-hours" className="text-sm font-medium">
                 Quiet Hours

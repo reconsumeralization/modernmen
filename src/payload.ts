@@ -34,6 +34,7 @@ if (typeof globalThis !== 'undefined') {
 }
 
 export default getPayloadClient
+export { getPayloadClient }
 
 // Add type declaration for global
 declare global {

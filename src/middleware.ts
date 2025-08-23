@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
-
-// Rate limiting store (in production, use Redis)
-const rateLimitMap = new Map<string, { count: number; timestamp: number }>()
+import { authRateLimiters, getRateLimitIdentifier, createRateLimitResponse } from '@/lib/auth-ratelimit'
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
@@ -25,49 +23,24 @@ export async function middleware(request: NextRequest) {
 
   // Rate limiting for API routes
   if (request.nextUrl.pathname.startsWith('/api/')) {
-    const ip = request.ip || '127.0.0.1'
-    const now = Date.now()
-    const windowMs = 60 * 1000 // 1 minute
-    const maxRequests = 100
+    try {
+      const identifier = getRateLimitIdentifier(request, 'api')
+      const result = await authRateLimiters.api.check(identifier)
 
-    const rateLimitData = rateLimitMap.get(ip)
-    
-    if (rateLimitData) {
-      if (now - rateLimitData.timestamp < windowMs) {
-        if (rateLimitData.count >= maxRequests) {
-          return new NextResponse('Too Many Requests', { 
-            status: 429,
-            headers: {
-              'Retry-After': '60',
-              'X-RateLimit-Limit': maxRequests.toString(),
-              'X-RateLimit-Remaining': '0',
-              'X-RateLimit-Reset': new Date(rateLimitData.timestamp + windowMs).toISOString(),
-            }
-          })
-        }
-        rateLimitData.count++
-      } else {
-        rateLimitData.count = 1
-        rateLimitData.timestamp = now
+      if (!result.success) {
+        return createRateLimitResponse(result)
       }
-    } else {
-      rateLimitMap.set(ip, { count: 1, timestamp: now })
-    }
 
-    // Clean up old entries
-    if (Math.random() < 0.01) { // 1% chance to clean up
-      for (const [key, data] of rateLimitMap.entries()) {
-        if (now - data.timestamp > windowMs) {
-          rateLimitMap.delete(key)
-        }
-      }
-    }
+      // Add rate limit headers to successful requests
+      response.headers.set('X-RateLimit-Limit', result.limit.toString())
+      response.headers.set('X-RateLimit-Remaining', result.remaining.toString())
+      response.headers.set('X-RateLimit-Reset', result.reset.toISOString())
+      response.headers.set('X-RateLimit-Using-Redis', result.redis ? 'true' : 'false')
 
-    // Add rate limit headers
-    const currentData = rateLimitMap.get(ip)!
-    response.headers.set('X-RateLimit-Limit', maxRequests.toString())
-    response.headers.set('X-RateLimit-Remaining', Math.max(0, maxRequests - currentData.count).toString())
-    response.headers.set('X-RateLimit-Reset', new Date(currentData.timestamp + windowMs).toISOString())
+    } catch (error) {
+      console.error('Rate limiting error in middleware:', error)
+      // Continue with request on rate limiting failure to prevent blocking legitimate users
+    }
   }
 
   // Authentication check for protected routes
@@ -80,6 +53,23 @@ export async function middleware(request: NextRequest) {
     '/api/user',
     '/api/admin'
   ]
+
+  // Documentation access control - simplified for Edge Runtime
+  if (request.nextUrl.pathname.startsWith('/documentation/admin')) {
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
+    })
+
+    // Only system admins can access admin documentation
+    if (!token || token.role !== 'admin') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/documentation'
+      url.searchParams.set('error', 'access_denied')
+      url.searchParams.set('section', 'admin')
+      return NextResponse.redirect(url)
+    }
+  }
 
   const publicAuthPaths = [
     '/auth/signin',

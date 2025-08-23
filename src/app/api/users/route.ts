@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '../../../payload'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { sendUserNotification, sendAdminNotification } from '@/lib/notificationService'
+import { validateRequestBody, validateSearchParams, createValidationErrorResponse, createServerErrorResponse } from '@/lib/validation-utils'
+import { createUserSchema } from '@/lib/validations'
 
 interface UserFilters {
   role?: string
@@ -105,15 +108,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
-    const { name, email, role, phone, password } = body
-
-    if (!name || !email || !role) {
-      return NextResponse.json(
-        { error: 'Name, email, and role are required' },
-        { status: 400 }
-      )
+    // Validate request body
+    const validation = await validateRequestBody(request, createUserSchema)
+    if (!validation.success) {
+      return createValidationErrorResponse(validation.errors!)
     }
+
+    const { firstName, lastName, email, role, phone, password } = validation.data!
+    const name = `${firstName} ${lastName}` // Combine first and last name
 
     const payload = await getPayloadClient()
 
@@ -145,6 +147,32 @@ export async function POST(request: NextRequest) {
 
     // Send welcome email (implement email service)
     console.log(`New user created: ${name} (${email})`)
+
+    // Send notifications
+    await sendAdminNotification({
+      type: 'user_created',
+      title: 'New User Created',
+      message: `User ${name} (${email}) has been created with role: ${role}`,
+      data: {
+        userId: newUser.id,
+        userEmail: email,
+        userRole: role
+      },
+      priority: 'medium'
+    })
+
+    // Send welcome notification to the new user
+    await sendUserNotification({
+      userId: newUser.id,
+      type: 'system_alert',
+      title: 'Welcome to Modern Men!',
+      message: `Your account has been created successfully. Welcome to the team!`,
+      data: {
+        userRole: role,
+        setupRequired: role === 'stylist'
+      },
+      priority: 'low'
+    })
 
     return NextResponse.json({
       user: {

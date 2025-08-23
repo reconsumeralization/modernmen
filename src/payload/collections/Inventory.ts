@@ -418,19 +418,23 @@ export const Inventory: CollectionConfig = {
     ],
   },
   access: {
-    read: ({ req: { user } }: AccessArgs) => {
+    read: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return true // All authenticated users can read inventory
     },
-    create: ({ req: { user } }: AccessArgs) => {
+    create: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin' || user.role === 'manager'
     },
-    update: ({ req: { user } }: AccessArgs) => {
+    update: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin' || user.role === 'manager'
     },
-    delete: ({ req: { user } }: AccessArgs) => {
+    delete: ({ req }: AccessArgs) => {
+      const user = req.user
       if (!user) return false
       return user.role === 'admin'
     },

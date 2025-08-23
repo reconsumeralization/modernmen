@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Icons } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
+import { Bell } from 'lucide-react'
 
 interface Notification {
   id: string
@@ -33,11 +34,7 @@ export function NotificationHistory({ userId, className = '' }: NotificationHist
   const [filter, setFilter] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
 
-  useEffect(() => {
-    fetchNotifications()
-  }, [currentPage, filter, sortBy])
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -64,7 +61,11 @@ export function NotificationHistory({ userId, className = '' }: NotificationHist
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentPage, filter])
+
+  useEffect(() => {
+    fetchNotifications()
+  }, [fetchNotifications])
 
   const markAsRead = async (notificationId: string) => {
     try {
@@ -210,7 +211,7 @@ export function NotificationHistory({ userId, className = '' }: NotificationHist
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <CardTitle className="flex items-center space-x-2">
-              <Icons.history className="h-5 w-5" />
+              <Bell className="h-5 w-5" />
               <span>Notification History</span>
             </CardTitle>
             <p className="text-sm text-gray-600 mt-1">
@@ -261,7 +262,7 @@ export function NotificationHistory({ userId, className = '' }: NotificationHist
       <CardContent>
         {notifications.length === 0 ? (
           <div className="text-center py-12">
-            <Icons.history className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <Bell className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-800 mb-2">No notifications found</h3>
             <p className="text-gray-600 mb-4">
               {filter === 'unread'

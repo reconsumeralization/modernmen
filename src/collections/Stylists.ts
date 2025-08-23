@@ -449,17 +449,18 @@ export const Stylists: CollectionConfig = {
   },
   access: {
     read: () => true, // Public read for frontend team page
-    create: ({ req: { user } }) => {
-      return user?.role === 'admin' || user?.role === 'manager'
+    create: ({ req }) => {
+      return req.user?.role === 'admin' || req.user?.role === 'manager'
     },
-    update: ({ req: { user } }) => {
+    update: ({ req }) => {
+      const user = req.user
       if (!user) return false
       if (user.role === 'admin' || user.role === 'manager') return true
       // Allow stylists to update their own profiles
       return { user: { equals: user.id } }
     },
-    delete: ({ req: { user } }) => {
-      return user?.role === 'admin'
+    delete: ({ req }) => {
+      return req.user?.role === 'admin'
     },
   },
   timestamps: true,
