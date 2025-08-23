@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { HelpCircle, ChevronDown, ChevronRight } from 'lucide-react'
+import { HelpCircle, ChevronDown, ChevronRight } from '@/lib/icon-mapping'
 
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions - Documentation',

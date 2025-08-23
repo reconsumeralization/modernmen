@@ -3,7 +3,7 @@ import { CollectionConfig } from 'payload'
 export const Stylists: CollectionConfig = {
   slug: 'stylists',
   admin: {
-    useAsTitle: 'name',
+    usTitle: 'name',
     description: 'Professional stylists and their schedules',
     group: 'Staff',
     defaultColumns: ['name', 'specializations', 'rating', 'isActive'],

@@ -1,5 +1,5 @@
 import { getUserFromSession, canAccessPath, getAccessDeniedMessage, getDefaultLandingPage } from '@/lib/documentation-auth'
-import { filterContentByRole, canUserAccessContent, filterNavigationItems, getContentAccessSummary, createUserContentFilter, filterSearchResults, getRestrictedContentFallback } from '@/lib/content-filtering'
+import { filterContentByRole, canUserAccessContent, filterNavigationItems, getContentAccessSummary, createUserContentFilter, filterrchResults, getRestrictedContentFallback } from '@/lib/content-filtering'
 import { hasPermission } from '@/lib/documentation-auth'
 import { hasDocumentationPermission } from '@/lib/documentation-permissions'
 import { DocumentationUser } from '@/lib/documentation-auth'
@@ -108,13 +108,13 @@ describe('System-wide sanity tests', () => {
     expect(filter.sections).toContain('developer')
   })
 
-  test('filterSearchResults respects user filter', () => {
+  test('filterrchResults respects user filter', () => {
     const results = [
       { id: 'r1', section: 'shared' },
       { id: 'r2', section: 'developer', requiredRoles: ['developer'] },
       { id: 'r3', section: 'admin', requiredPermissions: ['documentation.admin'] }
     ]
-    const filtered = filterSearchResults(results, mockUser)
+    const filtered = filterrchResults(results, mockUser)
     expect(filtered.map(r => r.id)).toEqual(['r1', 'r2'])
   })
 

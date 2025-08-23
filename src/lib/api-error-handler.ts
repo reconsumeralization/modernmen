@@ -2,11 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { logger } from './logger'
 import { z } from 'zod'
 
-export interface APIError {
-  code: string
-  message: string
-  details?: any
-  statusCode: number
+export class APIError extends Error {
+  public code: string
+  public statusCode: number
+  public details?: any
+
+  constructor(message: string, statusCode: number = 500, code?: string, details?: any) {
+    super(message)
+    this.name = 'APIError'
+    this.code = code || 'INTERNAL_ERROR'
+    this.statusCode = statusCode
+    this.details = details
+  }
 }
 
 export class APIErrorHandler {
@@ -16,12 +23,7 @@ export class APIErrorHandler {
     statusCode: number = 500,
     details?: any
   ): APIError {
-    return {
-      code,
-      message,
-      details,
-      statusCode
-    }
+    return new APIError(message, statusCode, code, details)
   }
 
   static async handleError(

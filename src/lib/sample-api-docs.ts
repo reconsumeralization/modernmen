@@ -41,10 +41,10 @@ export const sampleAPIDocumentation: APIDocumentationSection[] = [
               enum: ['admin', 'manager', 'stylist', 'customer']
             },
             {
-              name: 'search',
+              name: 'rch',
               type: 'string',
               required: false,
-              description: 'Search users by name or email',
+              description: 'rch users by name or email',
               example: 'john'
             }
           ],
@@ -223,6 +223,7 @@ export const sampleAPIDocumentation: APIDocumentationSection[] = [
         ]
       }
     ],
+    articles: [], // Added to resolve TypeScript error
     schemas: {},
     examples: [],
     authentication: []
@@ -320,6 +321,7 @@ export const sampleAPIDocumentation: APIDocumentationSection[] = [
         ]
       }
     ],
+    articles: [], // Added to resolve TypeScript error
     schemas: {},
     examples: [],
     authentication: []
@@ -496,6 +498,7 @@ export const sampleAPIDocumentation: APIDocumentationSection[] = [
         ]
       }
     ],
+    articles: [], // Added to resolve TypeScript error
     schemas: {},
     examples: [],
     authentication: []

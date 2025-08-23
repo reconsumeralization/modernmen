@@ -169,9 +169,9 @@ describe('VersionControlService', () => {
     });
   });
 
-  describe('version search', () => {
+  describe('version rch', () => {
     beforeEach(async () => {
-      const contentId = 'searchable-content';
+      const contentId = 'rchable-content';
       
       await service.createVersion(
         contentId,
@@ -212,8 +212,8 @@ describe('VersionControlService', () => {
       );
     });
 
-    it('searches versions by author', async () => {
-      const results = await service.searchVersions('searchable-content', {
+    it('rches versions by author', async () => {
+      const results = await service.rchVersions('rchable-content', {
         author: 'John'
       });
 
@@ -221,8 +221,8 @@ describe('VersionControlService', () => {
       expect(results[0].author).toBe('John Doe');
     });
 
-    it('searches versions by change type', async () => {
-      const results = await service.searchVersions('searchable-content', {
+    it('rches versions by change type', async () => {
+      const results = await service.rchVersions('rchable-content', {
         changeType: 'fixed'
       });
 
@@ -230,8 +230,8 @@ describe('VersionControlService', () => {
       expect(results[0].changes[0].type).toBe('fixed');
     });
 
-    it('searches versions by breaking changes', async () => {
-      const results = await service.searchVersions('searchable-content', {
+    it('rches versions by breaking changes', async () => {
+      const results = await service.rchVersions('rchable-content', {
         breakingChanges: true
       });
 
@@ -239,12 +239,12 @@ describe('VersionControlService', () => {
       expect(results[0].breakingChanges).toBe(true);
     });
 
-    it('searches versions by date range', async () => {
+    it('rches versions by date range', async () => {
       const now = new Date();
       const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-      const results = await service.searchVersions('searchable-content', {
+      const results = await service.rchVersions('rchable-content', {
         dateRange: { from: yesterday, to: tomorrow }
       });
 

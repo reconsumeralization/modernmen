@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Star, ThumbsUp, ThumbsDown, MessageSquare, Send } from 'lucide-react';
+import { Star, ThumbsUp, ThumbsDown, MessageSquare, Send } from '@/lib/icon-mapping';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

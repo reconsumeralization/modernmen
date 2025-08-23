@@ -3,7 +3,7 @@ import { CollectionConfig } from 'payload'
 export const Customers: CollectionConfig = {
   slug: 'customers',
   admin: {
-    useAsTitle: 'fullName',
+    usTitle: 'fullName',
     description: 'Client database and profiles',
     group: 'Customers',
     defaultColumns: ['fullName', 'email', 'phone', 'loyaltyTier', 'totalSpent'],
@@ -184,71 +184,65 @@ export const Customers: CollectionConfig = {
           },
         },
         {
-          name: 'communicationPreferences',
-          type: 'group',
-          fields: [
-            {
-              name: 'emailReminders',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Send email appointment reminders',
-              },
-            },
-            {
-              name: 'smsReminders',
-              type: 'checkbox',
-              defaultValue: false,
-              admin: {
-                description: 'Send SMS appointment reminders',
-              },
-            },
-            {
-              name: 'marketingEmails',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Send promotional emails',
-              },
-            },
-            {
-              name: 'specialOffers',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Send special offers and promotions',
-              },
-            },
+          name: 'emailReminders',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: {
+            description: 'Send email appointment reminders',
+          },
+        },
+        {
+          name: 'smsReminders',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            description: 'Send SMS appointment reminders',
+          },
+        },
+        {
+          name: 'marketingEmails',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: {
+            description: 'Send promotional emails',
+          },
+        },
+        {
+          name: 'specialOffers',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: {
+            description: 'Send special offers and promotions',
+          },
+        },
+        {
+          name: 'preferredDays',
+          type: 'select',
+          hasMany: true,
+          admin: {
+            description: 'Preferred days for appointments',
+          },
+          options: [
+            { label: 'Monday', value: 'monday' },
+            { label: 'Tuesday', value: 'tuesday' },
+            { label: 'Wednesday', value: 'wednesday' },
+            { label: 'Thursday', value: 'thursday' },
+            { label: 'Friday', value: 'friday' },
+            { label: 'Saturday', value: 'saturday' },
+            { label: 'Sunday', value: 'sunday' },
           ],
         },
         {
-          name: 'schedulingPreferences',
-          type: 'group',
-          fields: [
-            {
-              name: 'preferredDays',
-              type: 'select',
-              hasMany: true,
-              options: [
-                { label: 'Monday', value: 'monday' },
-                { label: 'Tuesday', value: 'tuesday' },
-                { label: 'Wednesday', value: 'wednesday' },
-                { label: 'Thursday', value: 'thursday' },
-                { label: 'Friday', value: 'friday' },
-                { label: 'Saturday', value: 'saturday' },
-                { label: 'Sunday', value: 'sunday' },
-              ],
-            },
-            {
-              name: 'preferredTimes',
-              type: 'select',
-              hasMany: true,
-              options: [
-                { label: 'Morning (9-12)', value: 'morning' },
-                { label: 'Afternoon (12-5)', value: 'afternoon' },
-                { label: 'Evening (5-8)', value: 'evening' },
-              ],
-            },
+          name: 'preferredTimes',
+          type: 'select',
+          hasMany: true,
+          admin: {
+            description: 'Preferred times for appointments',
+          },
+          options: [
+            { label: 'Morning (9-12)', value: 'morning' },
+            { label: 'Afternoon (12-5)', value: 'afternoon' },
+            { label: 'Evening (5-8)', value: 'evening' },
           ],
         },
       ],

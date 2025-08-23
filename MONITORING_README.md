@@ -29,7 +29,7 @@ The monitoring system provides:
 
 #### 3. Custom Analytics
 - **Performance Metrics**: Core Web Vitals (LCP, FID, CLS)
-- **User Actions**: Track clicks, form submissions, searches
+- **User Actions**: Track clicks, form submissions, rches
 - **API Performance**: Monitor endpoint response times
 - **Component Performance**: Track component render times
 
@@ -50,7 +50,7 @@ function MyComponent() {
     trackApiCall,
     trackPageView,
     trackFormSubmission,
-    trackSearch
+    trackrch
   } = useMonitoring()
 
   // Use monitoring functions...
@@ -69,14 +69,14 @@ function MyComponent() {
 }
 ```
 
-#### `useApiPerformance()`
+#### `upiPerformance()`
 Track API call performance:
 
 ```typescript
-import { useApiPerformance } from '@/hooks/useMonitoring'
+import { upiPerformance } from '@/hooks/useMonitoring'
 
 function MyComponent() {
-  const { trackApiRequest } = useApiPerformance()
+  const { trackApiRequest } = upiPerformance()
 
   const fetchData = async () => {
     const result = await trackApiRequest(
@@ -168,7 +168,7 @@ The monitoring system automatically:
 ### User Actions
 - **Clicks**: Button and link interactions
 - **Form Submissions**: Form completion and success rates
-- **Searches**: Search query tracking
+- **rches**: rch query tracking
 - **Navigation**: Page view tracking
 - **API Calls**: Endpoint usage and performance
 

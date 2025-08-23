@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { DocumentationSearchService } from '@/lib/search-service'
+import { DocumentationrchService } from '@/lib/rch-service'
 import { getUserRoleFromSession } from '@/lib/documentation-permissions'
-import { SearchQuery, SearchConfig } from '@/types/search'
+import { rchQuery, rchConfig } from '@/types/rch'
 
-// Initialize search service
-const searchConfig: SearchConfig = {
+// Initialize rch service
+const rchConfig: rchConfig = {
   provider: 'local',
   indexName: 'documentation',
   maxResults: 50,
@@ -37,31 +37,31 @@ const searchConfig: SearchConfig = {
   }
 }
 
-const searchService = new DocumentationSearchService(searchConfig)
+const rchService = new DocumentationrchService(rchConfig)
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const query = searchParams.get('q') || ''
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
-    const sortField = searchParams.get('sort') || 'relevance'
-    const sortDirection = searchParams.get('order') || 'desc'
+    const { rchParams } = new URL(request.url)
+    const query = rchParams.get('q') || ''
+    const page = parseInt(rchParams.get('page') || '1')
+    const limit = parseInt(rchParams.get('limit') || '20')
+    const sortField = rchParams.get('sort') || 'relevance'
+    const sortDirection = rchParams.get('order') || 'desc'
     
     // Parse filters from query parameters
-    const categories = searchParams.get('categories')?.split(',').filter(Boolean) || []
-    const contentTypes = searchParams.get('types')?.split(',').filter(Boolean) || []
-    const tags = searchParams.get('tags')?.split(',').filter(Boolean) || []
-    const difficulty = searchParams.get('difficulty')?.split(',').filter(Boolean) || []
-    const authors = searchParams.get('authors')?.split(',').filter(Boolean) || []
-    const sections = searchParams.get('sections')?.split(',').filter(Boolean) || []
+    const categories = rchParams.get('categories')?.split(',').filter(Boolean) || []
+    const contentTypes = rchParams.get('types')?.split(',').filter(Boolean) || []
+    const tags = rchParams.get('tags')?.split(',').filter(Boolean) || []
+    const difficulty = rchParams.get('difficulty')?.split(',').filter(Boolean) || []
+    const authors = rchParams.get('authors')?.split(',').filter(Boolean) || []
+    const sections = rchParams.get('sections')?.split(',').filter(Boolean) || []
 
     // Get user session and role
     const session = await getServerSession()
     const userRole = getUserRoleFromSession(session)
 
-    // Build search query
-    const searchQuery: SearchQuery = {
+    // Build rch query
+    const rchQuery: rchQuery = {
       query,
       filters: {
         categories,
@@ -83,14 +83,14 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Perform search
-    const searchResponse = await searchService.search(searchQuery, userRole)
+    // Perform rch
+    const rchResponse = await rchService.rch(rchQuery, userRole)
 
-    return NextResponse.json(searchResponse)
+    return NextResponse.json(rchResponse)
   } catch (error) {
-    console.error('Search API error:', error)
+    console.error('rch API error:', error)
     return NextResponse.json(
-      { error: 'Search service unavailable' },
+      { error: 'rch service unavailable' },
       { status: 500 }
     )
   }
@@ -105,22 +105,22 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession()
     const userRole = getUserRoleFromSession(session)
 
-    // Build search query
-    const searchQuery: SearchQuery = {
+    // Build rch query
+    const rchQuery: rchQuery = {
       query: query || '',
       filters: filters || {},
       pagination: pagination || { page: 1, limit: 20, offset: 0 },
       sorting: sorting || { field: 'relevance', direction: 'desc' }
     }
 
-    // Perform search
-    const searchResponse = await searchService.search(searchQuery, userRole)
+    // Perform rch
+    const rchResponse = await rchService.rch(rchQuery, userRole)
 
-    return NextResponse.json(searchResponse)
+    return NextResponse.json(rchResponse)
   } catch (error) {
-    console.error('Search API error:', error)
+    console.error('rch API error:', error)
     return NextResponse.json(
-      { error: 'Search service unavailable' },
+      { error: 'rch service unavailable' },
       { status: 500 }
     )
   }

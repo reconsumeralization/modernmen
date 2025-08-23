@@ -5,29 +5,18 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader } from './card'
 import { Badge } from './badge'
 import { Button } from './button'
-import {
-  Search,
-  ExternalLink,
-  Clock,
-  User,
-  Tag,
-  Star,
-  BookOpen,
-  Code,
-  FileText,
-  Settings
-} from 'lucide-react'
+import { rch, ExternalLink, Clock, User, Tag, Star, Book, Code, FileText, Cog } from '@/lib/icon-mapping'
 import { cn } from '@/lib/utils'
-import { SearchResult } from '@/lib/search-core'
+import { rchResult } from '@/lib/rch-core'
 
-interface SearchResultsProps {
-  results: SearchResult[]
+interface rchResultsProps {
+  results: rchResult[]
   query: string
   isLoading?: boolean
-  onResultClick?: (result: SearchResult) => void
+  onResultClick?: (result: rchResult) => void
 }
 
-const getTypeIcon = (type: SearchResult['type']) => {
+const getTypeIcon = (type: rchResult['type']) => {
   switch (type) {
     case 'component':
       return <Code className="h-4 w-4" />
@@ -38,11 +27,11 @@ const getTypeIcon = (type: SearchResult['type']) => {
     case 'reference':
       return <FileText className="h-4 w-4" />
     default:
-      return <Search className="h-4 w-4" />
+      return <rch className="h-4 w-4" />
   }
 }
 
-const getTypeColor = (type: SearchResult['type']) => {
+const getTypeColor = (type: rchResult['type']) => {
   switch (type) {
     case 'component':
       return 'bg-blue-100 text-blue-800 border-blue-200'
@@ -64,12 +53,12 @@ const getRelevanceColor = (score: number) => {
   return 'text-red-600'
 }
 
-export function SearchResults({
+export function rchResults({
   results,
   query,
   isLoading = false,
   onResultClick
-}: SearchResultsProps) {
+}: rchResultsProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -92,13 +81,13 @@ export function SearchResults({
     return (
       <Card className="text-center py-12">
         <CardContent>
-          <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <rch className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">No results found</h3>
           <p className="text-muted-foreground mb-4">
             We couldn't find any documentation matching "{query}"
           </p>
           <div className="text-sm text-muted-foreground space-y-2">
-            <p>Try searching for:</p>
+            <p>Try rching for:</p>
             <ul className="text-left max-w-md mx-auto space-y-1">
               <li>• Component names (e.g., "Button", "Input")</li>
               <li>• Categories (e.g., "UI", "Layout", "Charts")</li>
@@ -113,7 +102,7 @@ export function SearchResults({
 
   return (
     <div className="space-y-4">
-      {/* Search Summary */}
+      {/* rch Summary */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           Found {results.length} result{results.length !== 1 ? 's' : ''} for "{query}"
@@ -283,12 +272,12 @@ export function SearchResults({
 }
 
 // Compact version for smaller spaces
-export function SearchResultsCompact({
+export function rchResultsCompact({
   results,
   onResultClick
 }: {
-  results: SearchResult[]
-  onResultClick?: (result: SearchResult) => void
+  results: rchResult[]
+  onResultClick?: (result: rchResult) => void
 }) {
   return (
     <div className="space-y-2">

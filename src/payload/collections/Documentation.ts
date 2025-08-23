@@ -19,7 +19,7 @@ const canApproveDocumentation = (userRole?: string) => {
 export const Documentation: CollectionConfig = {
   slug: 'documentation',
   admin: {
-    useAsTitle: 'title',
+    usTitle: 'title',
     defaultColumns: ['title', 'type', 'targetRole', 'status', 'priority', 'updatedAt'],
     group: 'Content Management',
     description: 'Manage business documentation, guides, and procedures',
@@ -52,7 +52,7 @@ export const Documentation: CollectionConfig = {
         description: 'Brief summary of the documentation content',
       },
     },
-    
+
     // Classification
     {
       name: 'type',
@@ -122,10 +122,10 @@ export const Documentation: CollectionConfig = {
         },
       ],
       admin: {
-        description: 'Tags for better searchability and organization',
+        description: 'Tags for better rchability and organization',
       },
     },
-    
+
     // Content
     {
       name: 'content',
@@ -135,7 +135,7 @@ export const Documentation: CollectionConfig = {
         description: 'Main content of the documentation',
       },
     },
-    
+
     // Authoring and Workflow
     {
       name: 'author',
@@ -179,7 +179,7 @@ export const Documentation: CollectionConfig = {
         description: 'Priority level for this documentation',
       },
     },
-    
+
     // Versioning and Scheduling
     {
       name: 'version',
@@ -210,7 +210,7 @@ export const Documentation: CollectionConfig = {
         description: 'When this documentation expires and needs review',
       },
     },
-    
+
     // Content Properties
     {
       name: 'difficulty',
@@ -232,7 +232,7 @@ export const Documentation: CollectionConfig = {
         description: 'Estimated read time in minutes',
       },
     },
-    
+
     // Workflow and Approvals
     {
       name: 'workflow',
@@ -301,7 +301,7 @@ export const Documentation: CollectionConfig = {
         description: 'Workflow management for approval process',
       },
     },
-    
+
     // Relationships
     {
       name: 'relatedDocuments',
@@ -317,7 +317,7 @@ export const Documentation: CollectionConfig = {
         description: 'Related documentation that users might find helpful',
       },
     },
-    
+
     // Attachments
     {
       name: 'attachments',
@@ -337,7 +337,7 @@ export const Documentation: CollectionConfig = {
         description: 'File attachments for this documentation',
       },
     },
-    
+
     // Metadata and Analytics
     {
       name: 'metadata',
@@ -444,11 +444,12 @@ export const Documentation: CollectionConfig = {
     },
   ],
   timestamps: true,
-  
+
   // Access control
   access: {
     // Read access - users can read documentation based on their role
-    read: ({ req: { user } }) => {
+    read: (args: any) => {
+      const { req: { user } } = args;
       if (!user) {
         // Guests can only read public documentation
         return {
@@ -482,34 +483,38 @@ export const Documentation: CollectionConfig = {
     },
 
     // Create access - only business users and above can create documentation
-    create: ({ req: { user } }) => {
+    create: (args: any) => {
+      const { req: { user } } = args;
       return canManageDocumentation(user?.role);
     },
 
     // Update access - authors can edit their own drafts, business users can edit business docs
-    update: ({ req: { user }, id }) => {
+    update: (args: any) => {
+      const { req: { user }, id } = args;
       if (!user) return false;
-      
+
       if (user.role === 'system_admin') return true;
-      
+
       // Authors can edit their own documentation
       if (user.role === 'salon_owner' || user.role === 'developer') {
         return true;
       }
-      
+
       return false;
     },
 
     // Delete access - only admins and owners can delete
-    delete: ({ req: { user } }) => {
+    delete: (args: any) => {
+      const { req: { user } } = args;
       return ['system_admin', 'salon_owner'].includes(user?.role || '');
     },
   },
 
-  // Hooks for workflow automation and search indexing
+  // Hooks for workflow automation and rch indexing
   hooks: {
     beforeChange: [
-      async ({ data, req, operation }) => {
+      async (args: any) => {
+        const { data, req, operation } = args;
         // Auto-set author on create
         if (operation === 'create' && req.user) {
           data.author = req.user.id;
@@ -535,11 +540,11 @@ export const Documentation: CollectionConfig = {
             'staff-training': 365, // 1 year
             'default': 365, // 1 year
           };
-          
+
           const interval = reviewIntervals[data.category as keyof typeof reviewIntervals] || reviewIntervals.default;
           const nextReview = new Date();
           nextReview.setDate(nextReview.getDate() + interval);
-          
+
           if (!data.metadata) data.metadata = {};
           data.metadata.nextReviewDate = nextReview;
         }
@@ -549,11 +554,12 @@ export const Documentation: CollectionConfig = {
     ],
 
     afterChange: [
-      async ({ doc, operation, req }) => {
+      async (args: any) => {
+        const { doc, operation, req } = args;
         try {
-          // Index the document for search
-          const { DocumentationSearchService } = await import('@/lib/search-service');
-          const searchService = new DocumentationSearchService({
+          // Index the document for rch
+          const { DocumentationrchService } = await import('@/lib/rch-service');
+          const rchService = new DocumentationrchService({
             provider: 'local',
             indexName: 'documentation',
             maxResults: 50,
@@ -564,13 +570,13 @@ export const Documentation: CollectionConfig = {
             enableTypoTolerance: true,
             enableSynonyms: true,
             rankingConfig: {
-              roleBasedBoost: { 
-                guest: 1, 
-                salon_customer: 1.1, 
-                salon_employee: 1.2, 
-                salon_owner: 1.3, 
-                developer: 1.4, 
-                system_admin: 1.5 
+              roleBasedBoost: {
+                guest: 1,
+                salon_customer: 1.1,
+                salon_employee: 1.2,
+                salon_owner: 1.3,
+                developer: 1.4,
+                system_admin: 1.5
               },
               recencyBoost: 0.01,
               popularityBoost: 0.001,
@@ -585,7 +591,7 @@ export const Documentation: CollectionConfig = {
             }
           });
 
-          await searchService.indexDocument({
+          await rchService.indexDocument({
             id: doc.id,
             title: doc.title,
             description: doc.excerpt || '',
@@ -600,7 +606,7 @@ export const Documentation: CollectionConfig = {
             difficulty: doc.difficulty,
             estimatedReadTime: doc.estimatedReadTime,
             metadata: doc.metadata,
-            searchableText: '',
+            rchableText: '',
             keywords: [],
           });
 
@@ -622,11 +628,12 @@ export const Documentation: CollectionConfig = {
     ],
 
     beforeDelete: [
-      async ({ id }) => {
+      async (args: any) => {
+        const { id } = args;
         try {
-          // Remove from search index
-          const { DocumentationSearchService } = await import('@/lib/search-service');
-          const searchService = new DocumentationSearchService({
+          // Remove from rch index
+          const { DocumentationrchService } = await import('@/lib/rch-service');
+          const rchService = new DocumentationrchService({
             provider: 'local',
             indexName: 'documentation',
             maxResults: 50,
@@ -642,10 +649,10 @@ export const Documentation: CollectionConfig = {
               titleBoost: 3, descriptionBoost: 2, contentBoost: 1, tagsBoost: 2
             }
           });
-          
-          await searchService.removeDocument(id);
+
+          await rchService.removeDocument(id);
         } catch (error) {
-          console.error('Error removing document from search index:', error);
+          console.error('Error removing document from rch index:', error);
         }
       },
     ],

@@ -182,7 +182,7 @@ export function useNavigationAccess() {
       // Check role access
       if (item.requiredRole) {
         const roles = Array.isArray(item.requiredRole) ? item.requiredRole : [item.requiredRole]
-        const hasAccess = roles.some(role => {
+        const hasAccess = roles.some((role: string) => {
           switch (role) {
             case 'developer': return canAccess.developer
             case 'admin': return canAccess.admin

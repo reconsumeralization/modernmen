@@ -10,10 +10,10 @@ VALUES
     (uuid_generate_v4(), 'Run Terminal Command', 'RUN_TERMINAL_COMMAND_V2', 'CLIENT_SIDE', 'Executes terminal commands',
      false, true, '{"allowed_commands": ["*"], "timeout": 300}'::jsonb),
 
-    (uuid_generate_v4(), 'Semantic Search', 'SEMANTIC_SEARCH_FULL', 'CLIENT_SIDE', 'Performs semantic code search',
+    (uuid_generate_v4(), 'Semantic rch', 'SEMANTIC_RCH_FULL', 'CLIENT_SIDE', 'Performs semantic code rch',
      false, false, '{"max_results": 100, "min_score": 0.5}'::jsonb),
 
-    (uuid_generate_v4(), 'Search Symbols', 'SEARCH_SYMBOLS', 'CLIENT_SIDE', 'Searches for code symbols',
+    (uuid_generate_v4(), 'rch Symbols', 'RCH_SYMBOLS', 'CLIENT_SIDE', 'rches for code symbols',
      false, false, '{"max_results": 50}'::jsonb),
 
     (uuid_generate_v4(), 'Get Project Structure', 'GET_PROJECT_STRUCTURE', 'BUILTIN', 'Retrieves project file structure',
@@ -89,24 +89,24 @@ SELECT
     '{"minLength": 1}'::jsonb
 ON CONFLICT DO NOTHING;
 
--- Insert tool schemas for Semantic Search
+-- Insert tool schemas for Semantic rch
 INSERT INTO tool_schemas (id, tool_id, name, description, required_fields)
 SELECT 
     uuid_generate_v4(),
-    (SELECT id FROM tool_definitions WHERE type = 'SEMANTIC_SEARCH_FULL'),
-    'Semantic Search Parameters',
-    'Parameters for semantic code search',
+    (SELECT id FROM tool_definitions WHERE type = 'SEMANTIC_RCH_FULL'),
+    'Semantic rch Parameters',
+    'Parameters for semantic code rch',
     ARRAY['query', 'top_k']
 ON CONFLICT DO NOTHING;
 
--- Insert schema properties for Semantic Search
+-- Insert schema properties for Semantic rch
 INSERT INTO schema_properties (id, schema_id, name, type, description, is_required, validation_rules)
 SELECT 
     uuid_generate_v4(),
-    (SELECT id FROM tool_schemas WHERE name = 'Semantic Search Parameters'),
+    (SELECT id FROM tool_schemas WHERE name = 'Semantic rch Parameters'),
     'query',
     'string',
-    'Search query',
+    'rch query',
     true,
     '{"minLength": 3}'::jsonb
 ON CONFLICT DO NOTHING; 

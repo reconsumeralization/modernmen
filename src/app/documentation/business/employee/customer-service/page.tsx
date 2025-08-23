@@ -216,7 +216,7 @@ const logInteraction = (interaction: CustomerInteraction) => {
 - **During Consultation**: Suggest complementary services that enhance results
 - **During Service**: Recommend treatments that address observed needs
 - **At Checkout**: Offer products that maintain the look at home
-- **For Next Visit**: Suggest seasonal treatments or maintenance services
+- **For Next Visit**: Suggest sonal treatments or maintenance services
 
 **Effective Upselling Techniques**
 
@@ -224,7 +224,7 @@ const logInteraction = (interaction: CustomerInteraction) => {
 - Present services as packages that provide better value
 - Explain how services work together for optimal results
 - Offer package pricing that saves money compared to individual services
-- Create seasonal or special occasion packages
+- Create sonal or special occasion packages
 
 **The Maintenance Approach**
 - Educate customers about proper hair care and maintenance
@@ -357,7 +357,7 @@ const logInteraction = (interaction: CustomerInteraction) => {
 - Send appointment confirmations and reminders
 - Offer rescheduling options for conflicts
 - Suggest optimal timing for their next service
-- Provide seasonal service recommendations
+- Provide sonal service recommendations
 
 **Loyalty Program Engagement**
 - Explain loyalty program benefits and point accumulation
@@ -451,7 +451,7 @@ const logInteraction = (interaction: CustomerInteraction) => {
     completionRate: 0,
     averageRating: 0,
     feedbackCount: 0,
-    searchRanking: 94
+    rchRanking: 94
   },
   versioning: {
     changeHistory: [],

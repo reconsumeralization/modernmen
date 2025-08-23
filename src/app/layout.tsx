@@ -66,9 +66,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} ${roboto.variable} ${robotoMono.variable}`}>
-        <MonitoringInit />
         <GlobalErrorBoundary>
           <Providers>
+            <MonitoringInit />
             <div className="relative min-h-screen bg-background">
               <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
               <main className="relative">

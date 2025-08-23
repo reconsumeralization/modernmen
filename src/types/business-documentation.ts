@@ -190,7 +190,7 @@ export interface DocumentationAnalytics {
   averageTimeOnPage: number
   bounceRate: number
   completionRate: number
-  searchRanking: number
+  rchRanking: number
   popularSections: string[]
   commonExitPoints: string[]
   userFeedback: {
@@ -219,7 +219,7 @@ export interface BusinessDocumentationFilter {
     start: Date
     end: Date
   }
-  searchQuery?: string
+  rchQuery?: string
 }
 
 export interface BusinessDocumentationCreateRequest {
@@ -304,6 +304,6 @@ export interface DocumentationMetrics {
     activeUsers: number
     averageSessionDuration: number
     mostViewedCategories: string[]
-    searchQueries: string[]
+    rchQueries: string[]
   }
 }

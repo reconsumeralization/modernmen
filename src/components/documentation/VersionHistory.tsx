@@ -14,19 +14,7 @@ import {
   ChangeImpact
 } from '@/types/version-control';
 import { formatDistanceToNow } from 'date-fns';
-import { 
-  Clock, 
-  User, 
-  GitCommit, 
-  AlertTriangle, 
-  Info, 
-  Plus, 
-  Minus, 
-  Edit,
-  ExternalLink,
-  ChevronDown,
-  ChevronRight
-} from 'lucide-react';
+import { Clock, User, GitCommit, AlertTriangle, HelpCircle, Plus, Minus, Edit, ExternalLink, ChevronDown, ChevronRight } from '@/lib/icon-mapping';
 
 interface VersionHistoryProps {
   contentId: string;

@@ -3,7 +3,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react'
 import { logger } from '@/lib/logger'
 import { Button } from './button'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { AlertTriangle, RefreshCw } from '@/lib/icon-mapping'
 
 interface Props {
   children: ReactNode
@@ -136,12 +136,37 @@ export class ErrorBoundary extends Component<Props, State> {
 }
 
 // Specialized error boundary for API-related errors
-export class APIErrorBoundary extends Component<
-  Omit<Props, 'fallback'> & {
-    fallback?: ReactNode
-    retryable?: boolean
+interface APIErrorBoundaryProps extends Omit<Props, 'fallback'> {
+  fallback?: ReactNode
+  retryable?: boolean
+}
+
+export class APIErrorBoundary extends Component<APIErrorBoundaryProps, State> {
+  constructor(props: APIErrorBoundaryProps) {
+    super(props)
+    this.state = { hasError: false }
   }
-> {
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    logger.error('API Error Boundary caught an error', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString()
+    }, error)
+
+    this.props.onError?.(error, errorInfo)
+
+    this.setState({
+      error,
+      errorInfo
+    })
+  }
+
   render() {
     const defaultFallback = (
       <div className="p-6 bg-destructive/10 border border-destructive/20 rounded-lg">

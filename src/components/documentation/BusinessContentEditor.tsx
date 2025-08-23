@@ -2,21 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { 
-  Save, 
-  Eye, 
-  Send, 
-  FileText, 
-  Tag, 
-  Clock, 
-  User, 
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  Upload,
-  Link as LinkIcon,
-  MessageSquare
-} from 'lucide-react'
+import { Save, Eye, Send, FileText, Tag, Clock, User, AlertTriangle, CheckCircle, XCircle, Upload, Link, MessageSquare } from '@/lib/icon-mapping'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'

@@ -3,12 +3,15 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
 import { Icons } from '@/components/ui/icons'
+import { Calendar, Clock, Scissors, Star, Users, Award, CheckCircle, MapPin, Phone } from '@/lib/icon-mapping'
 import { toast } from 'sonner'
 
 export default function BookAppointmentPage() {
@@ -30,12 +33,78 @@ export default function BookAppointmentPage() {
   }, [session, status, router])
 
   const services = [
-    { id: 'haircut', name: 'Classic Haircut', price: '$35', duration: '30 min' },
-    { id: 'hair-color', name: 'Hair Coloring', price: '$85', duration: '90 min' },
-    { id: 'styling', name: 'Hair Styling', price: '$45', duration: '45 min' },
-    { id: 'beard-trim', name: 'Beard Trim', price: '$25', duration: '20 min' },
-    { id: 'facial', name: 'Facial Treatment', price: '$65', duration: '60 min' },
-    { id: 'package', name: 'Complete Package', price: '$150', duration: '2 hours' }
+    { 
+      id: 'classic-haircut', 
+      name: 'Classic Haircut', 
+      price: '$35', 
+      duration: '30 min',
+      description: 'Professional cut and style',
+      popular: true,
+      category: 'Haircut'
+    },
+    { 
+      id: 'premium-haircut', 
+      name: 'Premium Haircut', 
+      price: '$45', 
+      duration: '45 min',
+      description: 'Cut, wash, and style',
+      popular: false,
+      category: 'Haircut'
+    },
+    { 
+      id: 'beard-trim', 
+      name: 'Beard Trim & Shape', 
+      price: '$25', 
+      duration: '20 min',
+      description: 'Professional beard grooming',
+      popular: true,
+      category: 'Beard'
+    },
+    { 
+      id: 'beard-shave', 
+      name: 'Hot Towel Shave', 
+      price: '$40', 
+      duration: '30 min',
+      description: 'Traditional hot towel shave',
+      popular: false,
+      category: 'Beard'
+    },
+    { 
+      id: 'hair-color', 
+      name: 'Hair Coloring', 
+      price: '$85', 
+      duration: '90 min',
+      description: 'Professional hair coloring',
+      popular: false,
+      category: 'Color'
+    },
+    { 
+      id: 'styling', 
+      name: 'Hair Styling', 
+      price: '$45', 
+      duration: '45 min',
+      description: 'Special occasion styling',
+      popular: false,
+      category: 'Styling'
+    },
+    { 
+      id: 'facial', 
+      name: 'Facial Treatment', 
+      price: '$65', 
+      duration: '60 min',
+      description: 'Deep cleansing facial',
+      popular: false,
+      category: 'Facial'
+    },
+    { 
+      id: 'complete-package', 
+      name: 'Complete Package', 
+      price: '$150', 
+      duration: '2 hours',
+      description: 'Haircut, beard trim, and facial',
+      popular: true,
+      category: 'Package'
+    }
   ]
 
   const timeSlots = [
@@ -112,135 +181,214 @@ export default function BookAppointmentPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Page Header */}
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Badge 
+            variant="secondary" 
+            className="bg-amber-100 text-amber-800 px-4 py-2 text-sm font-medium mb-4"
+          >
+            📅 Book Your Appointment
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+            Schedule Your <span className="bg-gradient-to-r from-amber-600 to-amber-500 bg-clip-text text-transparent">Perfect Look</span>
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Choose from our premium services and book your appointment with our expert stylists
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Booking Form */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-blue-600 to-amber-600 text-white rounded-t-lg">
-              <CardTitle className="flex items-center space-x-2">
-                <Icons.calendar className="h-5 w-5" />
-                <span>Appointment Details</span>
-              </CardTitle>
-              <CardDescription className="text-blue-100">
-                Fill in your appointment preferences
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Service Selection */}
-                <div className="space-y-2">
-                  <Label htmlFor="service" className="text-sm font-medium text-gray-700">
-                    Select Service
-                  </Label>
-                  <select
-                    id="service"
-                    value={formData.service}
-                    onChange={(e) => handleInputChange('service', e.target.value)}
-                    required
-                    className="w-full p-3 border border-amber-200 rounded-lg focus:border-amber-400 focus:ring-amber-400 bg-white"
-                  >
-                    <option value="">Choose a service...</option>
-                    {services.map(service => (
-                      <option key={service.id} value={service.name}>
-                        {service.name} - {service.price} ({service.duration})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Date Selection */}
-                <div className="space-y-2">
-                  <Label htmlFor="date" className="text-sm font-medium text-gray-700">
-                    Preferred Date
-                  </Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => handleInputChange('date', e.target.value)}
-                    required
-                    min={new Date().toISOString().split('T')[0]}
-                    className="border-amber-200 focus:border-amber-400 focus:ring-amber-400"
-                  />
-                </div>
-
-                {/* Time Selection */}
-                <div className="space-y-2">
-                  <Label htmlFor="time" className="text-sm font-medium text-gray-700">
-                    Preferred Time
-                  </Label>
-                  <select
-                    id="time"
-                    value={formData.time}
-                    onChange={(e) => handleInputChange('time', e.target.value)}
-                    required
-                    className="w-full p-3 border border-amber-200 rounded-lg focus:border-amber-400 focus:ring-amber-400 bg-white"
-                  >
-                    <option value="">Choose a time...</option>
-                    {timeSlots.map(time => (
-                      <option key={time} value={time}>{time}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Notes */}
-                <div className="space-y-2">
-                  <Label htmlFor="notes" className="text-sm font-medium text-gray-700">
-                    Special Notes (Optional)
-                  </Label>
-                  <Textarea
-                    id="notes"
-                    value={formData.notes}
-                    onChange={(e) => handleInputChange('notes', e.target.value)}
-                    placeholder="Any special requests or notes for your stylist..."
-                    rows={4}
-                    className="border-amber-200 focus:border-amber-400 focus:ring-amber-400 resize-none"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-amber-600 hover:from-blue-700 hover:to-amber-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-                >
-                  {isLoading ? (
-                    <>
-                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                      Booking Appointment...
-                    </>
-                  ) : (
-                    <>
-                      <Icons.calendar className="mr-2 h-4 w-4" />
-                      Book Appointment
-                    </>
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Services Preview */}
-          <div className="space-y-6">
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-amber-600 to-blue-600 text-white rounded-t-lg">
-                <CardTitle className="flex items-center space-x-2">
-                  <Icons.scissors className="h-5 w-5" />
-                  <span>Our Services</span>
+          <motion.div 
+            className="xl:col-span-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-amber-600 to-amber-500 text-white rounded-t-xl">
+                <CardTitle className="flex items-center space-x-3 text-xl">
+                  <div className="p-2 rounded-full bg-white/20">
+                    <Calendar className="h-5 w-5" />
+                  </div>
+                  <span>Appointment Details</span>
                 </CardTitle>
                 <CardDescription className="text-amber-100">
+                  Fill in your appointment preferences and we'll confirm your booking
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-8">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Service Selection */}
+                  <div className="space-y-3">
+                    <Label htmlFor="service" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <Scissors className="h-4 w-4 text-amber-600" />
+                      Select Service
+                    </Label>
+                    <select
+                      id="service"
+                      value={formData.service}
+                      onChange={(e) => handleInputChange('service', e.target.value)}
+                      required
+                      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-amber-500 focus:ring-amber-500 bg-white shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <option value="">Choose a service...</option>
+                      {services.map(service => (
+                        <option key={service.id} value={service.name}>
+                          {service.name} - {service.price} ({service.duration})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Date Selection */}
+                  <div className="space-y-3">
+                    <Label htmlFor="date" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-amber-600" />
+                      Preferred Date
+                    </Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => handleInputChange('date', e.target.value)}
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                      className="p-4 border-2 border-gray-200 rounded-xl focus:border-amber-500 focus:ring-amber-500 shadow-sm hover:shadow-md transition-all duration-300"
+                    />
+                  </div>
+
+                  {/* Time Selection */}
+                  <div className="space-y-3">
+                    <Label htmlFor="time" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-amber-600" />
+                      Preferred Time
+                    </Label>
+                    <select
+                      id="time"
+                      value={formData.time}
+                      onChange={(e) => handleInputChange('time', e.target.value)}
+                      required
+                      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-amber-500 focus:ring-amber-500 bg-white shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <option value="">Choose a time...</option>
+                      {timeSlots.map(time => (
+                        <option key={time} value={time}>{time}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Notes */}
+                  <div className="space-y-3">
+                    <Label htmlFor="notes" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <span className="text-amber-600">📝</span>
+                      Special Notes (Optional)
+                    </Label>
+                    <Textarea
+                      id="notes"
+                      value={formData.notes}
+                      onChange={(e) => handleInputChange('notes', e.target.value)}
+                      placeholder="Any special requests or notes for your stylist..."
+                      rows={4}
+                      className="p-4 border-2 border-gray-200 rounded-xl focus:border-amber-500 focus:ring-amber-500 resize-none shadow-sm hover:shadow-md transition-all duration-300"
+                    />
+                  </div>
+
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
+                    >
+                      {isLoading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Booking Appointment...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-5 w-5" />
+                          Book Appointment
+                        </div>
+                      )}
+                    </Button>
+                  </motion.div>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Services Preview */}
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-t-xl">
+                <CardTitle className="flex items-center space-x-3 text-xl">
+                  <div className="p-2 rounded-full bg-white/20">
+                    <Scissors className="h-5 w-5" />
+                  </div>
+                  <span>Our Services</span>
+                </CardTitle>
+                <CardDescription className="text-slate-200">
                   Professional hair care services
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="space-y-4">
-                  {services.map(service => (
-                    <div key={service.id} className="flex justify-between items-center p-3 bg-gradient-to-r from-amber-50 to-blue-50 rounded-lg border border-amber-100">
-                      <div>
-                        <h4 className="font-semibold text-gray-800">{service.name}</h4>
-                        <p className="text-sm text-gray-600">{service.duration}</p>
+                  {services.map((service, index) => (
+                    <motion.div
+                      key={service.id}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+                      className="group cursor-pointer"
+                      onClick={() => handleInputChange('service', service.name)}
+                    >
+                      <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                        formData.service === service.name 
+                          ? 'border-amber-500 bg-amber-50 shadow-lg' 
+                          : 'border-gray-200 bg-gray-50 hover:border-amber-300 hover:bg-amber-50/50'
+                      }`}>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-semibold text-gray-800 group-hover:text-amber-600 transition-colors">
+                                {service.name}
+                              </h4>
+                              {service.popular && (
+                                <Badge variant="secondary" className="bg-amber-100 text-amber-800 text-xs">
+                                  Popular
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mb-1">{service.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-gray-500">
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {service.duration}
+                              </span>
+                              <Badge variant="outline" className="text-xs">
+                                {service.category}
+                              </Badge>
+                            </div>
+                          </div>
+                          <span className="font-bold text-lg text-amber-600">{service.price}</span>
+                        </div>
                       </div>
-                      <span className="font-bold text-blue-600">{service.price}</span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </CardContent>
@@ -275,7 +423,7 @@ export default function BookAppointmentPage() {
                 </ul>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
         </div>
       </div>
 

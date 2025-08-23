@@ -96,7 +96,7 @@ const scheduleAppointment = async (customerId, stylistId, serviceIds, dateTime) 
 |----------------|-------------------|
 | Manual component creation | AI-generated components with best practices |
 | Trial-and-error debugging | AI-powered error detection and fixes |
-| Documentation research | Instant code examples and explanations |
+| Documentation rerch | Instant code examples and explanations |
 | Manual testing | AI-assisted testing and validation |
 | Code review delays | Real-time code quality suggestions |
 

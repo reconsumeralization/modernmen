@@ -129,7 +129,7 @@ export const ModernMenBranding: React.FC = () => {
           <h3 style={{ color: '#1e40af', marginBottom: '0.5rem', fontSize: '1.3rem' }}>Appointment Management</h3>
           <p style={{ color: '#6b7280', fontSize: '1rem', lineHeight: '1.5' }}>
             Schedule appointments, track availability, and manage bookings with ease.
-            Send automated reminders and handle rescheduling seamlessly.
+            Send automated reminders and handle rescheduling mlessly.
           </p>
         </div>
 

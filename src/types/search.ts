@@ -1,18 +1,18 @@
 /**
- * Documentation Search Types
- * Comprehensive search functionality with role-based filtering and analytics
+ * Documentation rch Types
+ * Comprehensive rch functionality with role-based filtering and analytics
  */
 
 import { UserRole } from './documentation'
 
-export interface SearchQuery {
+export interface rchQuery {
   query: string
-  filters: SearchFilters
-  pagination: SearchPagination
-  sorting: SearchSorting
+  filters: rchFilters
+  pagination: rchPagination
+  sorting: rchSorting
 }
 
-export interface SearchFilters {
+export interface rchFilters {
   roles?: UserRole[]
   categories?: string[]
   tags?: string[]
@@ -23,13 +23,13 @@ export interface SearchFilters {
   sections?: string[]
 }
 
-export interface SearchPagination {
+export interface rchPagination {
   page: number
   limit: number
   offset: number
 }
 
-export interface SearchSorting {
+export interface rchSorting {
   field: SortField
   direction: 'asc' | 'desc'
 }
@@ -57,7 +57,7 @@ export interface DateRange {
   to: Date
 }
 
-export interface SearchResult {
+export interface rchResult {
   id: string
   title: string
   description: string
@@ -72,16 +72,16 @@ export interface SearchResult {
   difficulty?: DifficultyLevel
   estimatedReadTime?: number
   relevanceScore: number
-  highlights: SearchHighlight[]
-  metadata: SearchResultMetadata
+  highlights: rchHighlight[]
+  metadata: rchResultMetadata
 }
 
-export interface SearchHighlight {
+export interface rchHighlight {
   field: string
   fragments: string[]
 }
 
-export interface SearchResultMetadata {
+export interface rchResultMetadata {
   views: number
   rating: number
   completionRate: number
@@ -91,18 +91,18 @@ export interface SearchResultMetadata {
   isDeprecated: boolean
 }
 
-export interface SearchResponse {
-  results: SearchResult[]
+export interface rchResponse {
+  results: rchResult[]
   totalCount: number
-  facets: SearchFacets
-  suggestions: SearchSuggestion[]
-  analytics: SearchAnalytics
-  pagination: SearchPagination
-  query: SearchQuery
+  facets: rchFacets
+  suggestions: rchSuggestion[]
+  analytics: rchAnalytics
+  pagination: rchPagination
+  query: rchQuery
   executionTime: number
 }
 
-export interface SearchFacets {
+export interface rchFacets {
   roles: FacetCount[]
   categories: FacetCount[]
   tags: FacetCount[]
@@ -118,23 +118,23 @@ export interface FacetCount {
   selected: boolean
 }
 
-export interface SearchSuggestion {
+export interface rchSuggestion {
   text: string
   type: 'correction' | 'completion' | 'related'
   score: number
 }
 
-export interface SearchAnalytics {
+export interface rchAnalytics {
   queryId: string
   timestamp: Date
   userRole: UserRole
   resultsCount: number
   hasResults: boolean
   clickedResults: string[]
-  searchTime: number
+  rchTime: number
 }
 
-export interface SearchRankingConfig {
+export interface rchRankingConfig {
   roleBasedBoost: Record<UserRole, number>
   recencyBoost: number
   popularityBoost: number
@@ -148,7 +148,7 @@ export interface SearchRankingConfig {
   tagsBoost: number
 }
 
-export interface SearchIndexDocument {
+export interface rchIndexDocument {
   id: string
   title: string
   description: string
@@ -171,12 +171,12 @@ export interface SearchIndexDocument {
     isUpdated: boolean
     isDeprecated: boolean
   }
-  searchableText: string
+  rchableText: string
   keywords: string[]
 }
 
-export interface SearchConfig {
-  provider: 'local' | 'algolia' | 'elasticsearch'
+export interface rchConfig {
+  provider: 'local' | 'algolia' | 'elasticrch'
   indexName: string
   apiKey?: string
   appId?: string
@@ -188,10 +188,10 @@ export interface SearchConfig {
   enableHighlighting: boolean
   enableTypoTolerance: boolean
   enableSynonyms: boolean
-  rankingConfig: SearchRankingConfig
+  rankingConfig: rchRankingConfig
 }
 
-export interface SearchMetrics {
+export interface rchMetrics {
   totalQueries: number
   uniqueQueries: number
   averageResultsPerQuery: number
@@ -229,18 +229,18 @@ export interface EngagementMetric {
 
 export interface PerformanceMetric {
   date: Date
-  averageSearchTime: number
+  averagerchTime: number
   averageResultsCount: number
   errorRate: number
   uptime: number
 }
 
-export interface SearchFallback {
+export interface rchFallback {
   type: 'no_results' | 'error' | 'timeout'
   message: string
-  suggestions: SearchSuggestion[]
+  suggestions: rchSuggestion[]
   alternativeQueries: string[]
-  relatedContent: SearchResult[]
+  relatedContent: rchResult[]
   supportLinks: {
     title: string
     url: string

@@ -47,14 +47,14 @@ function testEnvVar(varName, description) {
 }
 
 // Test file content
-function testFileContent(filePath, searchText, description) {
+function testFileContent(filePath, rchText, description) {
   try {
     const fullPath = path.join(__dirname, filePath);
     const content = fs.readFileSync(fullPath, 'utf8');
-    const hasContent = content.includes(searchText);
-    test(`${description}: ${filePath} contains "${searchText}"`, hasContent);
+    const hasContent = content.includes(rchText);
+    test(`${description}: ${filePath} contains "${rchText}"`, hasContent);
   } catch (error) {
-    test(`${description}: ${filePath} contains "${searchText}"`, false);
+    test(`${description}: ${filePath} contains "${rchText}"`, false);
   }
 }
 
@@ -110,7 +110,7 @@ console.log('---------------------------------');
 testFileContent('src/lib/auth.ts', 'rateLimitResult.success', 'Rate limiting in auth.ts');
 testFileContent('src/lib/auth.ts', 'logger.authEvent', 'Logging in auth.ts');
 testFileContent('src/lib/auth.ts', 'bcrypt.compare', 'Password hashing');
-testFileContent('src/lib/auth.ts', 'SupabaseAdapter', 'Supabase adapter');
+testFileContent('src/lib/auth.ts', 'Supabadapter', 'Supabase adapter');
 
 // Test middleware content
 testFileContent('src/middleware.ts', 'getToken', 'Token verification');

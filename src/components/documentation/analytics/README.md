@@ -11,18 +11,18 @@ This analytics system provides comprehensive user feedback collection and conten
 
 ### ✅ Analytics Tracking
 - **Page View Tracking**: Automatic tracking of page views, time spent, and scroll depth
-- **Search Behavior**: Track search queries, results, clicks, and refinements
+- **rch Behavior**: Track rch queries, results, clicks, and refinements
 - **User Journey Mapping**: Session-based tracking of user navigation patterns
 - **Custom Event Tracking**: Flexible system for tracking specific interactions
 
 ### ✅ Content Gap Identification
-- **Search-Based Gaps**: Identify missing content from searches with no results
+- **rch-Based Gaps**: Identify missing content from rches with no results
 - **Feedback-Based Gaps**: Detect problematic content from negative user feedback
 - **Priority Classification**: Automatic priority assignment (critical, high, medium, low)
 - **Actionable Recommendations**: Specific suggestions for content improvements
 
 ### ✅ Analytics Dashboard
-- **Comprehensive Metrics**: Total views, unique users, search queries, satisfaction scores
+- **Comprehensive Metrics**: Total views, unique users, rch queries, satisfaction scores
 - **Visual Charts**: Bar charts for popular content, pie charts for satisfaction distribution
 - **Content Performance**: Detailed metrics for each piece of content
 - **Optimization Insights**: Data-driven recommendations for content improvements
@@ -82,8 +82,8 @@ await analytics.submitFeedback(feedback);
 // Track page views
 analytics.trackPageView(contentId, userRole, sessionId);
 
-// Track searches
-const searchId = analytics.trackSearch(query, resultsCount, userRole);
+// Track rches
+const rchId = analytics.trackrch(query, resultsCount, userRole);
 
 // Get metrics
 const metrics = await analytics.getDocumentationMetrics(timeRange);
@@ -91,11 +91,11 @@ const metrics = await analytics.getDocumentationMetrics(timeRange);
 
 ## Hooks
 
-### useAnalytics
+### unalytics
 React hook for easy integration of analytics tracking in components.
 
 ```typescript
-const analytics = useAnalytics({
+const analytics = unalytics({
   contentId: 'my-page',
   contentType: 'guide',
   userRole: 'developer',
@@ -129,7 +129,7 @@ interface ContentGap {
   id: string;
   description: string;
   priority: 'low' | 'medium' | 'high' | 'critical';
-  source: 'search_queries' | 'user_feedback' | 'behavioral_analytics';
+  source: 'rch_queries' | 'user_feedback' | 'behavioral_analytics';
   relatedQueries: string[];
   suggestedContent: string[];
   userRoles: UserRole[];
@@ -142,7 +142,7 @@ interface ContentGap {
 interface DocumentationMetrics {
   totalViews: number;
   uniqueUsers: number;
-  searchQueries: SearchMetric[];
+  rchQueries: rchMetric[];
   popularContent: ContentMetric[];
   userSatisfaction: SatisfactionMetric[];
   contentGaps: ContentGap[];
@@ -156,10 +156,10 @@ interface DocumentationMetrics {
 Add the analytics hook to any documentation page:
 
 ```typescript
-import { useAnalytics } from '@/hooks/useAnalytics';
+import { unalytics } from '@/hooks/unalytics';
 
 export default function MyDocPage() {
-  const analytics = useAnalytics({
+  const analytics = unalytics({
     contentId: 'my-doc-page',
     contentType: 'guide',
     userRole: 'developer'
@@ -178,17 +178,17 @@ export default function MyDocPage() {
 }
 ```
 
-### 2. Search Integration
-Track search behavior in your search components:
+### 2. rch Integration
+Track rch behavior in your rch components:
 
 ```typescript
-const handleSearch = (query: string) => {
-  const results = performSearch(query);
-  const searchId = analytics.trackSearch(query, results.length);
+const handlerch = (query: string) => {
+  const results = performrch(query);
+  const rchId = analytics.trackrch(query, results.length);
   
   // Track clicks on results
   results.forEach(result => {
-    result.onClick = () => analytics.trackSearchClick(query, result.id);
+    result.onClick = () => analytics.trackrchClick(query, result.id);
   });
 };
 ```

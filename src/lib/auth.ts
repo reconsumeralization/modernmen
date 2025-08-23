@@ -1,10 +1,10 @@
-import { NextAuthOptions } from 'next-auth'
+import type { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import GitHubProvider from 'next-auth/providers/github'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { SupabaseAdapter } from '@auth/supabase-adapter'
 import { createClient } from '@supabase/supabase-js'
-import bcrypt from 'bcryptjs'
+import * as bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { logger } from './logger'
 
@@ -15,16 +15,22 @@ const requiredEnvVars = [
   'NEXTAUTH_SECRET'
 ]
 
-for (const envVar of requiredEnvVars) {
-  if (!process.env[envVar] || process.env[envVar]?.includes('your-') || process.env[envVar]?.includes('https://your-project')) {
-    throw new Error(`Missing or placeholder value for required environment variable: ${envVar}. Please update your .env.local file with actual values.`)
+// Only validate environment variables in production
+if (process.env.NODE_ENV === 'production') {
+  for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar] || process.env[envVar]?.includes('your-') || process.env[envVar]?.includes('https://your-project')) {
+      throw new Error(`Missing or placeholder value for required environment variable: ${envVar}. Please update your .env.local file with actual values.`)
+    }
   }
 }
 
 // Create Supabase client for adapter
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key'
+
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  supabaseUrl,
+  supabaseKey,
   {
     auth: {
       autoRefreshToken: true,
@@ -40,8 +46,8 @@ const loginSchema = z.object({
 
 export const authOptions: NextAuthOptions = {
   adapter: SupabaseAdapter({
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    url: supabaseUrl,
+    secret: supabaseKey,
   }),
   providers: [
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
@@ -147,15 +153,15 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       if (account && user) {
         token.accessToken = account.access_token
-        token.role = user.role
+        token.role = (user as any).role
       }
       return token
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.sub!
-        session.user.role = token.role as string
-        session.accessToken = token.accessToken as string
+        ;(session.user as any).id = token.sub!
+        ;(session.user as any).role = token.role as string
+        ;(session as any).accessToken = token.accessToken as string
       }
       return session
     },

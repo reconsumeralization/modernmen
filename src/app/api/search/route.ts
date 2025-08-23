@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withErrorHandler, createSuccessResponse } from '@/lib/api-error-handler'
-import { searchService } from '@/lib/search-service-simple'
-import { SearchQuery } from '@/lib/search-core'
+import { rchService } from '@/lib/rch-service-simple'
+import { rchQuery } from '@/lib/rch-core'
 import { logger } from '@/lib/logger'
 
-async function handleSearch(request: NextRequest) {
+async function handlerch(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const query = searchParams.get('q')
-    const category = searchParams.get('category')
-    const type = searchParams.get('type')
-    const limit = searchParams.get('limit')
-    const offset = searchParams.get('offset')
+    const { rchParams } = new URL(request.url)
+    const query = rchParams.get('q')
+    const category = rchParams.get('category')
+    const type = rchParams.get('type')
+    const limit = rchParams.get('limit')
+    const offset = rchParams.get('offset')
 
     if (!query) {
       return NextResponse.json(
@@ -20,7 +20,7 @@ async function handleSearch(request: NextRequest) {
       )
     }
 
-    const searchQuery: SearchQuery = {
+    const rchQuery: rchQuery = {
       query,
       filters: {},
       limit: limit ? parseInt(limit) : 20,
@@ -29,58 +29,58 @@ async function handleSearch(request: NextRequest) {
 
     // Add filters if provided
     if (category) {
-      searchQuery.filters!.category = category.split(',')
+      rchQuery.filters!.category = category.split(',')
     }
     if (type) {
-      searchQuery.filters!.type = type.split(',')
+      rchQuery.filters!.type = type.split(',')
     }
 
-    logger.info('Search request received', {
+    logger.info('rch request received', {
       query,
       category,
       type,
-      limit: searchQuery.limit,
-      offset: searchQuery.offset
+      limit: rchQuery.limit,
+      offset: rchQuery.offset
     })
 
-    const results = await searchService.search(searchQuery)
+    const results = await rchService.rch(rchQuery)
 
     return createSuccessResponse({
       results: results.results,
       total: results.total,
       query,
-      filters: searchQuery.filters,
+      filters: rchQuery.filters,
       analytics: {
         resultsCount: results.total,
         responseTime: results.analytics.responseTime
       }
-    }, 'Search completed successfully')
+    }, 'rch completed successfully')
 
   } catch (error) {
-    logger.error('Search API error', {
+    logger.error('rch API error', {
       error: error instanceof Error ? error.message : 'Unknown error'
     }, error instanceof Error ? error : undefined)
 
     return NextResponse.json(
-      { error: 'Search failed' },
+      { error: 'rch failed' },
       { status: 500 }
     )
   }
 }
 
-async function handleSearchAnalytics(request: NextRequest) {
+async function handlerchAnalytics(request: NextRequest) {
   try {
-    const metrics = searchService.getSearchPerformanceMetrics()
-    const popularTerms = searchService.getPopularSearchTerms()
+    const metrics = rchService.getrchPerformanceMetrics()
+    const popularTerms = rchService.getPopularrchTerms()
 
     return createSuccessResponse({
       metrics,
       popularTerms,
-      totalSearches: metrics.totalSearches
-    }, 'Search analytics retrieved')
+      totalrches: metrics.totalrches
+    }, 'rch analytics retrieved')
 
   } catch (error) {
-    logger.error('Search analytics error', {
+    logger.error('rch analytics error', {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
 
@@ -92,12 +92,12 @@ async function handleSearchAnalytics(request: NextRequest) {
 }
 
 // Export with error handling wrapper
-export const GET = withErrorHandler(handleSearch)
+export const GET = withErrorHandler(handlerch)
 
 // Handle analytics endpoint
 export async function POST(request: NextRequest) {
   if (request.url.includes('/analytics')) {
-    return withErrorHandler(handleSearchAnalytics)(request)
+    return withErrorHandler(handlerchAnalytics)(request)
   }
 
   return NextResponse.json(

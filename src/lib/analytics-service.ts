@@ -1,12 +1,12 @@
-import { 
-  UserFeedback, 
-  DocumentationMetrics, 
-  ContentAnalytics, 
+import {
+  UserFeedback,
+  DocumentationMetrics,
+  ContentAnalytics,
   OptimizationRecommendations,
   ContentGap,
   PageViewMetric,
   UserJourneyMetric,
-  SearchBehaviorMetric,
+  rchBehaviorMetric,
   UserAction,
   DateRange,
   UserRole
@@ -17,7 +17,7 @@ export class AnalyticsService {
   private feedbackStorage: UserFeedback[] = [];
   private pageViews: PageViewMetric[] = [];
   private userJourneys: Map<string, UserJourneyMetric> = new Map();
-  private searchBehavior: SearchBehaviorMetric[] = [];
+  private rchBehavior: rchBehaviorMetric[] = [];
 
   static getInstance(): AnalyticsService {
     if (!AnalyticsService.instance) {
@@ -29,7 +29,7 @@ export class AnalyticsService {
   // Feedback Management
   async submitFeedback(feedback: UserFeedback): Promise<void> {
     this.feedbackStorage.push(feedback);
-    
+
     // In a real implementation, this would send to a backend service
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('documentation_feedback') || '[]';
@@ -46,12 +46,12 @@ export class AnalyticsService {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('documentation_feedback') || '[]';
       const feedback = JSON.parse(stored);
-      return contentId 
+      return contentId
         ? feedback.filter((f: UserFeedback) => f.contentId === contentId)
         : feedback;
     }
-    
-    return contentId 
+
+    return contentId
       ? this.feedbackStorage.filter(f => f.contentId === contentId)
       : this.feedbackStorage;
   }
@@ -76,7 +76,7 @@ export class AnalyticsService {
     const pageView = this.pageViews.find(
       pv => pv.contentId === contentId && pv.sessionId === sessionIdToUse
     );
-    
+
     if (pageView) {
       pageView.timeSpent = timeSpent;
     }
@@ -87,21 +87,21 @@ export class AnalyticsService {
     const pageView = this.pageViews.find(
       pv => pv.contentId === contentId && pv.sessionId === sessionIdToUse
     );
-    
+
     if (pageView) {
       pageView.scrollDepth = Math.max(pageView.scrollDepth, scrollDepth);
     }
   }
 
-  // Search Behavior Tracking
-  trackSearch(
-    query: string, 
-    resultsCount: number, 
+  // rch Behavior Tracking
+  trackrch(
+    query: string,
+    resultsCount: number,
     userRole?: UserRole
   ): string {
-    const searchId = `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    const searchMetric: SearchBehaviorMetric = {
+    const rchId = `rch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    const rchMetric: rchBehaviorMetric = {
       query,
       timestamp: new Date(),
       userRole,
@@ -111,36 +111,36 @@ export class AnalyticsService {
       abandoned: false
     };
 
-    this.searchBehavior.push(searchMetric);
-    return searchId;
+    this.rchBehavior.push(rchMetric);
+    return rchId;
   }
 
-  trackSearchClick(query: string, resultId: string): void {
-    const searchMetric = this.searchBehavior.find(
-      s => s.query === query && 
-      Math.abs(s.timestamp.getTime() - Date.now()) < 300000 // 5 minutes
+  trackrchClick(query: string, resultId: string): void {
+    const rchMetric = this.rchBehavior.find(
+      s => s.query === query &&
+        Math.abs(s.timestamp.getTime() - Date.now()) < 300000 // 5 minutes
     );
-    
-    if (searchMetric) {
-      searchMetric.clickedResults.push(resultId);
+
+    if (rchMetric) {
+      rchMetric.clickedResults.push(resultId);
     }
   }
 
-  trackSearchRefinement(originalQuery: string, refinedQuery: string): void {
-    const searchMetric = this.searchBehavior.find(
-      s => s.query === originalQuery && 
-      Math.abs(s.timestamp.getTime() - Date.now()) < 300000
+  trackrchRefinement(originalQuery: string, refinedQuery: string): void {
+    const rchMetric = this.rchBehavior.find(
+      s => s.query === originalQuery &&
+        Math.abs(s.timestamp.getTime() - Date.now()) < 300000
     );
-    
-    if (searchMetric) {
-      searchMetric.refinements.push(refinedQuery);
+
+    if (rchMetric) {
+      rchMetric.refinements.push(refinedQuery);
     }
   }
 
   // User Journey Tracking
   private updateUserJourney(sessionId: string, contentId: string, actionType: string): void {
     let journey = this.userJourneys.get(sessionId);
-    
+
     if (!journey) {
       journey = {
         sessionId,
@@ -177,17 +177,17 @@ export class AnalyticsService {
       pv => pv.timestamp >= dateRange.start && pv.timestamp <= dateRange.end
     );
 
-    const filteredSearches = this.searchBehavior.filter(
+    const filteredrches = this.rchBehavior.filter(
       s => s.timestamp >= dateRange.start && s.timestamp <= dateRange.end
     );
 
     return {
       totalViews: filteredPageViews.length,
       uniqueUsers: new Set(filteredPageViews.map(pv => pv.sessionId)).size,
-      searchQueries: this.generateSearchMetrics(filteredSearches),
+      rchQueries: this.generaterchMetrics(filteredrches),
       popularContent: this.generateContentMetrics(filteredPageViews, filteredFeedback),
       userSatisfaction: this.generateSatisfactionMetrics(filteredFeedback),
-      contentGaps: await this.identifyContentGaps(filteredSearches, filteredFeedback),
+      contentGaps: await this.identifyContentGaps(filteredrches, filteredFeedback),
       timeRange: dateRange
     };
   }
@@ -201,14 +201,14 @@ export class AnalyticsService {
       j => j.startTime >= dateRange.start && j.endTime <= dateRange.end
     );
 
-    const filteredSearches = this.searchBehavior.filter(
+    const filteredrches = this.rchBehavior.filter(
       s => s.timestamp >= dateRange.start && s.timestamp <= dateRange.end
     );
 
     return {
       pageViews: filteredPageViews,
       userJourneys: journeys,
-      searchBehavior: filteredSearches,
+      rchBehavior: filteredrches,
       contentEffectiveness: this.generateEffectivenessMetrics(filteredPageViews),
       userSatisfaction: this.generateSatisfactionMetrics(await this.getFeedback())
     };
@@ -216,7 +216,7 @@ export class AnalyticsService {
 
   async getOptimizationRecommendations(): Promise<OptimizationRecommendations> {
     const feedback = await this.getFeedback();
-    const contentGaps = await this.identifyContentGaps(this.searchBehavior, feedback);
+    const contentGaps = await this.identifyContentGaps(this.rchBehavior, feedback);
 
     return {
       contentGaps,
@@ -234,7 +234,7 @@ export class AnalyticsService {
     }
   }
 
-  private flagContentForReview(contentId: string, feedback: UserFeedback): void {
+  private flagContentForReview(contentId: string, _feedback: UserFeedback): void {
     // In a real implementation, this would trigger alerts or notifications
     console.log(`Content ${contentId} flagged for review based on negative feedback`);
   }
@@ -255,15 +255,15 @@ export class AnalyticsService {
     return this.generateSessionId();
   }
 
-  private generateSearchMetrics(searches: SearchBehaviorMetric[]) {
+  private generaterchMetrics(rches: rchBehaviorMetric[]) {
     const queryMap = new Map<string, { count: number; results: number; clicks: number }>();
-    
-    searches.forEach(search => {
-      const existing = queryMap.get(search.query) || { count: 0, results: 0, clicks: 0 };
+
+    rches.forEach(rch => {
+      const existing = queryMap.get(rch.query) || { count: 0, results: 0, clicks: 0 };
       existing.count++;
-      existing.results += search.resultsCount;
-      existing.clicks += search.clickedResults.length;
-      queryMap.set(search.query, existing);
+      existing.results += rch.resultsCount;
+      existing.clicks += rch.clickedResults.length;
+      queryMap.set(rch.query, existing);
     });
 
     return Array.from(queryMap.entries()).map(([query, data]) => ({
@@ -276,8 +276,15 @@ export class AnalyticsService {
   }
 
   private generateContentMetrics(pageViews: PageViewMetric[], feedback: UserFeedback[]) {
-    const contentMap = new Map<string, any>();
-    
+    const contentMap = new Map<string, {
+      contentId: string;
+      title: string;
+      views: number;
+      uniqueViews: Set<string>;
+      totalTime: number;
+      contentType: 'guide';
+    }>();
+
     pageViews.forEach(pv => {
       const existing = contentMap.get(pv.contentId) || {
         contentId: pv.contentId,
@@ -287,7 +294,7 @@ export class AnalyticsService {
         totalTime: 0,
         contentType: 'guide' as const
       };
-      
+
       existing.views++;
       existing.uniqueViews.add(pv.sessionId);
       existing.totalTime += pv.timeSpent;
@@ -296,8 +303,8 @@ export class AnalyticsService {
 
     return Array.from(contentMap.values()).map(content => {
       const contentFeedback = feedback.filter(f => f.contentId === content.contentId);
-      const avgRating = contentFeedback.length > 0 
-        ? contentFeedback.reduce((sum, f) => sum + f.rating, 0) / contentFeedback.length 
+      const avgRating = contentFeedback.length > 0
+        ? contentFeedback.reduce((sum, f) => sum + f.rating, 0) / contentFeedback.length
         : 0;
 
       return {
@@ -313,7 +320,7 @@ export class AnalyticsService {
 
   private generateSatisfactionMetrics(feedback: UserFeedback[]) {
     const contentMap = new Map<string, UserFeedback[]>();
-    
+
     feedback.forEach(f => {
       const existing = contentMap.get(f.contentId) || [];
       existing.push(f);
@@ -323,11 +330,11 @@ export class AnalyticsService {
     return Array.from(contentMap.entries()).map(([contentId, contentFeedback]) => {
       const ratings = contentFeedback.filter(f => f.rating > 0);
       const helpfulVotes = contentFeedback.filter(f => f.helpful).length;
-      
+
       return {
         contentId,
-        averageRating: ratings.length > 0 
-          ? ratings.reduce((sum, f) => sum + f.rating, 0) / ratings.length 
+        averageRating: ratings.length > 0
+          ? ratings.reduce((sum, f) => sum + f.rating, 0) / ratings.length
           : 0,
         totalRatings: ratings.length,
         helpfulVotes,
@@ -341,15 +348,15 @@ export class AnalyticsService {
   }
 
   private async identifyContentGaps(
-    searches: SearchBehaviorMetric[], 
+    rches: rchBehaviorMetric[],
     feedback: UserFeedback[]
   ): Promise<ContentGap[]> {
     const gaps: ContentGap[] = [];
-    
-    // Identify gaps from searches with no results
-    const noResultQueries = searches.filter(s => s.resultsCount === 0);
+
+    // Identify gaps from rches with no results
+    const noResultQueries = rches.filter(s => s.resultsCount === 0);
     const queryFrequency = new Map<string, number>();
-    
+
     noResultQueries.forEach(s => {
       queryFrequency.set(s.query, (queryFrequency.get(s.query) || 0) + 1);
     });
@@ -358,12 +365,12 @@ export class AnalyticsService {
       if (frequency >= 3) { // Threshold for considering a gap
         gaps.push({
           id: `gap_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          description: `Users are searching for "${query}" but no relevant content exists`,
+          description: `Users are rching for "${query}" but no relevant content exists`,
           priority: frequency >= 10 ? 'high' : frequency >= 5 ? 'medium' : 'low',
-          source: 'search_queries',
+          source: 'rch_queries',
           relatedQueries: [query],
           suggestedContent: this.generateContentSuggestions(query),
-          userRoles: this.extractUserRolesFromSearches(searches, query),
+          userRoles: this.extractUserRolesFromrches(rches, query),
           frequency
         });
       }
@@ -372,7 +379,7 @@ export class AnalyticsService {
     // Identify gaps from negative feedback
     const negativeFeedback = feedback.filter(f => f.rating <= 2 || !f.helpful);
     const contentIssues = new Map<string, UserFeedback[]>();
-    
+
     negativeFeedback.forEach(f => {
       const existing = contentIssues.get(f.contentId) || [];
       existing.push(f);
@@ -400,7 +407,7 @@ export class AnalyticsService {
 
   private generateEffectivenessMetrics(pageViews: PageViewMetric[]) {
     const contentMap = new Map<string, PageViewMetric[]>();
-    
+
     pageViews.forEach(pv => {
       const existing = contentMap.get(pv.contentId) || [];
       existing.push(pv);
@@ -418,9 +425,17 @@ export class AnalyticsService {
   }
 
   private generateImprovementSuggestions(feedback: UserFeedback[]) {
-    const suggestions = [];
+    const suggestions: Array<{
+      contentId: string;
+      type: 'clarity' | 'completeness' | 'accuracy' | 'performance';
+      description: string;
+      priority: 'low' | 'medium' | 'high';
+      estimatedImpact: number;
+      basedOn: 'user_feedback' | 'analytics' | 'automated_analysis';
+    }> = [];
+
     const contentIssues = new Map<string, UserFeedback[]>();
-    
+
     feedback.forEach(f => {
       const existing = contentIssues.get(f.contentId) || [];
       existing.push(f);
@@ -429,15 +444,50 @@ export class AnalyticsService {
 
     contentIssues.forEach((issues, contentId) => {
       const avgRating = issues.reduce((sum, i) => sum + i.rating, 0) / issues.length;
-      
+
       if (avgRating < 3) {
         suggestions.push({
           contentId,
-          type: 'clarity' as const,
+          type: 'clarity',
           description: 'Content has low ratings and may need clarity improvements',
-          priority: 'high' as const,
+          priority: 'high',
           estimatedImpact: 8,
-          basedOn: 'user_feedback' as const
+          basedOn: 'user_feedback'
+        });
+      }
+
+      // Check for completeness issues
+      const completenessIssues = issues.filter(i =>
+        i.comment?.toLowerCase().includes('missing') ||
+        i.comment?.toLowerCase().includes('incomplete')
+      );
+
+      if (completenessIssues.length > 0) {
+        suggestions.push({
+          contentId,
+          type: 'completeness',
+          description: 'Users report missing or incomplete information',
+          priority: 'medium',
+          estimatedImpact: 6,
+          basedOn: 'user_feedback'
+        });
+      }
+
+      // Check for accuracy issues
+      const accuracyIssues = issues.filter(i =>
+        i.comment?.toLowerCase().includes('wrong') ||
+        i.comment?.toLowerCase().includes('incorrect') ||
+        i.comment?.toLowerCase().includes('outdated')
+      );
+
+      if (accuracyIssues.length > 0) {
+        suggestions.push({
+          contentId,
+          type: 'accuracy',
+          description: 'Users report accuracy or outdated information issues',
+          priority: 'high',
+          estimatedImpact: 9,
+          basedOn: 'user_feedback'
         });
       }
     });
@@ -452,7 +502,7 @@ export class AnalyticsService {
 
   private generateFeedbackSummary(feedback: UserFeedback[]) {
     const contentMap = new Map<string, UserFeedback[]>();
-    
+
     feedback.forEach(f => {
       const existing = contentMap.get(f.contentId) || [];
       existing.push(f);
@@ -471,7 +521,7 @@ export class AnalyticsService {
 
   private calculateSentimentScore(feedback: UserFeedback[]): number {
     if (feedback.length === 0) return 0;
-    
+
     const sentimentSum = feedback.reduce((sum, f) => {
       let score = 0;
       if (f.rating > 0) {
@@ -482,14 +532,14 @@ export class AnalyticsService {
       }
       return sum + score;
     }, 0);
-    
+
     return Math.max(-1, Math.min(1, sentimentSum / feedback.length));
   }
 
   private generateContentSuggestions(query: string): string[] {
     // Simple keyword-based suggestions
-    const suggestions = [];
-    
+    const suggestions: string[] = [];
+
     if (query.toLowerCase().includes('setup')) {
       suggestions.push('Setup and Installation Guide');
     }
@@ -499,22 +549,22 @@ export class AnalyticsService {
     if (query.toLowerCase().includes('error')) {
       suggestions.push('Troubleshooting Guide');
     }
-    
+
     return suggestions.length > 0 ? suggestions : [`Documentation for: ${query}`];
   }
 
-  private extractUserRolesFromSearches(searches: SearchBehaviorMetric[], query: string): UserRole[] {
-    const roles = searches
+  private extractUserRolesFromrches(rches: rchBehaviorMetric[], query: string): UserRole[] {
+    const roles = rches
       .filter(s => s.query === query && s.userRole)
       .map(s => s.userRole!)
       .filter((role, index, arr) => arr.indexOf(role) === index);
-    
+
     return roles.length > 0 ? roles : ['guest'];
   }
 
   private extractCommonThemes(feedback: UserFeedback[]): string[] {
     const themes = new Set<string>();
-    
+
     feedback.forEach(f => {
       if (f.comment) {
         const comment = f.comment.toLowerCase();
@@ -523,10 +573,10 @@ export class AnalyticsService {
         if (comment.includes('error')) themes.add('accuracy');
         if (comment.includes('slow')) themes.add('performance');
       }
-      
+
       f.tags?.forEach(tag => themes.add(tag));
     });
-    
+
     return Array.from(themes);
   }
 
@@ -538,9 +588,9 @@ export class AnalyticsService {
   }
 
   private generateActionableInsights(feedback: UserFeedback[]): string[] {
-    const insights = [];
+    const insights: string[] = [];
     const themes = this.extractCommonThemes(feedback);
-    
+
     if (themes.includes('clarity')) {
       insights.push('Consider rewriting sections for better clarity');
     }
@@ -550,7 +600,7 @@ export class AnalyticsService {
     if (themes.includes('accuracy')) {
       insights.push('Review and update for accuracy');
     }
-    
+
     return insights;
   }
 
@@ -560,7 +610,7 @@ export class AnalyticsService {
     return views.length > 0 ? completed.length / views.length : 0;
   }
 
-  private calculateSuccessRate(views: PageViewMetric[]): number {
+  private calculateSuccessRate(_views: PageViewMetric[]): number {
     // Placeholder implementation
     return 0.85;
   }

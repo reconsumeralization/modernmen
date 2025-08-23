@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FeedbackWidget } from '@/components/documentation/FeedbackWidget';
 import { AnalyticsDashboard } from '@/components/documentation/AnalyticsDashboard';
 import { ContentGapAnalyzer } from '@/components/documentation/ContentGapAnalyzer';
-import { useAnalytics } from '@/hooks/useAnalytics';
+import { unalytics } from '@/hooks/unalytics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,7 +14,7 @@ export default function AnalyticsDemoPage() {
   const [selectedGap, setSelectedGap] = useState<ContentGap | null>(null);
   const [demoFeedback, setDemoFeedback] = useState<UserFeedback[]>([]);
   
-  const analytics = useAnalytics({
+  const analytics = unalytics({
     contentId: 'analytics-demo-page',
     contentType: 'guide',
     userRole: 'developer',
@@ -67,12 +67,12 @@ export default function AnalyticsDemoPage() {
       await analytics.submitFeedback(feedback);
     }
 
-    // Generate some sample searches
-    analytics.trackSearch('setup guide', 5);
-    analytics.trackSearch('api authentication', 3);
-    analytics.trackSearch('missing feature documentation', 0); // No results
-    analytics.trackSearch('troubleshooting errors', 2);
-    analytics.trackSearch('deployment guide', 0); // No results
+    // Generate some sample rches
+    analytics.trackrch('setup guide', 5);
+    analytics.trackrch('api authentication', 3);
+    analytics.trackrch('missing feature documentation', 0); // No results
+    analytics.trackrch('troubleshooting errors', 2);
+    analytics.trackrch('deployment guide', 0); // No results
 
     alert('Sample data generated! Check the analytics dashboard.');
   };
@@ -123,7 +123,7 @@ export default function AnalyticsDemoPage() {
                   <li>Page views and time spent</li>
                   <li>Scroll depth and engagement</li>
                   <li>User feedback and ratings</li>
-                  <li>Search queries and results</li>
+                  <li>rch queries and results</li>
                 </ul>
               </div>
 
@@ -238,10 +238,10 @@ export default function AnalyticsDemoPage() {
                 
                 <h4>1. Add Analytics Hook to Your Page</h4>
                 <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
-{`import { useAnalytics } from '@/hooks/useAnalytics';
+{`import { unalytics } from '@/hooks/unalytics';
 
 export default function MyDocumentationPage() {
-  const analytics = useAnalytics({
+  const analytics = unalytics({
     contentId: 'my-page-id',
     contentType: 'guide',
     userRole: 'developer',
@@ -268,16 +268,16 @@ export default function MyDocumentationPage() {
 />`}
                 </pre>
 
-                <h4>3. Track Search Interactions</h4>
+                <h4>3. Track rch Interactions</h4>
                 <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
-{`// Track search queries
-const searchId = analytics.trackSearch(query, resultsCount);
+{`// Track rch queries
+const rchId = analytics.trackrch(query, resultsCount);
 
-// Track search result clicks
-analytics.trackSearchClick(query, resultId);
+// Track rch result clicks
+analytics.trackrchClick(query, resultId);
 
-// Track search refinements
-analytics.trackSearchRefinement(originalQuery, refinedQuery);`}
+// Track rch refinements
+analytics.trackrchRefinement(originalQuery, refinedQuery);`}
                 </pre>
 
                 <h4>4. View Analytics Dashboard</h4>
@@ -304,7 +304,7 @@ analytics.trackSearchRefinement(originalQuery, refinedQuery);`}
                 <ul>
                   <li>✅ User feedback collection with ratings and comments</li>
                   <li>✅ Page view and engagement tracking</li>
-                  <li>✅ Search behavior analytics</li>
+                  <li>✅ rch behavior analytics</li>
                   <li>✅ Content gap identification</li>
                   <li>✅ Analytics dashboard with visualizations</li>
                   <li>✅ Optimization recommendations</li>

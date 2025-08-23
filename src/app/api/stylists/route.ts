@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import getPayloadClient from '../../../payload'
 
 // Sample data generators
 function generateSampleTestimonials(stylistName: string) {
@@ -66,7 +65,6 @@ function generateSampleInstagramPosts() {
 
 export async function GET(request: NextRequest) {
   try {
-    const payload = await getPayloadClient()
     const { searchParams } = new URL(request.url)
 
     const limit = parseInt(searchParams.get('limit') || '20')
@@ -74,57 +72,78 @@ export async function GET(request: NextRequest) {
     const featured = searchParams.get('featured') === 'true'
     const active = searchParams.get('active') !== 'false'
 
-    // Build query filters
-    const filters: any = {
-      and: []
-    }
+    // For now, always return sample data since Payload CMS is not configured
+    const sampleStylists = [
+      {
+        id: 'sample-1',
+        name: 'Alex Rodriguez',
+        bio: 'Master barber with 8 years of experience specializing in modern fades and classic cuts.',
+        profileImage: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+        specializations: ['Fades', 'Classic Cuts', 'Beard Trims'],
+        experience: 8,
+        performance: { rating: 4.9, totalAppointments: 1250 },
+        socialMedia: { instagram: '@alexrodriguez', facebook: 'alexrodriguezbarber' },
+        featured: true,
+        isActive: true,
+        portfolio: [],
+        testimonials: generateSampleTestimonials('Alex Rodriguez'),
+        instagramPosts: generateSampleInstagramPosts(),
+      },
+      {
+        id: 'sample-2',
+        name: 'Marcus Johnson',
+        bio: 'Creative stylist known for contemporary styles and color treatments.',
+        profileImage: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+        specializations: ['Contemporary Styles', 'Color Treatments', 'Styling'],
+        experience: 6,
+        performance: { rating: 4.8, totalAppointments: 980 },
+        socialMedia: { instagram: '@marcusjohnson', facebook: 'marcusjohnsonstylist' },
+        featured: true,
+        isActive: true,
+        portfolio: [],
+        testimonials: generateSampleTestimonials('Marcus Johnson'),
+        instagramPosts: generateSampleInstagramPosts(),
+      },
+      {
+        id: 'sample-3',
+        name: 'Sarah Chen',
+        bio: 'Expert colorist and stylist with 5 years of experience in modern hair trends.',
+        profileImage: 'https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+        specializations: ['Hair Coloring', 'Styling', 'Consultations'],
+        experience: 5,
+        performance: { rating: 4.7, totalAppointments: 750 },
+        socialMedia: { instagram: '@sarahchen', facebook: 'sarahchenstylist' },
+        featured: true,
+        isActive: true,
+        portfolio: [],
+        testimonials: generateSampleTestimonials('Sarah Chen'),
+        instagramPosts: generateSampleInstagramPosts(),
+      },
+    ]
+
+    // Filter based on parameters
+    let filteredStylists = sampleStylists
 
     if (featured) {
-      filters.and.push({ featured: { equals: true } })
+      filteredStylists = sampleStylists.filter(stylist => stylist.featured)
     }
 
-    if (active) {
-      filters.and.push({ isActive: { equals: true } })
+    if (active !== undefined) {
+      filteredStylists = filteredStylists.filter(stylist => stylist.isActive === active)
     }
 
-    // If no filters, remove the and array
-    if (filters.and.length === 0) {
-      delete filters.and
-    }
-
-    const stylists = await payload.find({
-      collection: 'stylists',
-      limit,
-      page,
-      where: filters,
-      sort: 'displayOrder',
-      depth: 2, // Include related data
-    })
-
-    // Transform the data for frontend consumption
-    const transformedStylists = stylists.docs.map((stylist: any) => ({
-      id: stylist.id,
-      name: stylist.name,
-      bio: stylist.bio,
-      profileImage: stylist.profileImage,
-      specializations: stylist.specializations,
-      experience: stylist.experience,
-      performance: stylist.performance,
-      socialMedia: stylist.socialMedia,
-      featured: stylist.featured,
-      isActive: stylist.isActive,
-      portfolio: stylist.portfolio || [],
-      testimonials: stylist.testimonials || generateSampleTestimonials(stylist.name),
-      instagramPosts: stylist.instagramPosts || generateSampleInstagramPosts(),
-    }))
+    // Apply pagination
+    const startIndex = (page - 1) * limit
+    const endIndex = startIndex + limit
+    const paginatedStylists = filteredStylists.slice(startIndex, endIndex)
 
     return NextResponse.json({
-      stylists: transformedStylists,
-      total: stylists.totalDocs,
-      page: stylists.page,
-      totalPages: stylists.totalPages,
-      hasNext: stylists.hasNextPage,
-      hasPrev: stylists.hasPrevPage,
+      stylists: paginatedStylists,
+      total: filteredStylists.length,
+      page: page,
+      totalPages: Math.ceil(filteredStylists.length / limit),
+      hasNext: endIndex < filteredStylists.length,
+      hasPrev: page > 1,
     })
 
   } catch (error) {

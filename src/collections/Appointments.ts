@@ -3,11 +3,11 @@ import { CollectionConfig, Where, AccessArgs } from 'payload'
 export const Appointments: CollectionConfig = {
   slug: 'appointments',
   admin: {
-    useAsTitle: 'appointmentTitle',
+    usTitle: 'appointmentTitle',
     description: 'Customer appointments and bookings',
     group: 'Appointments',
     defaultColumns: ['appointmentTitle', 'customer', 'stylist', 'dateTime', 'status'],
-    listSearchableFields: ['customer.firstName', 'customer.lastName', 'customer.email'],
+    listrchableFields: ['customer.firstName', 'customer.lastName', 'customer.email'],
   },
   fields: [
     {
@@ -324,7 +324,7 @@ export const Appointments: CollectionConfig = {
       },
       fields: [
         {
-          name: 'pointsEarned',
+          name: 'pointrned',
           type: 'number',
           defaultValue: 0,
           min: 0,
@@ -435,13 +435,13 @@ export const Appointments: CollectionConfig = {
       async ({ doc, req, operation }) => {
         if (operation === 'create') {
           // Update customer's loyalty points
-          if (doc.customer && doc.pricing?.pointsEarned) {
+          if (doc.customer && doc.pricing?.pointrned) {
             await req.payload.update({
               collection: 'customers',
               id: doc.customer,
               data: {
                 loyaltyPoints: {
-                  $inc: doc.pricing.pointsEarned,
+                  $inc: doc.pricing.pointrned,
                 },
                 totalSpent: {
                   $inc: doc.pricing.total,

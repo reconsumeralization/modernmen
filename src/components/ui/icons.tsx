@@ -1,15 +1,15 @@
-import { Loader2, Users, Calendar, Scissors, Settings, Database, ExternalLink, RefreshCw, Info, BarChart3, Phone, Edit, X, Save, ArrowLeft, Download, Clock, Mail } from 'lucide-react'
+import { Loader2, Users, Calendar, Scissors, Cog, Database, ExternalLink, RefreshCw, HelpCircle, BarChart3, Phone, Edit, X, Save, ArrowLeft, Download, Clock, Bell, Mail } from '@/lib/icon-mapping'
 
 export const Icons = {
   spinner: Loader2,
   users: Users,
   calendar: Calendar,
   scissors: Scissors,
-  settings: Settings,
+  settings: Cog,
   database: Database,
   externalLink: ExternalLink,
   refreshCw: RefreshCw,
-  info: Info,
+  info: HelpCircle,
   barChart3: BarChart3,
   phone: Phone,
   edit: Edit,

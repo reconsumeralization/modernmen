@@ -2,18 +2,7 @@ import { Metadata } from 'next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
-  RefreshCw, 
-  Wifi, 
-  Monitor, 
-  Smartphone,
-  Globe,
-  Database,
-  Settings
-} from 'lucide-react'
+import { AlertTriangle, CheckCircle, XCircle, RefreshCw, WifiOff, Monitor, Smartphone, Database, Cog, Settings, Globe } from '@/lib/icon-mapping'
 
 export const metadata: Metadata = {
   title: 'Troubleshooting Guide - Documentation',

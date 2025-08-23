@@ -1,22 +1,22 @@
-// Simplified search service for immediate implementation
+// Simplified rch service for immediate implementation
 import { logger } from './logger'
-import { SearchQuery, SearchResult, SearchAnalytics } from './search-core'
+import { rchQuery, rchResult, rchAnalytics } from './rch-core'
 
-class SearchService {
-  private static instance: SearchService
-  private searchIndex: Map<string, SearchResult> = new Map()
-  private analytics: SearchAnalytics[] = []
+class rchService {
+  private static instance: rchService
+  private rchIndex: Map<string, rchResult> = new Map()
+  private analytics: rchAnalytics[] = []
 
-  static getInstance(): SearchService {
-    if (!SearchService.instance) {
-      SearchService.instance = new SearchService()
+  static getInstance(): rchService {
+    if (!rchService.instance) {
+      rchService.instance = new rchService()
     }
-    return SearchService.instance
+    return rchService.instance
   }
 
   // Initialize with mock data for demonstration
   async initialize(): Promise<void> {
-    this.searchIndex.set('button-component', {
+    this.rchIndex.set('button-component', {
       id: 'button-component',
       title: 'Button Component',
       description: 'A reusable button component with multiple variants and states',
@@ -32,22 +32,22 @@ class SearchService {
       }
     })
 
-    logger.info('Search service initialized with mock data')
+    logger.info('rch service initialized with mock data')
   }
 
-  async search(query: SearchQuery): Promise<{
-    results: SearchResult[]
+  async rch(query: rchQuery): Promise<{
+    results: rchResult[]
     total: number
-    analytics: SearchAnalytics
+    analytics: rchAnalytics
   }> {
     const startTime = performance.now()
 
-    const results = Array.from(this.searchIndex.values()).filter(item =>
+    const results = Array.from(this.rchIndex.values()).filter(item =>
       item.title.toLowerCase().includes(query.query.toLowerCase()) ||
       item.description.toLowerCase().includes(query.query.toLowerCase())
     )
 
-    const analytics: SearchAnalytics = {
+    const analytics: rchAnalytics = {
       query: query.query,
       resultsCount: results.length,
       filters: query.filters,
@@ -64,4 +64,4 @@ class SearchService {
   }
 }
 
-export const searchService = SearchService.getInstance()
+export const rchService = rchService.getInstance()

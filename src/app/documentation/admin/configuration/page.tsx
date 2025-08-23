@@ -2,30 +2,17 @@ import { Metadata } from 'next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { 
-  Settings, 
-  Database, 
-  Shield, 
-  Globe, 
-  Mail, 
-  Bell,
-  Key,
-  Server,
-  AlertTriangle,
-  CheckCircle,
-  Code
-} from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'System Configuration - Admin Documentation',
   description: 'Complete guide for configuring and managing the salon management system.',
 }
 
-export default function ConfigurationPage() {
+function ConfigurationPage() {
   const configurationSections = [
     {
       title: 'Environment Configuration',
-      icon: <Server className="h-6 w-6 text-blue-400" />,
+      icon: <database className="h-6 w-6 text-blue-400" />,
       description: 'Set up and configure different environments (development, staging, production)',
       items: [
         {
@@ -60,7 +47,7 @@ export default function ConfigurationPage() {
     },
     {
       title: 'Authentication & Security',
-      icon: <Shield className="h-6 w-6 text-red-400" />,
+      icon: <lock className="h-6 w-6 text-red-400" />,
       description: 'Configure authentication providers and security settings',
       items: [
         {
@@ -95,7 +82,7 @@ export default function ConfigurationPage() {
     },
     {
       title: 'Email & Notifications',
-      icon: <Mail className="h-6 w-6 text-green-400" />,
+      icon: <bell className="h-6 w-6 text-green-400" />,
       description: 'Configure email services and notification systems',
       items: [
         {
@@ -130,7 +117,7 @@ export default function ConfigurationPage() {
     },
     {
       title: 'API & Integrations',
-      icon: <Globe className="h-6 w-6 text-purple-400" />,
+      icon: <database className="h-6 w-6 text-purple-400" />,
       description: 'Configure external API integrations and webhooks',
       items: [
         {
@@ -181,13 +168,13 @@ export default function ConfigurationPage() {
   const getImportanceIcon = (importance: string) => {
     switch (importance) {
       case 'critical':
-        return <AlertTriangle className="h-4 w-4" />
+        return <alertTriangle className="h-4 w-4" />
       case 'high':
-        return <AlertTriangle className="h-4 w-4" />
+        return <alertTriangle className="h-4 w-4" />
       case 'medium':
-        return <CheckCircle className="h-4 w-4" />
+        return <checkCircle className="h-4 w-4" />
       default:
-        return <CheckCircle className="h-4 w-4" />
+        return <checkCircle className="h-4 w-4" />
     }
   }
 
@@ -195,7 +182,7 @@ export default function ConfigurationPage() {
     <div className="max-w-5xl">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
-          <Settings className="h-8 w-8 text-blue-500" />
+          <cog className="h-8 w-8 text-blue-500" />
           <h1 className="text-3xl font-bold text-slate-100">
             System Configuration
           </h1>
@@ -207,7 +194,7 @@ export default function ConfigurationPage() {
 
       {/* Security Warning */}
       <Alert className="mb-8 border-red-700/50 bg-red-900/20">
-        <AlertTriangle className="h-4 w-4" />
+        <alertTriangle className="h-4 w-4" />
         <AlertTitle>Security Notice</AlertTitle>
         <AlertDescription>
           Always use secure, randomly generated secrets for production environments. 
@@ -235,7 +222,7 @@ export default function ConfigurationPage() {
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-lg text-slate-100 flex items-center gap-2">
-                          <Code className="h-5 w-5 text-slate-400" />
+                          <code className="h-5 w-5 text-slate-400" />
                           {item.name}
                         </CardTitle>
                         <CardDescription className="text-slate-300 mt-1">
@@ -275,7 +262,7 @@ export default function ConfigurationPage() {
       {/* Configuration Checklist */}
       <div className="mt-12 p-6 bg-gradient-to-r from-green-900/20 to-blue-900/20 border border-green-700/30 rounded-lg">
         <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
-          <CheckCircle className="h-5 w-5 text-green-400" />
+          <checkCircle className="h-5 w-5 text-green-400" />
           Pre-deployment Checklist
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -327,5 +314,7 @@ export default function ConfigurationPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
+
+export default ConfigurationPage;

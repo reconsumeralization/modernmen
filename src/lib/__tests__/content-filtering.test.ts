@@ -4,7 +4,7 @@ import {
   filterNavigationItems,
   getContentAccessSummary,
   createUserContentFilter,
-  filterSearchResults,
+  filterrchResults,
   getRestrictedContentFallback
 } from '../content-filtering'
 import { DocumentationUser } from '../documentation-auth'
@@ -242,8 +242,8 @@ describe('Content Filtering', () => {
     })
   })
 
-  describe('filterSearchResults', () => {
-    const mockSearchResults = [
+  describe('filterrchResults', () => {
+    const mockrchResults = [
       {
         id: 'result-1',
         title: 'Public Result',
@@ -263,20 +263,20 @@ describe('Content Filtering', () => {
       }
     ]
 
-    it('filters search results for developer user', () => {
-      const filtered = filterSearchResults(mockSearchResults, mockUsers.developer)
+    it('filters rch results for developer user', () => {
+      const filtered = filterrchResults(mockrchResults, mockUsers.developer)
       expect(filtered).toHaveLength(2)
       expect(filtered.map(r => r.id)).toEqual(['result-1', 'result-2'])
     })
 
-    it('filters search results for customer user', () => {
-      const filtered = filterSearchResults(mockSearchResults, mockUsers.customer)
+    it('filters rch results for customer user', () => {
+      const filtered = filterrchResults(mockrchResults, mockUsers.customer)
       expect(filtered).toHaveLength(1)
       expect(filtered[0].id).toBe('result-1')
     })
 
     it('returns all results for admin user', () => {
-      const filtered = filterSearchResults(mockSearchResults, mockUsers.admin)
+      const filtered = filterrchResults(mockrchResults, mockUsers.admin)
       expect(filtered).toHaveLength(3)
     })
   })

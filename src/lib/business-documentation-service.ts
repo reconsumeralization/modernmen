@@ -98,7 +98,7 @@ export class BusinessDocumentationService {
           averageTimeOnPage: 0,
           bounceRate: 0,
           completionRate: 0,
-          searchRanking: 0,
+          rchRanking: 0,
           popularSections: [],
           commonExitPoints: [],
           userFeedback: {
@@ -152,9 +152,9 @@ export class BusinessDocumentationService {
       }
 
       // Update version if content changed
-      let version = existing.version
+      let version = existing.version || '1.0.0'
       if (request.content && request.content !== existing.content) {
-        version = this.incrementVersion(existing.version)
+        version = this.incrementVersion(version)
       }
 
       const updateData = {
@@ -213,9 +213,9 @@ export class BusinessDocumentationService {
   }
 
   /**
-   * Search and filter documentation
+   * rch and filter documentation
    */
-  async searchDocumentation(
+  async rchDocumentation(
     filter: BusinessDocumentationFilter,
     userRole: UserRole,
     page: number = 1,
@@ -227,7 +227,7 @@ export class BusinessDocumentationService {
     totalPages: number
   }> {
     try {
-      const query = this.buildSearchQuery(filter, userRole)
+      const query = this.buildrchQuery(filter, userRole)
       const response = await this.makePayloadRequest('GET', '/api/documentation', {
         ...query,
         page,
@@ -241,8 +241,8 @@ export class BusinessDocumentationService {
         totalPages: response.totalPages
       }
     } catch (error) {
-      console.error('Error searching documentation:', error)
-      throw new Error('Failed to search documentation')
+      console.error('Error rching documentation:', error)
+      throw new Error('Failed to rch documentation')
     }
   }
 
@@ -370,7 +370,7 @@ export class BusinessDocumentationService {
           mostViewedCategories: Object.keys(documentsByCategory)
             .sort((a, b) => documentsByCategory[b] - documentsByCategory[a])
             .slice(0, 5),
-          searchQueries: [] // Would be populated from search analytics
+          rchQueries: [] // Would be populated from rch analytics
         }
       }
     } catch (error) {
@@ -459,9 +459,9 @@ export class BusinessDocumentationService {
   }
 
   /**
-   * Build search query from filter
+   * Build rch query from filter
    */
-  private buildSearchQuery(filter: BusinessDocumentationFilter, userRole: UserRole): any {
+  private buildrchQuery(filter: BusinessDocumentationFilter, userRole: UserRole): any {
     const query: any = {}
 
     if (filter.type?.length) {
@@ -499,11 +499,11 @@ export class BusinessDocumentationService {
       }
     }
 
-    if (filter.searchQuery) {
+    if (filter.rchQuery) {
       query.$or = [
-        { title: { $regex: filter.searchQuery, $options: 'i' } },
-        { excerpt: { $regex: filter.searchQuery, $options: 'i' } },
-        { content: { $regex: filter.searchQuery, $options: 'i' } }
+        { title: { $regex: filter.rchQuery, $options: 'i' } },
+        { excerpt: { $regex: filter.rchQuery, $options: 'i' } },
+        { content: { $regex: filter.rchQuery, $options: 'i' } }
       ]
     }
 
@@ -516,7 +516,7 @@ export class BusinessDocumentationService {
       'system_admin': ['guest', 'salon_customer', 'salon_employee', 'salon_owner', 'developer', 'system_admin']
     }
 
-    const accessibleRoles = roleHierarchy[userRole] || [userRole]
+    const accessibleRoles = roleHierarchy[userRole as keyof typeof roleHierarchy] || [userRole]
     query.targetRole = { $in: accessibleRoles }
 
     return query
@@ -538,7 +538,7 @@ export class BusinessDocumentationService {
     if (data && method !== 'GET') {
       options.body = JSON.stringify(data)
     } else if (data && method === 'GET') {
-      const params = new URLSearchParams(data)
+      const params = new URLrchParams(data)
       const response = await fetch(`${url}?${params}`, options)
       return response.json()
     }
@@ -583,7 +583,7 @@ export class BusinessDocumentationService {
         averageTimeOnPage: 0,
         bounceRate: 0,
         completionRate: 0,
-        searchRanking: 0,
+        rchRanking: 0,
         popularSections: [],
         commonExitPoints: [],
         userFeedback: { helpful: 0, notHelpful: 0, averageRating: 0, totalRatings: 0 },
@@ -654,9 +654,13 @@ export class BusinessDocumentationService {
   }
 
   private incrementVersion(version: string): string {
+    if (!version) return '1.0.1'
+    
     const parts = version.split('.')
+    const major = parts[0] || '1'
+    const minor = parts[1] || '0'
     const patch = parseInt(parts[2] || '0') + 1
-    return `${parts[0]}.${parts[1]}.${patch}`
+    return `${major}.${minor}.${patch}`
   }
 
   private generateId(): string {

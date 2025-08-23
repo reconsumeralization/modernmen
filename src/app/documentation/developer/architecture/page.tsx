@@ -15,7 +15,7 @@ export default function ArchitecturePage() {
 
         <p>
           The Modern Men documentation platform is built with a modular, extensible architecture
-          that separates content management, search, analytics, and presentation layers.
+          that separates content management, rch, analytics, and presentation layers.
         </p>
 
         <h2>High‑Level Diagram</h2>
@@ -35,11 +35,11 @@ export default function ArchitecturePage() {
             approval workflow. Integrated via the Payload API.
           </li>
           <li>
-            <strong>Search Service</strong> – Full‑text search powered by Algolia (fallback to
-            ElasticSearch). Exposes <code>/api/documentation/search</code>.
+            <strong>rch Service</strong> – Full‑text rch powered by Algolia (fallback to
+            Elasticrch). Exposes <code>/api/documentation/rch</code>.
           </li>
           <li>
-            <strong>Analytics Service</strong> – Collects page views, search queries, and feedback.
+            <strong>Analytics Service</strong> – Collects page views, rch queries, and feedback.
             Data is stored in Supabase and visualized in the admin dashboard.
           </li>
           <li>
@@ -61,7 +61,7 @@ export default function ArchitecturePage() {
             <code>Content Validation Middleware</code> checks markdown, links, and accessibility.
           </li>
           <li>
-            Upon successful validation, <code>Search Indexing Middleware</code> updates the Algolia
+            Upon successful validation, <code>rch Indexing Middleware</code> updates the Algolia
             index.
           </li>
           <li>
@@ -69,7 +69,7 @@ export default function ArchitecturePage() {
             Collection Middleware</code> to log the view.
           </li>
           <li>
-            Search queries are sent to <code>/api/documentation/search</code>, which forwards them
+            rch queries are sent to <code>/api/documentation/rch</code>, which forwards them
             to Algolia and returns ranked results.
           </li>
         </ol>

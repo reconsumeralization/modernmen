@@ -34,7 +34,12 @@ const AUTH_RATE_LIMITS = {
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL
 const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
 const isProduction = process.env.NODE_ENV === 'production'
-const enableRedis = REDIS_URL && REDIS_TOKEN
+// Only enable Redis if we have valid URLs (not placeholder values)
+const enableRedis = REDIS_URL && REDIS_TOKEN && 
+  REDIS_URL !== 'your-redis-url' && 
+  REDIS_URL !== 'your_production_redis_url' &&
+  REDIS_URL !== 'your-actual-redis-url' &&
+  !REDIS_URL.includes('your-redis-url')
 
 // Initialize Redis connection
 let redis: Redis | null = null

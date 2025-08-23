@@ -76,7 +76,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO mcp_services (id, name, namespace, methods, protocol)
 VALUES
     (uuid_generate_v4(), 'GitHub MCP', 'github',
-     '["readFile", "searchCode", "getIssue", "createIssue", "updateIssue"]'::jsonb,
+     '["readFile", "rchCode", "getIssue", "createIssue", "updateIssue"]'::jsonb,
      'JSON-RPC/WS'),
     (uuid_generate_v4(), 'Database MCP', 'database',
      '["queryRecs", "createRec", "updateRec", "deleteRec"]'::jsonb,

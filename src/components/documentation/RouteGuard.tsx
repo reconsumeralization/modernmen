@@ -7,7 +7,7 @@ import { checkRouteAccess, getUserFromSession } from '@/lib/documentation-auth'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Shield, AlertTriangle, ArrowRight } from 'lucide-react'
+import { Lock, AlertTriangle, ArrowRight } from '@/lib/icon-mapping'
 
 interface RouteGuardProps {
   children: React.ReactNode

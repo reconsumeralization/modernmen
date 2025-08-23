@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useSession } from 'next-auth/react'
-import { Shield, Lock, AlertTriangle } from 'lucide-react'
+import { Clock } from '@/lib/icon-mapping'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -29,7 +29,7 @@ export function AccessControl({
     path,
     fallback,
     showFallback = true
-}: AccessControlProps): JSX.Element | null {
+}: AccessControlProps): React.ReactElement | null {
     const { data: session, status } = useSession() as any
 
     // Loading state
@@ -62,7 +62,7 @@ export function AccessControl({
 
     // Check permission-based access
     if (requiredPermission) {
-        if (!user || !user.permissions.includes(requiredPermission)) {
+        if (!user || !user.permissions || !user.permissions.includes(requiredPermission)) {
             return showFallback ? (
                 fallback ? <>{fallback}</> : <AccessDeniedFallback user={user} requiredPermission={requiredPermission} />
             ) : null
@@ -110,10 +110,13 @@ function AccessDeniedFallback({ user, path, requiredRole, requiredPermission }: 
         <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
-                    <Lock className="h-5 w-5" />
+                    {/* The 'Lock' component is currently not a valid React component based on linting errors. */}
+                    {/* Falling back to the emoji to resolve the error. Please ensure 'Lock' is a valid React component if intended for use. */}
+                    <span className="h-5 w-5">🔒</span>
                     Access Restricted
                 </CardTitle>
                 <CardDescription className="text-amber-700 dark:text-amber-300">
+                    {getMessage()}
                     {getMessage()}
                 </CardDescription>
             </CardHeader>
@@ -256,7 +259,11 @@ export function AuthenticatedOnly({ children, fallback }: AuthenticatedOnlyProps
     if (!session) {
         return fallback ? <>{fallback}</> : (
             <Alert>
-                <Shield className="h-4 w-4" />
+                {/* The 'Lock' component is not a valid JSX element type according to linting errors.
+                    To fix this, we are directly using the fallback emoji.
+                    If a specific icon component is intended, ensure it is correctly imported
+                    and defined as a React component (e.g., from a UI library like Lucide). */}
+                <span className="h-4 w-4">🔒</span>
                 <AlertDescription>
                     Please sign in to access this content.
                 </AlertDescription>

@@ -1,6 +1,6 @@
 import { webpackBundler } from '@payloadcms/bundler-webpack'
-import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import postgresAdapter from '@payloadcms/db-postgres'
+import lexicalEditor from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import type { Config } from 'payload'
 import path from 'path'
@@ -21,7 +21,7 @@ export default buildConfig({
     {
       slug: 'users',
       admin: {
-        useAsTitle: 'name',
+        usTitle: 'name',
         description: 'User accounts',
       },
       auth: true,

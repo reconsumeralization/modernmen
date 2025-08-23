@@ -32,14 +32,14 @@ export async function validateRequestBody<T>(
 }
 
 /**
- * Validates URL search parameters
+ * Validates URL rch parameters
  */
-export function validateSearchParams<T>(
-  searchParams: URLSearchParams,
+export function validaterchParams<T>(
+  rchParams: URLrchParams,
   schema: z.ZodSchema<T>
 ): ValidationResult<T> {
   try {
-    const params = Object.fromEntries(searchParams.entries())
+    const params = Object.fromEntries(rchParams.entries())
     const validatedData = schema.parse(params)
     return { success: true, data: validatedData }
   } catch (error) {
@@ -96,7 +96,7 @@ export async function validateAuthenticatedRequest<T>(
     const bodyValidation = await validateRequestBody(request, schema)
 
     if (!bodyValidation.success) {
-      return bodyValidation
+      return bodyValidation as ValidationResult<T & { userId: string }>
     }
 
     // In a real implementation, you'd get the user ID from the auth context
@@ -139,17 +139,17 @@ export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
 
   for (const [key, value] of Object.entries(sanitized)) {
     if (typeof value === 'string') {
-      sanitized[key] = sanitizeString(value)
+      (sanitized as any)[key] = sanitizeString(value)
     } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      sanitized[key] = sanitizeObject(value)
+      (sanitized as any)[key] = sanitizeObject(value)
     } else if (Array.isArray(value)) {
-      sanitized[key] = value.map(item =>
+      (sanitized as any)[key] = value.map((item: any) =>
         typeof item === 'string' ? sanitizeString(item) : item
       )
     }
   }
 
-  return sanitized
+  return sanitized as T
 }
 
 /**

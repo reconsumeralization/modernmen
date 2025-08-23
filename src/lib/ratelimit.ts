@@ -24,9 +24,9 @@ export const uploadRatelimit = new Ratelimit({
   prefix: 'modernmen:upload',
 })
 
-export const searchRatelimit = new Ratelimit({
+export const rchRatelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(30, '1 m'),
   analytics: true,
-  prefix: 'modernmen:search',
+  prefix: 'modernmen:rch',
 })

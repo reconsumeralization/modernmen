@@ -1,6 +1,6 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { userchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
@@ -13,8 +13,8 @@ const errorMessages: Record<string, string> = {
 }
 
 const AuthErrorPage = () => {
-  const searchParams = useSearchParams()
-  const error = searchParams?.get('error') || 'Default'
+  const rchParams = userchParams()
+  const error = rchParams?.get('error') || 'Default'
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

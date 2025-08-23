@@ -37,9 +37,8 @@ describe('AccessControl', () => {
   it('shows loading state when session is loading', () => {
     mockUseSession.mockReturnValue({
       data: null,
-      status: 'loading',
-      update: jest.fn()
-    } as any)
+      status: 'loading'
+    })
 
     render(
       <AccessControl>
@@ -58,9 +57,8 @@ describe('AccessControl', () => {
           permissions: ['documentation.read']
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <AccessControl requiredRole="developer">
@@ -79,9 +77,8 @@ describe('AccessControl', () => {
           permissions: []
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <AccessControl requiredRole="developer">
@@ -101,9 +98,8 @@ describe('AccessControl', () => {
           permissions: ['documentation.edit']
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <AccessControl requiredPermission="documentation.edit">
@@ -122,9 +118,8 @@ describe('AccessControl', () => {
           permissions: ['documentation.read']
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <AccessControl requiredPermission="documentation.edit">
@@ -144,9 +139,8 @@ describe('AccessControl', () => {
           permissions: []
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <AccessControl 
@@ -166,8 +160,9 @@ describe('AccessControl', () => {
       data: {
         user: {
           role: 'guest',
-          permissions: []
-        }
+          id: ''
+        },
+        expires: ''
       },
       status: 'authenticated'
     })
@@ -189,8 +184,9 @@ describe('PermissionGate', () => {
       data: {
         user: {
           role: 'developer',
-          permissions: ['documentation.edit']
-        }
+          id: ''
+        },
+        expires: ''
       },
       status: 'authenticated'
     })
@@ -209,8 +205,9 @@ describe('PermissionGate', () => {
       data: {
         user: {
           role: 'guest',
-          permissions: []
-        }
+          id: ''
+        },
+        expires: ''
       },
       status: 'authenticated'
     })
@@ -230,13 +227,11 @@ describe('RoleGuard', () => {
     mockUseSession.mockReturnValue({
       data: {
         user: {
-          role: 'developer',
-          permissions: []
+          role: 'developer'
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <RoleGuard roles="developer">
@@ -251,13 +246,11 @@ describe('RoleGuard', () => {
     mockUseSession.mockReturnValue({
       data: {
         user: {
-          role: 'salon_owner',
-          permissions: []
+          role: 'salon_owner'
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <RoleGuard roles={['salon_owner', 'system_admin']}>
@@ -273,11 +266,11 @@ describe('RoleGuard', () => {
       data: {
         user: {
           role: 'guest',
-          permissions: []
-        }
+          id: ''
+        },
+        expires: ''
       },
-      status: 'authenticated',
-      update: jest.fn()
+      status: 'authenticated'
     })
 
     render(
@@ -295,13 +288,11 @@ describe('AdminOnly', () => {
     mockUseSession.mockReturnValue({
       data: {
         user: {
-          role: 'system_admin',
-          permissions: ['documentation.admin']
+          role: 'system_admin'
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <AdminOnly>
@@ -316,13 +307,11 @@ describe('AdminOnly', () => {
     mockUseSession.mockReturnValue({
       data: {
         user: {
-          role: 'developer',
-          permissions: []
+          role: 'developer'
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <AdminOnly>
@@ -340,8 +329,9 @@ describe('DeveloperOnly', () => {
       data: {
         user: {
           role: 'developer',
-          permissions: []
-        }
+          id: ''
+        },
+        expires: ''
       },
       status: 'authenticated'
     })
@@ -359,13 +349,11 @@ describe('DeveloperOnly', () => {
     mockUseSession.mockReturnValue({
       data: {
         user: {
-          role: 'system_admin',
-          permissions: []
+          role: 'system_admin'
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <DeveloperOnly>
@@ -380,13 +368,11 @@ describe('DeveloperOnly', () => {
     mockUseSession.mockReturnValue({
       data: {
         user: {
-          role: 'salon_owner',
-          permissions: []
+          role: 'salon_owner'
         }
       },
-      status: 'authenticated',
-      update: jest.fn()
-    } as any)
+      status: 'authenticated'
+    })
 
     render(
       <DeveloperOnly>

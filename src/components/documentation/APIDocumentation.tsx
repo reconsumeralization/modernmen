@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible'
-import { ChevronDownIcon, ChevronRightIcon, PlayIcon, CopyIcon, DownloadIcon } from 'lucide-react'
+import { ChevronDown, ChevronRight, Play, Copy, Download } from '@/lib/icon-mapping'
 import { APIEndpoint, APIDocumentationSection, SDKGenerationConfig } from '@/types/api-documentation'
 import { HTTPMethod } from '@/types/documentation'
 import { APITester } from './APITester'
@@ -150,7 +150,7 @@ export function APIDocumentation({
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={downloadOpenAPISpec}>
-            <DownloadIcon className="w-4 h-4 mr-2" />
+            <Download className="w-4 h-4 mr-2" />
             Download OpenAPI Spec
           </Button>
           {sdkGeneration && (
@@ -207,9 +207,9 @@ export function APIDocumentation({
                     <div>
                       <CardTitle className="flex items-center gap-2">
                         {expandedSections.has(section.id) ? (
-                          <ChevronDownIcon className="w-4 h-4" />
+                          <ChevronDown className="w-4 h-4" />
                         ) : (
-                          <ChevronRightIcon className="w-4 h-4" />
+                          <ChevronRight className="w-4 h-4" />
                         )}
                         {section.title}
                         <Badge variant="secondary">
@@ -240,9 +240,9 @@ export function APIDocumentation({
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-3">
                                     {isExpanded ? (
-                                      <ChevronDownIcon className="w-4 h-4" />
+                                      <ChevronDown className="w-4 h-4" />
                                     ) : (
-                                      <ChevronRightIcon className="w-4 h-4" />
+                                      <ChevronRight className="w-4 h-4" />
                                     )}
                                     <Badge className={cn('font-mono text-xs', getMethodColor(endpoint.method))}>
                                       {endpoint.method}
@@ -262,7 +262,7 @@ export function APIDocumentation({
                                           handleTestEndpoint(endpoint)
                                         }}
                                       >
-                                        <PlayIcon className="w-3 h-3 mr-1" />
+                                        <Play className="w-3 h-3 mr-1" />
                                         Test
                                       </Button>
                                     )}
@@ -453,7 +453,7 @@ function RequestBodySection({ requestBody }: { requestBody: NonNullable<APIEndpo
                       variant="ghost"
                       onClick={() => navigator.clipboard.writeText(JSON.stringify(example.value, null, 2))}
                     >
-                      <CopyIcon className="w-3 h-3" />
+                      <Copy className="w-3 h-3" />
                     </Button>
                   </div>
                   <pre className="text-xs overflow-x-auto">
@@ -500,7 +500,7 @@ function ResponsesSection({ responses }: { responses: APIEndpoint['responses'] }
                               variant="ghost"
                               onClick={() => navigator.clipboard.writeText(JSON.stringify(example.value, null, 2))}
                             >
-                              <CopyIcon className="w-3 h-3" />
+                              <Copy className="w-3 h-3" />
                             </Button>
                           </div>
                           <pre className="text-xs overflow-x-auto">

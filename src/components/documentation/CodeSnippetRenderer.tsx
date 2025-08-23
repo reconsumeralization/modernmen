@@ -1,15 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { 
-  Copy, 
-  Check, 
-  Play, 
-  Download, 
-  ExternalLink,
-  FileText,
-  Terminal
-} from 'lucide-react'
+import { Copy, Check, Play, Download, ExternalLink, FileText, Terminal } from '@/lib/icon-mapping'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

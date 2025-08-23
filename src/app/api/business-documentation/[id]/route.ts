@@ -13,18 +13,19 @@ const docService = new BusinessDocumentationService({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession()
     const user = getUserFromSession(session)
-    
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const documentation = await docService.getDocumentationById(params.id)
-    
+    const { id } = await params
+    const documentation = await docService.getDocumentationById(id)
+
     if (!documentation) {
       return NextResponse.json({ error: 'Documentation not found' }, { status: 404 })
     }
@@ -39,7 +40,7 @@ export async function GET(
     }
 
     const accessibleRoles = roleHierarchy[user.role as keyof typeof roleHierarchy] || [user.role]
-    
+
     if (!accessibleRoles.includes(documentation.targetRole) && documentation.status !== 'published') {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
@@ -56,12 +57,12 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession()
     const user = getUserFromSession(session)
-    
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -71,9 +72,10 @@ export async function PATCH(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
+    const { id } = await params
     const body = await request.json()
     const updateRequest = {
-      id: params.id,
+      id,
       ...body
     }
 
@@ -91,12 +93,12 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession()
     const user = getUserFromSession(session)
-    
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

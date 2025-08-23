@@ -6,12 +6,12 @@ import {
   TrendingUp, 
   Users, 
   Eye, 
-  Search, 
+  rch, 
   MessageSquare, 
-  AlertTriangle,
-  Star,
-  ThumbsUp
-} from 'lucide-react';
+  AlertTriangle, 
+  Star, 
+  ThumbsUp 
+} from '@/lib/icon-mapping';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -92,9 +92,9 @@ export function AnalyticsDashboard({
         changeType: 'positive' as const
       },
       {
-        title: 'Search Queries',
-        value: formatNumber(metrics.searchQueries.length),
-        icon: Search,
+        title: 'rch Queries',
+        value: formatNumber(metrics.rchQueries.length),
+        icon: rch,
         change: '+15%',
         changeType: 'positive' as const
       },
@@ -126,10 +126,10 @@ export function AnalyticsDashboard({
       }));
   };
 
-  const getSearchQueriesData = () => {
+  const getrchQueriesData = () => {
     if (!metrics) return [];
     
-    return metrics.searchQueries
+    return metrics.rchQueries
       .sort((a, b) => b.count - a.count)
       .slice(0, 10)
       .map(query => ({
@@ -214,7 +214,7 @@ export function AnalyticsDashboard({
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="search">Search</TabsTrigger>
+          <TabsTrigger value="rch">rch</TabsTrigger>
           <TabsTrigger value="feedback">Feedback</TabsTrigger>
         </TabsList>
 
@@ -288,17 +288,17 @@ export function AnalyticsDashboard({
           </Card>
         </TabsContent>
 
-        <TabsContent value="search" className="space-y-6">
+        <TabsContent value="rch" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Search className="h-5 w-5" />
-                Search Analytics
+                <rch className="h-5 w-5" />
+                rch Analytics
               </CardTitle>
             </CardHeader>
             <CardContent>
               <SimpleBarChart 
-                data={getSearchQueriesData()} 
+                data={getrchQueriesData()} 
                 dataKey="count"
                 width={600}
                 height={400}

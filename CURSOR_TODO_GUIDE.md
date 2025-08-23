@@ -1,6 +1,6 @@
 # Cursor IDE Todo System Guide
 
-Based on my search, there isn't a widely recognized "Cursors todo system" as a standalone product. However, Cursor IDE has several excellent ways to manage todos and project tasks. Here are the best approaches:
+Based on my rch, there isn't a widely recognized "Cursors todo system" as a standalone product. However, Cursor IDE has several excellent ways to manage todos and project tasks. Here are the best approaches:
 
 ## 🎯 **Recommended Todo Systems for Cursor IDE**
 
@@ -28,7 +28,7 @@ Cursor IDE doesn't have a dedicated todo system, but you can use:
 #### **2.1 Todo Tree Extension**
 ```bash
 # Install via Cursor's extension marketplace
-# Search for: "Todo Tree"
+# rch for: "Todo Tree"
 ```
 
 **Features:**
@@ -226,7 +226,7 @@ Cursor IDE doesn't have a dedicated todo system, but you can use:
 Since there's no official "Cursors todo system" documentation, here are the resources you should use:
 
 1. **Cursor Documentation**: https://cursor.sh/docs
-2. **VS Code Todo Extensions**: Search in Cursor's extension marketplace
+2. **VS Code Todo Extensions**: rch in Cursor's extension marketplace
 3. **GitHub Integration**: https://docs.github.com/en/codespaces
 4. **Project Management**: Use `.cursorrules` format as demonstrated
 

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   useMonitoring,
   useComponentPerformance,
-  useApiPerformance,
+  upiPerformance,
   useInteractionTracking,
   useErrorBoundary
 } from '@/hooks/useMonitoring'
@@ -26,16 +26,16 @@ export function MonitoringExample() {
     trackApiCall,
     trackPageView,
     trackFormSubmission,
-    trackSearch
+    trackrch
   } = useMonitoring()
 
   // Get specialized hooks
-  const { trackApiRequest } = useApiPerformance()
+  const { trackApiRequest } = upiPerformance()
   const { trackClick, trackFormInteraction } = useInteractionTracking()
   const { reportError } = useErrorBoundary()
 
   // Component state
-  const [searchQuery, setSearchQuery] = useState('')
+  const [rchQuery, setrchQuery] = useState('')
   const [formData, setFormData] = useState({ name: '', email: '' })
 
   // Example: Track button clicks
@@ -91,11 +91,11 @@ export function MonitoringExample() {
     }
   }
 
-  // Example: Track search
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      trackSearch(searchQuery, Math.floor(Math.random() * 100)) // Mock results count
-      addBreadcrumb(`Search performed: "${searchQuery}"`, 'search', 'info')
+  // Example: Track rch
+  const handlerch = () => {
+    if (rchQuery.trim()) {
+      trackrch(rchQuery, Math.floor(Math.random() * 100)) // Mock results count
+      addBreadcrumb(`rch performed: "${rchQuery}"`, 'rch', 'info')
     }
   }
 
@@ -209,16 +209,16 @@ export function MonitoringExample() {
             </form>
           </div>
 
-          {/* Search Tracking */}
+          {/* rch Tracking */}
           <div className="space-y-2">
-            <h3 className="font-medium">Search Tracking</h3>
+            <h3 className="font-medium">rch Tracking</h3>
             <div className="flex gap-2">
               <Input
-                placeholder="Search query..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="rch query..."
+                value={rchQuery}
+                onChange={(e) => setrchQuery(e.target.value)}
               />
-              <Button onClick={handleSearch}>Search</Button>
+              <Button onClick={handlerch}>rch</Button>
             </div>
           </div>
 

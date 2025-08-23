@@ -366,7 +366,7 @@ npm run dev
     completionRate: 0.87,
     averageRating: 4.6,
     feedbackCount: 23,
-    searchRanking: 0.92
+    rchRanking: 0.92
   },
   versioning: {
     changeHistory: [

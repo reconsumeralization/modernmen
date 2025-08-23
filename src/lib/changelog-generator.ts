@@ -428,7 +428,7 @@ export class ChangelogGenerator {
 
   private extractMigrationInstructions(text: string): string | undefined {
     // Look for migration instructions in commit message or PR description
-    const migrationPattern = /(?:migration|migrate|breaking change):\s*(.+?)(?:\n\n|\n$|$)/is;
+    const migrationPattern = /(?:migration|migrate|breaking change):\s*(.+?)(?:\n\n|\n$|$)/i;
     const match = text.match(migrationPattern);
     return match ? match[1].trim() : undefined;
   }

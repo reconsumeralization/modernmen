@@ -3,7 +3,7 @@ import { CollectionConfig } from 'payload'
 export const Services: CollectionConfig = {
   slug: 'services',
   admin: {
-    useAsTitle: 'name',
+    usTitle: 'name',
     description: 'Hair salon services and pricing',
     group: 'Business',
     defaultColumns: ['name', 'category', 'price', 'duration', 'isActive'],
@@ -236,7 +236,7 @@ export const Services: CollectionConfig = {
       },
       fields: [
         {
-          name: 'pointsEarned',
+          name: 'pointrned',
           type: 'number',
           defaultValue: 10,
           min: 0,

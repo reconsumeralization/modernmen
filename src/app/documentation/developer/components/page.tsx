@@ -9,16 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  RefreshCw, 
-  ExternalLink, 
-  BookOpen, 
-  Component, 
-  Palette,
-  BarChart3,
-  AlertCircle,
-  CheckCircle
-} from 'lucide-react';
+import { RefreshCw, ExternalLink, FileText as BookOpen, Settings as Component, Palette, BarChart3, AlertTriangle, CheckCircle, AlertCircle } from '@/lib/icon-mappings';
 import { toast } from 'sonner';
 
 export default function ComponentDocumentationPage() {

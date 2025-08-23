@@ -125,7 +125,7 @@ export interface GuideContent {
     completionRate: number;
     averageRating: number;
     feedbackCount: number;
-    searchRanking: number;
+    rchRanking: number;
   };
   versioning: {
     changeHistory: ChangeHistoryItem[];
@@ -145,7 +145,7 @@ export interface Parameter {
 
 export interface ContentType {
   mediaType: string;
-  schema: any;
+  schema?: any;
   examples?: Example[];
 }
 
@@ -231,6 +231,17 @@ export interface BreadcrumbItem {
   current?: boolean;
 }
 
+export interface NavigationItem {
+  title: string;
+  href: string;
+  sections?: NavigationSection[];
+}
+
+export interface NavigationSection {
+  title: string;
+  href: string;
+}
+
 export interface SidebarConfig {
   sections: SidebarSection[];
   userRole: UserRole;
@@ -256,26 +267,26 @@ export interface SidebarItem {
   children?: SidebarItem[];
 }
 
-export interface SearchFilter {
+export interface rchFilter {
   key: string;
   label: string;
-  options: SearchFilterOption[];
+  options: rchFilterOption[];
 }
 
-export interface SearchFilterOption {
+export interface rchFilterOption {
   value: string;
   label: string;
   count?: number;
 }
 
-export interface SearchRankingConfig {
+export interface rchRankingConfig {
   roleBasedBoost: Record<UserRole, number>;
   recencyBoost: number;
   popularityBoost: number;
   accuracyBoost: number;
 }
 
-export interface SearchAnalytics {
+export interface rchAnalytics {
   trackQuery: (query: string, results: number) => void;
   trackClick: (query: string, resultId: string) => void;
   trackNoResults: (query: string) => void;
@@ -292,13 +303,13 @@ export interface UserFeedback {
 export interface DocumentationMetrics {
   totalViews: number;
   uniqueUsers: number;
-  searchQueries: SearchMetric[];
+  rchQueries: rchMetric[];
   popularContent: ContentMetric[];
   userSatisfaction: SatisfactionMetric[];
   contentGaps: ContentGap[];
 }
 
-export interface SearchMetric {
+export interface rchMetric {
   query: string;
   count: number;
   resultsFound: number;
@@ -339,4 +350,39 @@ export interface ChangeItem {
   type: "added" | "changed" | "deprecated" | "removed" | "fixed" | "security";
   description: string;
   breaking: boolean;
+}
+export interface ValidationError {
+  message: string;
+  severity: 'error' | 'warning' | 'info';
+  type: 'content' | 'markdown' | 'link' | 'code' | 'accessibility';
+  line?: number;
+  column?: number;
+  field?: string;
+  code?: string;
+  context?: string;
+}
+
+export interface ValidationWarning {
+  message: string;
+  severity: 'warning' | 'info';
+  type: 'content' | 'markdown' | 'link' | 'code' | 'accessibility';
+  line?: number;
+  column?: number;
+  context?: string;
+}
+
+export interface ValidationSuggestion {
+  message: string;
+  type: 'improvement' | 'optimization' | 'best-practice';
+  priority: 'high' | 'medium' | 'low';
+  context?: string;
+}
+
+export interface ValidationResult {
+  isValid: boolean;
+  errors: ValidationError[];
+  warnings: ValidationWarning[];
+  suggestions?: ValidationSuggestion[];
+  score?: number;
+  lastValidated?: Date;
 }

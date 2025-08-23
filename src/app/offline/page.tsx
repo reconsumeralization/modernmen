@@ -1,6 +1,6 @@
 "use client"
 
-import { WifiOff, RefreshCw } from 'lucide-react'
+import { WifiOff, RefreshCw } from '@/lib/icon-mapping'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
 

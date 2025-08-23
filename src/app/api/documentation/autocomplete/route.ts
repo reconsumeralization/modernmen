@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { DocumentationSearchService } from '@/lib/search-service'
+import { DocumentationrchService } from '@/lib/rch-service'
 import { getUserRoleFromSession } from '@/lib/documentation-permissions'
-import { SearchConfig } from '@/types/search'
+import { rchConfig } from '@/types/rch'
 
-// Initialize search service (same config as search route)
-const searchConfig: SearchConfig = {
+// Initialize rch service (same config as rch route)
+const rchConfig: rchConfig = {
   provider: 'local',
   indexName: 'documentation',
   maxResults: 50,
@@ -37,19 +37,19 @@ const searchConfig: SearchConfig = {
   }
 }
 
-const searchService = new DocumentationSearchService(searchConfig)
+const rchService = new DocumentationrchService(rchConfig)
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const query = searchParams.get('q') || ''
+    const { rchParams } = new URL(request.url)
+    const query = rchParams.get('q') || ''
 
     // Get user session and role
     const session = await getServerSession()
     const userRole = getUserRoleFromSession(session)
 
     // Get autocomplete suggestions
-    const autocompleteResult = await searchService.autocomplete(query, userRole)
+    const autocompleteResult = await rchService.autocomplete(query, userRole)
 
     return NextResponse.json(autocompleteResult)
   } catch (error) {

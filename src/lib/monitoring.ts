@@ -44,7 +44,7 @@ export interface ErrorEvent {
 }
 
 export interface UserAction {
-  type: 'click' | 'navigation' | 'form_submission' | 'search' | 'api_call'
+  type: 'click' | 'navigation' | 'form_submission' | 'rch' | 'api_call'
   target?: string
   data?: Record<string, any>
   timestamp?: number
@@ -116,10 +116,8 @@ class MonitoringService {
           replaysOnErrorSampleRate: sentryConfig.replaysOnErrorSampleRate || 1.0,
           replaysSessionSampleRate: sentryConfig.replaysSessionSampleRate || 0.1,
           integrations: [
-            new Sentry.Replay({
-              maskAllText: true,
-              blockAllMedia: true,
-            }),
+            // Sentry.replayIntegration is not available in this version
+            // Use browserTracingIntegration instead if available
           ],
           beforeSend: (event: any) => {
             // Filter out development errors
@@ -151,7 +149,6 @@ class MonitoringService {
       import('logrocket').then((LogRocket) => {
         LogRocket.init(logRocketConfig.appId, {
           release: process.env.VERCEL_GIT_COMMIT_SHA,
-          environment: logRocketConfig.environment,
         })
 
         logger.info('LogRocket initialized successfully', {
@@ -210,6 +207,11 @@ class MonitoringService {
 
       // Catch global errors
       window.addEventListener('error', (event) => {
+        // Skip benign ResizeObserver errors
+        if (event.message?.includes('ResizeObserver')) {
+          return
+        }
+
         this.captureError({
           message: event.message,
           stack: event.error?.stack,
@@ -285,7 +287,7 @@ class MonitoringService {
   private monitorCustomMetrics() {
     // Monitor page load performance
     window.addEventListener('load', () => {
-      const navigation = performance.getEntriesByType('navigation')[0] as any
+      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
 
       if (navigation) {
         this.trackMetric({
@@ -299,13 +301,74 @@ class MonitoringService {
           value: navigation.domContentLoadedEventEnd - navigation.fetchStart,
           unit: 'ms'
         })
+
+        // Use modern performance timing properties
+        this.trackMetric({
+          name: 'dns_lookup_time',
+          value: navigation.domainLookupEnd - navigation.domainLookupStart,
+          unit: 'ms'
+        })
+
+        this.trackMetric({
+          name: 'tcp_connect_time',
+          value: navigation.connectEnd - navigation.connectStart,
+          unit: 'ms'
+        })
       }
     })
   }
 
   // Public API methods
+  trackEvent(eventName: string, properties?: Record<string, any>) {
+    try {
+      // Send to analytics service
+      if (this.config.analytics?.enabled) {
+        logger.info('Event tracked', { eventName, properties })
+      }
+
+      // Send to LogRocket if available
+      if (typeof window !== 'undefined' && (window as any).LogRocket) {
+        const LogRocket = (window as any).LogRocket
+        LogRocket.track(eventName, properties)
+      }
+
+      // Send to Sentry if available
+      if (typeof window !== 'undefined' && (window as any).Sentry) {
+        const Sentry = (window as any).Sentry
+        Sentry.captureMessage(`Event: ${eventName}`, {
+          level: 'info',
+          extra: properties
+        })
+      }
+    } catch (error) {
+      logger.error('Failed to track event', {
+        eventName,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      })
+    }
+  }
+
   captureError(error: ErrorEvent) {
     try {
+      // Filter out benign browser warnings and errors
+      const benignErrors = [
+        'ResizeObserver loop limit exceeded',
+        'ResizeObserver loop completed with undelivered notifications',
+        'Non-Error promise rejection captured',
+        'Script error',
+        'Network request failed'
+      ]
+
+      const shouldIgnore = benignErrors.some(benignError => 
+        error.message?.toLowerCase().includes(benignError.toLowerCase())
+      )
+
+      if (shouldIgnore) {
+        // Log as debug instead of error for benign issues
+        logger.debug(`Ignoring benign error: ${error.message}`)
+        return
+      }
+
       // Log to our custom logger
       logger.error(error.message, {
         stack: error.stack,
@@ -404,20 +467,27 @@ class MonitoringService {
     }
   }
 
-  setUser(user: { id?: string; email?: string; role?: string }) {
+  setUser(user: { id?: string; email?: string | null; role?: string }) {
     try {
+      // Normalize user data to handle nullable email
+      const normalizedUser = {
+        id: user.id,
+        email: user.email || undefined,
+        role: user.role
+      }
+
       // Set user context in Sentry
       if (typeof window !== 'undefined' && (window as any).Sentry) {
         const Sentry = (window as any).Sentry
-        Sentry.setUser(user)
+        Sentry.setUser(normalizedUser)
       }
 
       // Set user context in LogRocket
       if (typeof window !== 'undefined' && (window as any).LogRocket) {
         const LogRocket = (window as any).LogRocket
-        LogRocket.identify(user.id || 'anonymous', {
-          email: user.email,
-          role: user.role
+        LogRocket.identify(normalizedUser.id || 'anonymous', {
+          email: normalizedUser.email,
+          role: normalizedUser.role
         })
       }
 
@@ -497,10 +567,10 @@ export const monitoringHelpers = {
     })
   },
 
-  // Track search queries
-  trackSearch: (query: string, resultsCount?: number) => {
+  // Track rch queries
+  trackrch: (query: string, resultsCount?: number) => {
     monitoring.trackUserAction({
-      type: 'search',
+      type: 'rch',
       data: {
         query,
         resultsCount

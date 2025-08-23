@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Icons } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
-import { Bell } from 'lucide-react'
+import { Bell } from '@/lib/icon-mapping'
 
 interface Notification {
   id: string
@@ -37,7 +37,7 @@ export function NotificationHistory({ userId, className = '' }: NotificationHist
   const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true)
-      const params = new URLSearchParams({
+      const params = new URLrchParams({
         page: currentPage.toString(),
         limit: '20'
       })

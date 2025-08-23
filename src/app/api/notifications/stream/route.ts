@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = session.user.id
-    const { searchParams } = new URL(request.url)
-    const includeHistory = searchParams.get('history') === 'true'
+    const { rchParams } = new URL(request.url)
+    const includeHistory = rchParams.get('history') === 'true'
 
     // Set up Server-Sent Events
     const stream = new ReadableStream({

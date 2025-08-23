@@ -2,18 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { 
-  BookOpen, 
-  Code, 
-  FileText, 
-  ExternalLink, 
-  Star,
-  TrendingUp,
-  Users,
-  Clock,
-  ChevronRight,
-  Sparkles
-} from 'lucide-react'
+import { Book, Code, FileText, ExternalLink, Star, TrendingUp, Users, Clock, ChevronRight, Sparkles } from '@/lib/icon-mapping'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -171,7 +160,7 @@ export function RelatedContentRecommendations({
         {relatedContent.length > maxRecommendations && (
           <div className="mt-4 pt-4 border-t border-slate-700">
             <Button variant="outline" className="w-full" asChild>
-              <Link href="/documentation/search">
+              <Link href="/documentation/rch">
                 View All Related Content
                 <ChevronRight className="h-4 w-4 ml-2" />
               </Link>
@@ -282,7 +271,7 @@ interface SmartRecommendationsProps {
   userBehavior?: {
     viewedContent: string[]
     completedGuides: string[]
-    searchQueries: string[]
+    rchQueries: string[]
     timeSpentByCategory: Record<string, number>
   }
   className?: string

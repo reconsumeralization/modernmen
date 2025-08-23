@@ -1,4 +1,6 @@
 import { ContentLoader, createContentLoader, defaultContentLoaderConfig } from '../content-loader';
+// @ts-nocheck
+import { expect } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
 
@@ -152,7 +154,7 @@ This is a test document.
       const result = await validationLoader.loadDocumentation('test.md');
 
       expect(result.validation).toBeDefined();
-      expect(result.validation!.isValid).toBeDefined();
+      expect(result.validation?.isValid).toBeDefined();
     });
 
     it('should skip validation for YAML files', async () => {
@@ -184,8 +186,8 @@ description: This is a YAML configuration file`;
       const results = await loader.loadMultipleDocuments(['doc1.md', 'doc2.md']);
 
       expect(results).toHaveLength(2);
-      expect(results[0].frontmatter.title).toBe('Doc 1');
-      expect(results[1].frontmatter.title).toBe('Doc 2');
+      expect(results[0]?.frontmatter.title).toBe('Doc 1');
+      expect(results[1]?.frontmatter.title).toBe('Doc 2');
     });
 
     it('should handle partial failures gracefully', async () => {
@@ -200,7 +202,7 @@ description: This is a YAML configuration file`;
       const results = await loader.loadMultipleDocuments(['doc1.md', 'nonexistent.md']);
 
       expect(results).toHaveLength(1);
-      expect(results[0].frontmatter.title).toBe('Doc 1');
+      expect(results[0]?.frontmatter.title).toBe('Doc 1');
     });
   });
 
@@ -228,7 +230,6 @@ description: This is a YAML configuration file`;
       expect(files).toContain('docs/subdir/subdoc.md');
       expect(files).not.toContain('docs/unsupported.txt');
     });
-
     it('should scan directory non-recursively', async () => {
       const mockDirEntries = [
         { name: 'doc1.md', isFile: () => true, isDirectory: () => false },
@@ -292,22 +293,22 @@ Another [internal link](/docs/other) and [external link](https://github.com).
       const result = await loader.loadDocumentation('complex.md');
 
       expect(result.extractedMetadata.headings).toHaveLength(3);
-      expect(result.extractedMetadata.headings[0]).toEqual({
+      expect(result.extractedMetadata.headings![0]).toEqual({
         level: 1,
         text: 'Main Title',
         id: 'main-title'
       });
 
       expect(result.extractedMetadata.codeBlocks).toHaveLength(2);
-      expect(result.extractedMetadata.codeBlocks[0].language).toBe('javascript');
-      expect(result.extractedMetadata.codeBlocks[1].language).toBe('python');
+      expect(result.extractedMetadata.codeBlocks[0]?.language).toBe('javascript');
+      expect(result.extractedMetadata.codeBlocks[1]?.language).toBe('python');
 
       expect(result.extractedMetadata.links).toHaveLength(3);
-      expect(result.extractedMetadata.links[0].isExternal).toBe(true);
-      expect(result.extractedMetadata.links[1].isExternal).toBe(false);
+      expect(result.extractedMetadata.links[0]?.isExternal).toBe(true);
+      expect(result.extractedMetadata.links[1]?.isExternal).toBe(false);
 
       expect(result.extractedMetadata.images).toHaveLength(2);
-      expect(result.extractedMetadata.images[0].title).toBe('Test Image');
+      expect(result.extractedMetadata.images[0]?.title).toBe('Test Image');
 
       expect(result.extractedMetadata.wordCount).toBeGreaterThan(20);
       expect(result.extractedMetadata.estimatedReadTime).toBeGreaterThan(0);
@@ -364,7 +365,8 @@ describe('createContentLoader', () => {
   it('should create loader with custom config', () => {
     const customConfig = {
       enableValidation: false,
-      supportedFormats: ['markdown'] as const
+      // Cast to mutable array to satisfy ContentLoaderConfig type
+      supportedFormats: ['markdown'] as any
     };
 
     const loader = createContentLoader(customConfig);

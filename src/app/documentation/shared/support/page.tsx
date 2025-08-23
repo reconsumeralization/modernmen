@@ -2,18 +2,7 @@ import { Metadata } from 'next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { 
-  Mail, 
-  Phone, 
-  MessageCircle, 
-  Clock, 
-  AlertCircle,
-  CheckCircle,
-  Users,
-  Headphones,
-  FileText,
-  ExternalLink
-} from 'lucide-react'
+import { Bell, Phone, MessageSquare, Clock, AlertTriangle, CheckCircle, Users, Headphones, FileText, ExternalLink } from '@/lib/icon-mapping'
 
 export const metadata: Metadata = {
   title: 'Contact Support - Documentation',

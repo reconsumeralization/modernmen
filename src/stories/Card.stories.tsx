@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-const meta: Meta<typeof Card> = {
+const meta = {
   title: 'UI/Card',
   component: Card,
   parameters: {
@@ -23,7 +23,7 @@ const meta: Meta<typeof Card> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = any;
 
 export const Default: Story = {
   render: () => (

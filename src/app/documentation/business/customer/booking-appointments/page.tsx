@@ -193,7 +193,7 @@ const bookingConfirmation = {
 
 **For Regular Maintenance:**
 - Book the same services you've had before
-- Consider seasonal treatments (deep conditioning in winter)
+- Consider sonal treatments (deep conditioning in winter)
 - Add grooming services as needed
 - Take advantage of loyalty program discounts
 
@@ -300,7 +300,7 @@ const bookingConfirmation = {
 - Appointment confirmations and changes
 - Promotional offers and special events
 - Loyalty program updates and rewards
-- Seasonal service recommendations
+- sonal service recommendations
 
 **Text Message Notifications**
 - Appointment reminders and confirmations
@@ -342,7 +342,7 @@ const bookingConfirmation = {
 **Promotional Notifications**
 - Birthday month special offers
 - Loyalty program milestone rewards
-- Seasonal service promotions
+- sonal service promotions
 - Referral program opportunities`,
         codeSnippets: [],
         interactiveExamples: [
@@ -370,10 +370,10 @@ const bookingConfirmation = {
 - **Off-Peak Hours**: 10 AM - 2 PM typically has more availability
 - **Advance Booking**: Book 2-3 weeks ahead for popular stylists
 
-**Seasonal Considerations**
-- **Spring/Summer**: Book early for wedding and event season
+**sonal Considerations**
+- **Spring/Summer**: Book early for wedding and event son
 - **Back-to-School**: August/September are busy months
-- **Holiday Season**: November/December fill up quickly
+- **Holiday son**: November/December fill up quickly
 - **New Year**: January is popular for fresh starts
 
 **Getting Your Preferred Stylist**
@@ -405,7 +405,7 @@ const bookingConfirmation = {
 **Package and Bundle Deals**
 - Monthly maintenance packages for regular customers
 - Special occasion packages (wedding, graduation)
-- Seasonal treatment bundles
+- sonal treatment bundles
 - Referral rewards and family discounts
 
 **Troubleshooting Common Issues**
@@ -495,7 +495,7 @@ const bookingConfirmation = {
     completionRate: 0,
     averageRating: 0,
     feedbackCount: 0,
-    searchRanking: 95
+    rchRanking: 95
   },
   versioning: {
     changeHistory: [],

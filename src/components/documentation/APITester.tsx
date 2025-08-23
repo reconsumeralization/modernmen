@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { PlayIcon, CopyIcon, SaveIcon, HistoryIcon, AlertCircleIcon, CheckCircleIcon } from 'lucide-react'
+import { Play, Copy, Download, Clock, AlertTriangle, CheckCircle } from '@/lib/icon-mapping'
 import { APIEndpoint, APITestRequest, APITestResponse, APITestHistory } from '@/types/api-documentation'
 import { cn } from '@/lib/utils'
 
@@ -126,7 +126,7 @@ export function APITester({ endpoint, authentication, onClose, onTest }: APITest
     })
 
     // Add query parameters
-    const queryParams = new URLSearchParams()
+    const queryParams = new URLrchParams()
     endpoint.parameters.query.forEach(param => {
       const value = parameters[param.name]
       if (value !== undefined && value !== '') {
@@ -265,7 +265,10 @@ export function APITester({ endpoint, authentication, onClose, onTest }: APITest
       setRequestBody(JSON.stringify(historyItem.request.body, null, 2))
     }
     if (historyItem.request.authentication) {
-      setAuthType(historyItem.request.authentication.type)
+      // Only set auth type if it's a valid type for our state
+      if (historyItem.request.authentication.type !== 'basic') {
+        setAuthType(historyItem.request.authentication.type)
+      }
       setAuthToken(historyItem.request.authentication.token || '')
     }
   }

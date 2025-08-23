@@ -23,7 +23,10 @@ export async function initializePayload() {
         await payload.count({ collection })
         logger.info(`✅ Collection '${collection}' is accessible`)
       } catch (error) {
-        logger.warn(`⚠️  Collection '${collection}' may not exist yet:`, error)
+        logger.warn(`⚠️  Collection '${collection}' may not exist yet:`, { 
+          collection,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        })
       }
     }
 
@@ -56,14 +59,14 @@ export async function initializePayload() {
         logger.info('✅ Admin user already exists')
       }
     } catch (error) {
-      logger.error('Failed to create admin user:', error)
+      logger.error('Failed to create admin user:', { operation: 'create_admin_user' }, error instanceof Error ? error : undefined)
     }
 
     logger.info('🎉 Payload CMS initialization complete!')
     return payload
 
   } catch (error) {
-    logger.error('❌ Payload CMS initialization failed:', error)
+    logger.error('❌ Payload CMS initialization failed:', { operation: 'payload_init' }, error instanceof Error ? error : undefined)
     throw error
   }
 }
@@ -136,7 +139,7 @@ export async function seedInitialData() {
 
     logger.info('✅ Initial data seeding complete!')
   } catch (error) {
-    logger.error('❌ Failed to seed initial data:', error)
+    logger.error('❌ Failed to seed initial data:', { operation: 'seed_data' }, error instanceof Error ? error : undefined)
     throw error
   }
 }

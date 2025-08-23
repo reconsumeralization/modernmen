@@ -18,7 +18,7 @@ export function MonitoringInit() {
 
         if (navigation) {
           addBreadcrumb(
-            `Page loaded in ${Math.round(navigation.loadEventEnd - navigation.navigationStart)}ms`,
+            `Page loaded in ${Math.round(navigation.loadEventEnd - navigation.fetchStart)}ms`,
             'performance',
             'info'
           )

@@ -32,7 +32,7 @@ export function useMonitoring() {
     if (session?.user) {
       monitoring.setUser({
         id: session.user.id,
-        email: session.user.email,
+        email: session.user.email ?? undefined,
         role: session.user.role
       })
     }
@@ -86,9 +86,14 @@ export function useMonitoring() {
     monitoringHelpers.trackFormSubmission(formName, success, duration)
   }, [])
 
-  // Search tracking helper
-  const trackSearch = useCallback((query: string, resultsCount?: number) => {
-    monitoringHelpers.trackSearch(query, resultsCount)
+  // rch tracking helper
+  const trackrch = useCallback((query: string, resultsCount?: number) => {
+    monitoringHelpers.trackrch(query, resultsCount)
+  }, [])
+
+  // Event tracking helper
+  const trackEvent = useCallback((eventName: string, properties?: Record<string, any>) => {
+    monitoring.trackEvent(eventName, properties)
   }, [])
 
   return {
@@ -99,7 +104,8 @@ export function useMonitoring() {
     trackApiCall,
     trackPageView,
     trackFormSubmission,
-    trackSearch
+    trackrch,
+    trackEvent
   }
 }
 
@@ -127,7 +133,7 @@ export function useComponentPerformance(componentName: string) {
 }
 
 // Hook for tracking API performance
-export function useApiPerformance() {
+export function upiPerformance() {
   const { trackApiCall } = useMonitoring()
 
   const trackApiRequest = useCallback(async <T>(

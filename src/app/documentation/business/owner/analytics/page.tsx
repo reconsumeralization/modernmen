@@ -124,7 +124,7 @@ const calculateKPIs = (data: BusinessData) => {
 **Time-Based Analysis**
 - **Daily Patterns**: Identify peak and slow days for staffing optimization
 - **Weekly Trends**: Understand weekly booking patterns and adjust marketing
-- **Monthly Cycles**: Recognize seasonal fluctuations and plan accordingly
+- **Monthly Cycles**: Recognize sonal fluctuations and plan accordingly
 - **Yearly Growth**: Track long-term business growth and set realistic goals
 
 **Service Performance Analysis**
@@ -141,7 +141,7 @@ const calculateKPIs = (data: BusinessData) => {
 
 **Forecasting Techniques**
 - **Trend Projection**: Use historical data to predict future revenue
-- **Seasonal Adjustments**: Account for seasonal variations in forecasts
+- **sonal Adjustments**: Account for sonal variations in forecasts
 - **Scenario Planning**: Model different growth scenarios and their impacts
 - **Goal Setting**: Set realistic revenue targets based on data insights`,
         codeSnippets: [],
@@ -336,7 +336,7 @@ const calculateKPIs = (data: BusinessData) => {
     completionRate: 0,
     averageRating: 0,
     feedbackCount: 0,
-    searchRanking: 88
+    rchRanking: 88
   },
   versioning: {
     changeHistory: [],

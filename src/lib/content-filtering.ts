@@ -221,9 +221,9 @@ export function createUserContentFilter(user: DocumentationUser | null): Content
 }
 
 /**
- * Apply content filter to search results
+ * Apply content filter to rch results
  */
-export function filterSearchResults(
+export function filterrchResults(
   results: any[],
   user: DocumentationUser | null,
   options: ContentFilterOptions = {}

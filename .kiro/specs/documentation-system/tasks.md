@@ -66,14 +66,14 @@ chronization utilities with automated validation and publishing workflows
 
 
 
-### Phase 4: Search, Guides, and Interactive Components
+### Phase 4: rch, Guides, and Interactive Components
 
-- [-] 4. Create advanced documentation search functionality
+- [-] 4. Create advanced documentation rch functionality
 
-  - Implement DocumentationSearch component with fuzzy search, synonyms, and SearchRankingConfig for role-based boosting
-  - Build search indexing utilities for documentation content with full-text search integration (Algolia or ElasticSearch)
-  - Create search ranking algorithm with popularity, recency, and accuracy boosting factors
-  - Implement comprehensive search analytics tracking for queries, results, clicks, and no-results scenarios
+  - Implement Documentationrch component with fuzzy rch, synonyms, and rchRankingConfig for role-based boosting
+  - Build rch indexing utilities for documentation content with full-text rch integration (Algolia or Elasticrch)
+  - Create rch ranking algorithm with popularity, recency, and accuracy boosting factors
+  - Implement comprehensive rch analytics tracking for queries, results, clicks, and no-results scenarios
   - _Requirements: 1.4, 2.3_
 
 - [x] 5. Develop guide rendering and interactive display components (Parallel with Step 4)
@@ -84,7 +84,7 @@ chronization utilities with automated validation and publishing workflows
   - Build prerequisite checking and progress tracking for multi-step guides with completion analytics
   - Create related content recommendation system based on user role, behavior, and current guide context
   - _Requirements: 8.2, 9.2, 10.2_
-  - **Milestone: M4 - Search & Rendering**
+  - **Milestone: M4 - rch & Rendering**
 
 ### Phase 5: API & Component Documentation
 -
@@ -127,7 +127,7 @@ chronization utilities with automated validation and publishing workflows
   - Create FeedbackWidget component with ratings, comments, and UserFeedback interface for structured data collection
   - Build analytics tracking for page views, user journeys, content effectiveness, and DocumentationMetrics dashboard
   - Implement user satisfaction metrics collection with ContentAnalytics and OptimizationRecommendations
-  - Create content gap identification based on search queries, user feedback, and behavioral analytics
+  - Create content gap identification based on rch queries, user feedback, and behavioral analytics
   - _Requirements: 1.4, 8.4, 9.4, 10.4_
 
 
@@ -203,14 +203,14 @@ chronization utilities with automated validation and publishing workflows
   - Create AnalyticsDashboard component for content managers and administrators with DocumentationMetrics visualization
   - Implement content performance metrics with user engagement tracking and ContentAnalytics integration
   - Build optimization recommendations based on user behavior, feedback, and OptimizationRecommendations engine
-  - Create automated content gap detection and improvement suggestions with SearchFallback strategies
+  - Create automated content gap detection and improvement suggestions with rchFallback strategies
   - _Requirements: 8.3, 11.2_
 
-- [ ] 18. Implement advanced search and content discovery system (Parallel with Steps 16-17)
-  - Create full-text search integration with Algolia or ElasticSearch with SearchRankingConfig and role-based boosting
+- [ ] 18. Implement advanced rch and content discovery system (Parallel with Steps 16-17)
+  - Create full-text rch integration with Algolia or Elasticrch with rchRankingConfig and role-based boosting
   - Build content recommendation engine based on user role, behavior, and RelatedContent algorithms
-  - Implement search result ranking with popularity, relevance scoring, and SearchAnalytics tracking
-  - Create search analytics and query optimization features with typo correction and category redirection
+  - Implement rch result ranking with popularity, relevance scoring, and rchAnalytics tracking
+  - Create rch analytics and query optimization features with typo correction and category redirection
   - _Requirements: 1.4, 2.3_
   - **Milestone: M10 - CI/CD & Optimization**
 
@@ -226,7 +226,7 @@ chronization utilities with automated validation and publishing workflows
 
 - [ ] 20. Finalize documentation portal with comprehensive testing and validation (Parallel with Step 19)
   - Create end-to-end tests for all user journeys and role-based workflows with automated content validation
-  - Implement performance testing for search functionality, large content loading, and DocumentationValidator integration
+  - Implement performance testing for rch functionality, large content loading, and DocumentationValidator integration
   - Build accessibility testing suite with automated WCAG compliance checking and AccessibilityTesting procedures
   - Create user acceptance testing scenarios for all documentation sections, features, and error handling workflows
   - _Requirements: 6.1, 6.2, 6.3, 6.4_
@@ -239,11 +239,11 @@ chronization utilities with automated validation and publishing workflows
 | **M1: Portal Ready**                         | `/app/documentation` routes, layout, role context, core TypeScript interfaces       | None                    |
 | **M2: Core Content Models**                  | GuideContent, APIDocumentationModel, validation, CMS integration                    | M1                      |
 | **M3: Role-Based Access**                    | Permissions, filtering, and user role context established                           | M1, M2                  |
-| **M4: Search & Rendering**                   | DocumentationSearch and GuideRenderer functional with interactive examples          | M2, M3                  |
+| **M4: rch & Rendering**                   | Documentationrch and GuideRenderer functional with interactive examples          | M2, M3                  |
 | **M5: API & Component Docs**                 | APIDocumentation and Storybook fully integrated                                     | M2, M3                  |
 | **M6: Analytics & Versioning**               | FeedbackWidget, AnalyticsDashboard, VersionHistory operational                      | M3, M4                  |
 | **M7: Business/Admin Docs**                  | Salon owner/employee/customer and admin guides live                                 | M2, M3, M6              |
 | **M8: Developer & Testing Docs**             | Onboarding, setup, and automated testing docs completed                             | M2                      |
 | **M9: Accessibility & Internationalization** | WCAG compliance and multi-locale content live                                       | M4, M5                  |
-| **M10: CI/CD & Optimization**                | Automated validation, deployment pipelines, search ranking, content recommendations | M6, M7, M8              |
+| **M10: CI/CD & Optimization**                | Automated validation, deployment pipelines, rch ranking, content recommendations | M6, M7, M8              |
 | **M11: Interactive & Final QA**              | Interactive playgrounds, SDK generation, end-to-end testing, UAT complete           | All previous milestones |

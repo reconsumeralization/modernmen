@@ -18,8 +18,8 @@ jest.mock('next/navigation', () => ({
       defaultLocale: 'en',
     }
   },
-  useSearchParams() {
-    return new URLSearchParams()
+  userchParams() {
+    return new URLrchParams()
   },
   usePathname() {
     return '/'

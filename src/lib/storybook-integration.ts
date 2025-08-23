@@ -101,9 +101,9 @@ export class StorybookIntegrationService {
   }
 
   /**
-   * Search components by query
+   * rch components by query
    */
-  async searchComponents(query: string): Promise<ComponentDocumentation[]> {
+  async rchComponents(query: string): Promise<ComponentDocumentation[]> {
     const documentation = await this.getDocumentation();
     const lowercaseQuery = query.toLowerCase();
     

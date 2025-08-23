@@ -8,17 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Search, 
-  Component, 
-  Palette, 
-  Type, 
-  Accessibility, 
-  GitBranch,
-  ExternalLink,
-  Eye,
-  Code
-} from 'lucide-react';
+import { rch, Component, Palette, Type, Accessibility, GitBranch, ExternalLink, Eye, Code } from '@/lib/icon-mapping';
 
 interface DesignSystemDocsProps {
   documentation: DesignSystemDocumentation;
@@ -31,15 +21,15 @@ export function DesignSystemDocs({
   onComponentSelect,
   onPlaygroundOpen 
 }: DesignSystemDocsProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [rchQuery, setrchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ComponentCategory | 'all'>('all');
   const [selectedComponent, setSelectedComponent] = useState<ComponentDocumentation | null>(null);
 
   const filteredComponents = documentation.components.filter(component => {
-    const matchesSearch = component.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         component.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesrch = component.name.toLowerCase().includes(rchQuery.toLowerCase()) ||
+                         component.description.toLowerCase().includes(rchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || component.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    return matchesrch && matchesCategory;
   });
 
   const categories = Array.from(new Set(documentation.components.map(c => c.category)));
@@ -76,14 +66,14 @@ export function DesignSystemDocs({
         </TabsList>
 
         <TabsContent value="components" className="space-y-4">
-          {/* Search and Filter */}
+          {/* rch and Filter */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <rch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search components..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="rch components..."
+                value={rchQuery}
+                onChange={(e) => setrchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -119,7 +109,7 @@ export function DesignSystemDocs({
               <Component className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">No components found</h3>
               <p className="text-muted-foreground">
-                Try adjusting your search or filter criteria
+                Try adjusting your rch or filter criteria
               </p>
             </div>
           )}
@@ -334,25 +324,25 @@ function ComponentDetailPanel({
 }
 
 function DesignTokensSection({ tokens }: { tokens: any[] }) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [rchQuery, setrchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const categories = Array.from(new Set(tokens.map(t => t.category)));
   const filteredTokens = tokens.filter(token => {
-    const matchesSearch = token.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesrch = token.name.toLowerCase().includes(rchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || token.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    return matchesrch && matchesCategory;
   });
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <rch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search design tokens..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="rch design tokens..."
+            value={rchQuery}
+            onChange={(e) => setrchQuery(e.target.value)}
             className="pl-10"
           />
         </div>

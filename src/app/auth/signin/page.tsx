@@ -1,6 +1,6 @@
 'use client'
 
-import { getProviders, signIn, getSession } from 'next-auth/react'
+import { signIn, getSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -15,7 +15,6 @@ export default function SignInPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [providers, setProviders] = useState<any>(null)
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -23,12 +22,6 @@ export default function SignInPage() {
   const error = searchParams?.get('error')
 
   useEffect(() => {
-    const getProvidersData = async () => {
-      const providers = await getProviders()
-      setProviders(providers)
-    }
-    getProvidersData()
-
     if (error) {
       toast.error(error === 'CredentialsSignin' ? 'Invalid credentials' : 'Authentication failed')
     }
@@ -58,34 +51,7 @@ export default function SignInPage() {
     }
   }
 
-  const handleProviderSignIn = (providerId: string) => {
-    signIn(providerId, { callbackUrl })
-  }
-
-  const renderOAuthProviders = () => {
-    if (!providers) return null
-
-    const oauthProviders = Object.values(providers).filter((provider: any) => provider.id !== 'credentials')
-
-    return oauthProviders.map((provider: any) => (
-      <Button
-        key={provider.name}
-        variant="outline"
-        onClick={() => handleProviderSignIn(provider.id)}
-        className="w-full border-amber-200 hover:border-amber-300 hover:bg-amber-50 text-gray-700"
-        disabled={isLoading}
-      >
-        {provider.id === 'google' && <Icons.google className="mr-2 h-4 w-4" />}
-        {provider.id === 'github' && <Icons.gitHub className="mr-2 h-4 w-4" />}
-        Continue with {provider.name}
-      </Button>
-    ))
-  }
-
   const renderCredentialsForm = () => {
-    if (!providers || !Object.values(providers).some((p: any) => p.id === 'credentials')) {
-      return null
-    }
 
     return (
       <>
@@ -206,21 +172,6 @@ export default function SignInPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* OAuth Providers */}
-            {renderOAuthProviders()}
-
-            {/* Divider */}
-            {providers && Object.values(providers).length > 1 && (
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-amber-200" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-amber-700 font-medium">Or continue with</span>
-                </div>
-              </div>
-            )}
-
             {/* Credentials Form */}
             {renderCredentialsForm()}
           </CardContent>

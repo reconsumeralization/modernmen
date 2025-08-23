@@ -5,10 +5,10 @@ import { logger } from '@/lib/logger'
 
 async function getStorybookDocumentation(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const component = searchParams.get('component')
-    const category = searchParams.get('category')
-    const query = searchParams.get('query')
+    const { rchParams } = new URL(request.url)
+    const component = rchParams.get('component')
+    const category = rchParams.get('category')
+    const query = rchParams.get('query')
 
     logger.info('Fetching storybook documentation', {
       component,
@@ -35,9 +35,9 @@ async function getStorybookDocumentation(request: NextRequest) {
     }
 
     if (query) {
-      // Search components
-      const components = await storybookService.searchComponents(query)
-      return createSuccessResponse(components, `Search results for: ${query}`)
+      // rch components
+      const components = await storybookService.rchComponents(query)
+      return createSuccessResponse(components, `rch results for: ${query}`)
     }
 
     // Get all documentation

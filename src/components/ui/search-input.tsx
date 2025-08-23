@@ -3,12 +3,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Input } from './input'
 import { Button } from './button'
-import { Search, X, Filter, Loader2 } from 'lucide-react'
+import { rch, X, Filter, Loader2 } from '@/lib/icon-mapping'
 import { cn } from '@/lib/utils'
 import { useMonitoring } from '@/hooks/useMonitoring'
 
-interface SearchInputProps {
-  onSearch: (query: string, filters?: any) => void
+interface rchInputProps {
+  onrch: (query: string, filters?: any) => void
   placeholder?: string
   className?: string
   showFilters?: boolean
@@ -16,14 +16,14 @@ interface SearchInputProps {
   initialQuery?: string
 }
 
-export function SearchInput({
-  onSearch,
-  placeholder = 'Search documentation...',
+export function rchInput({
+  onrch,
+  placeholder = 'rch documentation...',
   className,
   showFilters = true,
   isLoading = false,
   initialQuery = ''
-}: SearchInputProps) {
+}: rchInputProps) {
   const [query, setQuery] = useState(initialQuery)
   const [showFilterPanel, setShowFilterPanel] = useState(false)
   const [filters, setFilters] = useState({
@@ -34,29 +34,29 @@ export function SearchInput({
   })
 
   const inputRef = useRef<HTMLInputElement>(null)
-  const { trackSearch } = useMonitoring()
+  const { trackrch } = useMonitoring()
 
-  // Debounce search
+  // Debounce rch
   useEffect(() => {
     const timer = setTimeout(() => {
       if (query.trim()) {
-        onSearch(query, filters)
-        trackSearch(query, 0) // Will be updated with actual results count
+        onrch(query, filters)
+        trackrch(query, 0) // Will be updated with actual results count
       }
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [query, filters, onSearch, trackSearch])
+  }, [query, filters, onrch, trackrch])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (query.trim()) {
-      onSearch(query, filters)
-      trackSearch(query, 0)
+      onrch(query, filters)
+      trackrch(query, 0)
     }
   }
 
-  const clearSearch = () => {
+  const clearrch = () => {
     setQuery('')
     setFilters({
       category: [],
@@ -89,7 +89,7 @@ export function SearchInput({
     <div className={cn('relative w-full', className)}>
       <form onSubmit={handleSubmit} className="relative">
         <div className="relative flex items-center">
-          <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
+          <rch className="absolute left-3 h-4 w-4 text-muted-foreground" />
           <Input
             ref={inputRef}
             type="text"
@@ -108,7 +108,7 @@ export function SearchInput({
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={clearSearch}
+                onClick={clearrch}
                 className="h-8 w-8 p-0"
               >
                 <X className="h-4 w-4" />
@@ -219,7 +219,7 @@ export function SearchInput({
               type="button"
               variant="outline"
               size="sm"
-              onClick={clearSearch}
+              onClick={clearrch}
             >
               Clear All Filters
             </Button>

@@ -29,7 +29,7 @@ Modern Men Salon Management System now includes a fully integrated Payload CMS b
 ### API Endpoints
 - `/api/admin/[...payload]` - Admin panel API
 - `/api/payload/init` - Initialization and health checks
-- `/api/payload/search` - Search across collections
+- `/api/payload/rch` - rch across collections
 - `/api/payload/analytics` - Analytics and reporting
 
 ## Setup Instructions
@@ -99,13 +99,13 @@ Default admin credentials:
 
 ## API Integration
 
-### Search Integration
+### rch Integration
 
-The Payload search endpoint is integrated with the main search functionality:
+The Payload rch endpoint is integrated with the main rch functionality:
 
 ```typescript
-// Example search request
-const response = await fetch('/api/payload/search?q=haircut&collection=services')
+// Example rch request
+const response = await fetch('/api/payload/rch?q=haircut&collection=services')
 const results = await response.json()
 ```
 

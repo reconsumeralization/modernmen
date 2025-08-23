@@ -9,6 +9,9 @@ const nextConfig = {
   },
   serverExternalPackages: ['@prisma/client'],
   
+  // Vercel optimizations
+  outputFileTracingRoot: process.cwd(),
+  
   // Progressive Web App
   images: {
     remotePatterns: [

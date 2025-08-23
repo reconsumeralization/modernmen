@@ -9,6 +9,7 @@
 - ✅ **Dependencies**: Fixed missing @tanstack/react-query
 - ✅ **API Endpoints**: Added missing healthcheck route
 - ✅ **Environment**: Ready for production
+- ✅ **Database**: Configured with PostgreSQL 15 and password 3639 (upgrade to 18.3 available)
 
 ### Vercel Account Verified:
 - ✅ **Account**: Agiaify
@@ -17,6 +18,13 @@
 - ✅ **New Project Created**: modernmen-app (prj_1IhdfoiSasVHwuB5Y4nMONafTO1N)
 
 ## 🚀 DEPLOYMENT EXECUTION
+
+### Database Configuration Updated:
+- ✅ **PostgreSQL Version**: Currently using PostgreSQL 15 (latest supported by CLI v2.20.5)
+- ✅ **Database Password**: Set to 3639 for session
+- ✅ **Configuration**: Updated in supabase/config.toml
+- ✅ **Environment**: Updated .env.local with current version
+- ⚠️ **Note**: PostgreSQL 18.3 upgrade requires Supabase CLI v2.34.3+ (current: v2.20.5)
 
 ### Project Created Successfully:
 - **Name**: modernmen-app
@@ -43,6 +51,10 @@
    NEXTAUTH_URL=https://modernmen-app.vercel.app
    OPENAI_API_KEY=sk-your_production_openai_key
    ANTHROPIC_API_KEY=sk-ant-your_production_anthropic_key
+   
+   # Database Configuration (PostgreSQL 15):
+   DATABASE_URL=postgresql://postgres:3639@localhost:5433/modernmen_db
+   POSTGRES_URL=postgresql://postgres:3639@localhost:5433/modernmen_db
    ```
 
 4. **Deploy**: Click the "Deploy" button
@@ -57,6 +69,11 @@
 **Total Time to Live**: ~6-9 minutes
 
 ## 🔧 POST-DEPLOYMENT CHECKLIST
+
+### Database Upgrade (Optional):
+- [ ] Update Supabase CLI: `npm install -g @supabase/cli@latest`
+- [ ] Upgrade to PostgreSQL 18.3: Update `major_version = 18` in `supabase/config.toml`
+- [ ] Restart local development: `npx supabase stop && npx supabase start`
 
 ### Immediate (After Deployment):
 - [ ] Test homepage loads correctly

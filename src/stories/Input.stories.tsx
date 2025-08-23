@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-const meta: Meta<typeof Input> = {
+const meta = {
   title: 'UI/Input',
   component: Input,
   parameters: {
@@ -17,7 +17,7 @@ const meta: Meta<typeof Input> = {
   argTypes: {
     type: {
       control: { type: 'select' },
-      options: ['text', 'email', 'password', 'number', 'tel', 'url', 'search'],
+      options: ['text', 'email', 'password', 'number', 'tel', 'url', 'rch'],
       description: 'The type of input',
     },
     placeholder: {
@@ -36,7 +36,7 @@ const meta: Meta<typeof Input> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = any;
 
 export const Default: Story = {
   args: {
@@ -85,10 +85,10 @@ export const Number: Story = {
   },
 };
 
-export const Search: Story = {
+export const rch: Story = {
   args: {
-    type: 'search',
-    placeholder: 'Search...',
+    type: 'rch',
+    placeholder: 'rch...',
   },
 };
 

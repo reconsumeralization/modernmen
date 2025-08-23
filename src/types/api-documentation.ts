@@ -128,6 +128,7 @@ export interface CodeGenerationTemplate {
 }
 
 export interface APIDocumentationSection {
+  articles: any
   id: string
   title: string
   description: string

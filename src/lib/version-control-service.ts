@@ -276,9 +276,9 @@ export class VersionControlService {
   }
 
   /**
-   * Search versions
+   * rch versions
    */
-  async searchVersions(
+  async rchVersions(
     contentId: string,
     query: {
       author?: string;

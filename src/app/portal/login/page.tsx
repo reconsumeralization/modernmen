@@ -2,7 +2,7 @@
 
 import { getProviders, signIn, getSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { userchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,11 +16,11 @@ export default function PortalLoginPage() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [providers, setProviders] = useState<any>(null)
-  const searchParams = useSearchParams()
+  const rchParams = userchParams()
   const router = useRouter()
 
-  const callbackUrl = searchParams?.get('callbackUrl') || '/portal'
-  const error = searchParams?.get('error')
+  const callbackUrl = rchParams?.get('callbackUrl') || '/portal'
+  const error = rchParams?.get('error')
 
   useEffect(() => {
     const getProvidersData = async () => {

@@ -178,7 +178,7 @@ export async function GET(request: Request) {
 export const Services: CollectionConfig = {
   slug: 'services',
   admin: {
-    useAsTitle: 'name',
+    usTitle: 'name',
     description: 'Hair salon services and pricing'
   },
   fields: [

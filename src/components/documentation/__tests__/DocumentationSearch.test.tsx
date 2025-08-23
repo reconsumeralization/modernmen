@@ -2,13 +2,13 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { DocumentationSearch } from '../DocumentationSearch';
+import { Documentationrch } from '../Documentationrch';
 
 // Mock dependencies
 jest.mock('next-auth/react');
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
-  useSearchParams: jest.fn()
+  userchParams: jest.fn()
 }));
 jest.mock('@/lib/documentation-permissions', () => ({
   getUserRoleFromSession: jest.fn(() => 'developer')
@@ -21,10 +21,10 @@ const mockUseSession = useSession as jest.MockedFunction<typeof useSession>;
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
 const mockPush = jest.fn();
 
-// Mock search service
-jest.mock('@/lib/search-service', () => ({
-  DocumentationSearchService: jest.fn().mockImplementation(() => ({
-    search: jest.fn().mockResolvedValue({
+// Mock rch service
+jest.mock('@/lib/rch-service', () => ({
+  DocumentationrchService: jest.fn().mockImplementation(() => ({
+    rch: jest.fn().mockResolvedValue({
       results: [
         {
           id: 'test-result',
@@ -76,7 +76,7 @@ jest.mock('@/lib/search-service', () => ({
         resultsCount: 1,
         hasResults: true,
         clickedResults: [],
-        searchTime: 50
+        rchTime: 50
       },
       pagination: { page: 1, limit: 20, offset: 0 },
       query: {
@@ -99,7 +99,7 @@ jest.mock('@/lib/search-service', () => ({
   }))
 }));
 
-describe('DocumentationSearch', () => {
+describe('Documentationrch', () => {
   beforeEach(() => {
     mockUseSession.mockReturnValue({
       data: {
@@ -114,18 +114,18 @@ describe('DocumentationSearch', () => {
     jest.clearAllMocks();
   });
 
-  it('renders search input correctly', () => {
-    render(<DocumentationSearch />);
+  it('renders rch input correctly', () => {
+    render(<Documentationrch />);
     
-    expect(screen.getByPlaceholderText('Search documentation...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('rch documentation...')).toBeInTheDocument();
     expect(screen.getByRole('button')).toBeInTheDocument(); // Filter button
   });
 
-  it('performs search when user types', async () => {
-    render(<DocumentationSearch />);
+  it('performs rch when user types', async () => {
+    render(<Documentationrch />);
     
-    const searchInput = screen.getByPlaceholderText('Search documentation...');
-    fireEvent.change(searchInput, { target: { value: 'API' } });
+    const rchInput = screen.getByPlaceholderText('rch documentation...');
+    fireEvent.change(rchInput, { target: { value: 'API' } });
 
     await waitFor(() => {
       expect(screen.getByText('Test API Guide')).toBeInTheDocument();
@@ -136,11 +136,11 @@ describe('DocumentationSearch', () => {
   });
 
   it('shows autocomplete suggestions', async () => {
-    render(<DocumentationSearch />);
+    render(<Documentationrch />);
     
-    const searchInput = screen.getByPlaceholderText('Search documentation...');
-    fireEvent.change(searchInput, { target: { value: 'API' } });
-    fireEvent.focus(searchInput);
+    const rchInput = screen.getByPlaceholderText('rch documentation...');
+    fireEvent.change(rchInput, { target: { value: 'API' } });
+    fireEvent.focus(rchInput);
 
     await waitFor(() => {
       expect(screen.getByText('Suggestions')).toBeInTheDocument();
@@ -150,10 +150,10 @@ describe('DocumentationSearch', () => {
   });
 
   it('navigates to result when clicked', async () => {
-    render(<DocumentationSearch />);
+    render(<Documentationrch />);
     
-    const searchInput = screen.getByPlaceholderText('Search documentation...');
-    fireEvent.change(searchInput, { target: { value: 'API' } });
+    const rchInput = screen.getByPlaceholderText('rch documentation...');
+    fireEvent.change(rchInput, { target: { value: 'API' } });
 
     await waitFor(() => {
       expect(screen.getByText('Test API Guide')).toBeInTheDocument();
@@ -167,10 +167,10 @@ describe('DocumentationSearch', () => {
   });
 
   it('shows filters when enabled', async () => {
-    render(<DocumentationSearch showFilters={true} />);
+    render(<Documentationrch showFilters={true} />);
     
-    const searchInput = screen.getByPlaceholderText('Search documentation...');
-    fireEvent.change(searchInput, { target: { value: 'API' } });
+    const rchInput = screen.getByPlaceholderText('rch documentation...');
+    fireEvent.change(rchInput, { target: { value: 'API' } });
 
     await waitFor(() => {
       expect(screen.getByText('Test API Guide')).toBeInTheDocument();
@@ -184,11 +184,11 @@ describe('DocumentationSearch', () => {
     });
   });
 
-  it('handles empty search results', async () => {
+  it('handles empty rch results', async () => {
     // Mock empty results
-    const mockSearchService = require('@/lib/search-service').DocumentationSearchService;
-    mockSearchService.mockImplementation(() => ({
-      search: jest.fn().mockResolvedValue({
+    const mockrchService = require('@/lib/rch-service').DocumentationrchService;
+    mockrchService.mockImplementation(() => ({
+      rch: jest.fn().mockResolvedValue({
         results: [],
         totalCount: 0,
         facets: {
@@ -210,7 +210,7 @@ describe('DocumentationSearch', () => {
           resultsCount: 0,
           hasResults: false,
           clickedResults: [],
-          searchTime: 25
+          rchTime: 25
         },
         pagination: { page: 1, limit: 20, offset: 0 },
         query: {
@@ -229,10 +229,10 @@ describe('DocumentationSearch', () => {
       })
     }));
 
-    render(<DocumentationSearch />);
+    render(<Documentationrch />);
     
-    const searchInput = screen.getByPlaceholderText('Search documentation...');
-    fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
+    const rchInput = screen.getByPlaceholderText('rch documentation...');
+    fireEvent.change(rchInput, { target: { value: 'nonexistent' } });
 
     await waitFor(() => {
       expect(screen.getByText('No results found')).toBeInTheDocument();
@@ -240,8 +240,8 @@ describe('DocumentationSearch', () => {
     });
   });
 
-  it('handles search with initial query', async () => {
-    render(<DocumentationSearch initialQuery="API testing" />);
+  it('handles rch with initial query', async () => {
+    render(<Documentationrch initialQuery="API testing" />);
     
     await waitFor(() => {
       expect(screen.getByDisplayValue('API testing')).toBeInTheDocument();
@@ -251,10 +251,10 @@ describe('DocumentationSearch', () => {
 
   it('calls onResultClick when provided', async () => {
     const mockOnResultClick = jest.fn();
-    render(<DocumentationSearch onResultClick={mockOnResultClick} />);
+    render(<Documentationrch onResultClick={mockOnResultClick} />);
     
-    const searchInput = screen.getByPlaceholderText('Search documentation...');
-    fireEvent.change(searchInput, { target: { value: 'API' } });
+    const rchInput = screen.getByPlaceholderText('rch documentation...');
+    fireEvent.change(rchInput, { target: { value: 'API' } });
 
     await waitFor(() => {
       expect(screen.getByText('Test API Guide')).toBeInTheDocument();
@@ -272,17 +272,17 @@ describe('DocumentationSearch', () => {
     }
   });
 
-  it('shows loading state during search', async () => {
-    // Mock delayed search
-    const mockSearchService = require('@/lib/search-service').DocumentationSearchService;
-    mockSearchService.mockImplementation(() => ({
-      search: jest.fn().mockImplementation(() => 
+  it('shows loading state during rch', async () => {
+    // Mock delayed rch
+    const mockrchService = require('@/lib/rch-service').DocumentationrchService;
+    mockrchService.mockImplementation(() => ({
+      rch: jest.fn().mockImplementation(() => 
         new Promise(resolve => setTimeout(() => resolve({
           results: [],
           totalCount: 0,
           facets: { roles: [], categories: [], tags: [], contentTypes: [], difficulty: [], authors: [], sections: [] },
           suggestions: [],
-          analytics: { queryId: 'test', timestamp: new Date(), userRole: 'developer', resultsCount: 0, hasResults: false, clickedResults: [], searchTime: 0 },
+          analytics: { queryId: 'test', timestamp: new Date(), userRole: 'developer', resultsCount: 0, hasResults: false, clickedResults: [], rchTime: 0 },
           pagination: { page: 1, limit: 20, offset: 0 },
           query: { query: '', filters: {}, pagination: { page: 1, limit: 20, offset: 0 }, sorting: { field: 'relevance', direction: 'desc' } },
           executionTime: 0
@@ -296,28 +296,28 @@ describe('DocumentationSearch', () => {
       })
     }));
 
-    render(<DocumentationSearch />);
+    render(<Documentationrch />);
     
-    const searchInput = screen.getByPlaceholderText('Search documentation...');
-    fireEvent.change(searchInput, { target: { value: 'loading test' } });
+    const rchInput = screen.getByPlaceholderText('rch documentation...');
+    fireEvent.change(rchInput, { target: { value: 'loading test' } });
 
     // Should show loading spinner
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
   it('handles compact mode', () => {
-    render(<DocumentationSearch compact={true} />);
+    render(<Documentationrch compact={true} />);
     
-    expect(screen.getByPlaceholderText('Search documentation...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('rch documentation...')).toBeInTheDocument();
   });
 
-  it('submits search on form submit', async () => {
-    render(<DocumentationSearch />);
+  it('submits rch on form submit', async () => {
+    render(<Documentationrch />);
     
-    const searchInput = screen.getByPlaceholderText('Search documentation...');
-    fireEvent.change(searchInput, { target: { value: 'API' } });
+    const rchInput = screen.getByPlaceholderText('rch documentation...');
+    fireEvent.change(rchInput, { target: { value: 'API' } });
     
-    const form = searchInput.closest('form');
+    const form = rchInput.closest('form');
     if (form) {
       fireEvent.submit(form);
     }

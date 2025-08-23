@@ -41,19 +41,19 @@ export function EmployeeManagement() {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [stats, setStats] = useState<EmployeeStats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [rchTerm, setrchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [ratingFilter, setRatingFilter] = useState('all')
 
   useEffect(() => {
     fetchEmployees()
-  }, [searchTerm, statusFilter, ratingFilter])
+  }, [rchTerm, statusFilter, ratingFilter])
 
   const fetchEmployees = async () => {
     try {
       setLoading(true)
-      const params = new URLSearchParams()
-      if (searchTerm) params.set('search', searchTerm)
+      const params = new URLrchParams()
+      if (rchTerm) params.set('rch', rchTerm)
       if (statusFilter !== 'all') {
         params.set('isActive', statusFilter === 'active' ? 'true' : 'false')
       }
@@ -225,9 +225,9 @@ export function EmployeeManagement() {
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <div className="flex gap-2">
                 <Input
-                  placeholder="Search employees..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="rch employees..."
+                  value={rchTerm}
+                  onChange={(e) => setrchTerm(e.target.value)}
                   className="w-full sm:w-64"
                 />
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -262,7 +262,7 @@ export function EmployeeManagement() {
               <Icons.users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-800 mb-2">No employees found</h3>
               <p className="text-gray-600 mb-4">
-                {searchTerm || statusFilter !== 'all' || ratingFilter !== 'all'
+                {rchTerm || statusFilter !== 'all' || ratingFilter !== 'all'
                   ? 'Try adjusting your filters'
                   : 'No employees have been created yet'
                 }

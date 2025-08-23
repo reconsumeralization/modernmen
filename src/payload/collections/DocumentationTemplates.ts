@@ -1,10 +1,30 @@
-/* @ts-ignore: Payload types may not be resolvable in this context */
-type CollectionConfig = any;
+import type { CollectionConfig, Access, FieldHook } from 'payload/types'
 
-export const DocumentationTemplates: CollectionConfig = {
+// Define types for access control context
+interface AccessContext {
+  req: {
+    user?: {
+      id: string;
+      role?: string;
+    };
+  };
+}
+
+interface HookContext {
+  data: any;
+  req: {
+    user?: {
+      id: string;
+      role?: string;
+    };
+  };
+  operation: 'create' | 'update' | 'delete';
+}
+
+export const DocumentationTemplates: any = {
   slug: 'documentation-templates',
   admin: {
-    useAsTitle: 'name',
+    usTitle: 'name',
     defaultColumns: ['name', 'type', 'category', 'isDefault', 'usageCount'],
     group: 'Content Management',
     description: 'Manage documentation templates for consistent content creation',
@@ -180,13 +200,13 @@ export const DocumentationTemplates: CollectionConfig = {
   timestamps: true,
   access: {
     read: () => true, // All authenticated users can read templates
-    create: ({ req: { user } }) => ['system_admin', 'salon_owner', 'developer'].includes(user?.role || ''),
-    update: ({ req: { user } }) => ['system_admin', 'salon_owner', 'developer'].includes(user?.role || ''),
-    delete: ({ req: { user } }) => ['system_admin', 'salon_owner'].includes(user?.role || ''),
+    create: ({ req: { user } }: AccessContext) => ['system_admin', 'salon_owner', 'developer'].includes(user?.role || ''),
+    update: ({ req: { user } }: AccessContext) => ['system_admin', 'salon_owner', 'developer'].includes(user?.role || ''),
+    delete: ({ req: { user } }: AccessContext) => ['system_admin', 'salon_owner'].includes(user?.role || ''),
   },
   hooks: {
     beforeChange: [
-      async ({ data, req, operation }) => {
+      async ({ data, req, operation }: HookContext) => {
         if (operation === 'create' && req.user) {
           data.createdBy = req.user.id;
         }

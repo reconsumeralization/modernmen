@@ -70,7 +70,7 @@ const testGuide: GuideContent = {
     completionRate: 0,
     averageRating: 0,
     feedbackCount: 0,
-    searchRanking: 0
+    rchRanking: 0
   },
   versioning: {
     changeHistory: [],

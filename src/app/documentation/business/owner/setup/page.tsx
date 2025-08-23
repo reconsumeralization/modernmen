@@ -144,7 +144,7 @@ const businessProfile = {
 1. **Base Pricing**: Set standard prices for each service
 2. **Stylist-Specific Pricing**: Allow different rates for senior stylists
 3. **Package Deals**: Create bundled service offerings
-4. **Seasonal Promotions**: Set up promotional pricing periods
+4. **sonal Promotions**: Set up promotional pricing periods
 5. **Membership Discounts**: Configure loyalty program pricing
 
 **Service Duration and Booking**
@@ -372,7 +372,7 @@ const serviceMenu = {
     completionRate: 0,
     averageRating: 0,
     feedbackCount: 0,
-    searchRanking: 90
+    rchRanking: 90
   },
   versioning: {
     changeHistory: [],

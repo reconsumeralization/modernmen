@@ -221,7 +221,7 @@ const openingChecklist = {
 **Upselling Opportunities**
 1. **Natural Integration**: Suggest additional services that genuinely benefit the customer
 2. **Product Recommendations**: Recommend products that maintain the look at home
-3. **Future Services**: Discuss maintenance schedules and seasonal treatments
+3. **Future Services**: Discuss maintenance schedules and sonal treatments
 4. **Package Deals**: Present value-added service packages when appropriate
 
 **Service Completion**
@@ -341,7 +341,7 @@ const openingChecklist = {
     completionRate: 0,
     averageRating: 0,
     feedbackCount: 0,
-    searchRanking: 92
+    rchRanking: 92
   },
   versioning: {
     changeHistory: [],

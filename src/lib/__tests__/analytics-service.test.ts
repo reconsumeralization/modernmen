@@ -123,24 +123,24 @@ describe('AnalyticsService', () => {
     });
   });
 
-  describe('Search Tracking', () => {
-    it('tracks search queries', () => {
-      const searchId = analyticsService.trackSearch('test query', 5, 'developer');
+  describe('rch Tracking', () => {
+    it('tracks rch queries', () => {
+      const rchId = analyticsService.trackrch('test query', 5, 'developer');
       
-      expect(searchId).toMatch(/^search_\d+_/);
+      expect(rchId).toMatch(/^rch_\d+_/);
     });
 
-    it('tracks search clicks', () => {
-      analyticsService.trackSearch('test query', 5, 'developer');
-      analyticsService.trackSearchClick('test query', 'result-1');
+    it('tracks rch clicks', () => {
+      analyticsService.trackrch('test query', 5, 'developer');
+      analyticsService.trackrchClick('test query', 'result-1');
       
       // Should not throw - internal tracking
       expect(true).toBe(true);
     });
 
-    it('tracks search refinements', () => {
-      analyticsService.trackSearch('original query', 0, 'developer');
-      analyticsService.trackSearchRefinement('original query', 'refined query');
+    it('tracks rch refinements', () => {
+      analyticsService.trackrch('original query', 0, 'developer');
+      analyticsService.trackrchRefinement('original query', 'refined query');
       
       // Should not throw - internal tracking
       expect(true).toBe(true);
@@ -160,7 +160,7 @@ describe('AnalyticsService', () => {
 
       expect(metrics).toHaveProperty('totalViews');
       expect(metrics).toHaveProperty('uniqueUsers');
-      expect(metrics).toHaveProperty('searchQueries');
+      expect(metrics).toHaveProperty('rchQueries');
       expect(metrics).toHaveProperty('popularContent');
       expect(metrics).toHaveProperty('userSatisfaction');
       expect(metrics).toHaveProperty('contentGaps');
@@ -177,7 +177,7 @@ describe('AnalyticsService', () => {
 
       expect(analytics).toHaveProperty('pageViews');
       expect(analytics).toHaveProperty('userJourneys');
-      expect(analytics).toHaveProperty('searchBehavior');
+      expect(analytics).toHaveProperty('rchBehavior');
       expect(analytics).toHaveProperty('contentEffectiveness');
       expect(analytics).toHaveProperty('userSatisfaction');
     });
@@ -195,19 +195,19 @@ describe('AnalyticsService', () => {
   });
 
   describe('Content Gap Identification', () => {
-    it('identifies gaps from search queries with no results', async () => {
-      // Simulate searches with no results
-      analyticsService.trackSearch('missing feature docs', 0, 'developer');
-      analyticsService.trackSearch('missing feature docs', 0, 'developer');
-      analyticsService.trackSearch('missing feature docs', 0, 'developer');
+    it('identifies gaps from rch queries with no results', async () => {
+      // Simulate rches with no results
+      analyticsService.trackrch('missing feature docs', 0, 'developer');
+      analyticsService.trackrch('missing feature docs', 0, 'developer');
+      analyticsService.trackrch('missing feature docs', 0, 'developer');
 
       const recommendations = await analyticsService.getOptimizationRecommendations();
       
-      const searchGaps = recommendations.contentGaps.filter(
-        gap => gap.source === 'search_queries'
+      const rchGaps = recommendations.contentGaps.filter(
+        gap => gap.source === 'rch_queries'
       );
       
-      expect(searchGaps.length).toBeGreaterThan(0);
+      expect(rchGaps.length).toBeGreaterThan(0);
     });
 
     it('identifies gaps from negative feedback', async () => {

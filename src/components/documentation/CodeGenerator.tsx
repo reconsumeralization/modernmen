@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { CopyIcon, DownloadIcon, CodeIcon } from 'lucide-react'
+import { Copy, Download, Code } from '@/lib/icon-mapping'
 import { APIEndpoint, SDKGenerationConfig, CodeGenerationTemplate } from '@/types/api-documentation'
 import { cn } from '@/lib/utils'
 
@@ -72,7 +72,7 @@ export function CodeGenerator({ endpoint, sdkConfig, onClose }: CodeGeneratorPro
   }
 
   const downloadCode = (language: string, code: string) => {
-    const extensions = {
+    const extensions: Record<string, string> = {
       typescript: 'ts',
       javascript: 'js',
       python: 'py',
@@ -94,7 +94,7 @@ export function CodeGenerator({ endpoint, sdkConfig, onClose }: CodeGeneratorPro
   }
 
   const getLanguageIcon = (language: string) => {
-    const icons = {
+    const icons: Record<string, string> = {
       typescript: '🔷',
       javascript: '🟨',
       python: '🐍',
@@ -269,8 +269,8 @@ interface ${endpoint.operationId}Request {
     url = url.replace(`{${param.name}}`, `\${params.${param.name}}`)
   })
 
-  const queryString = endpoint.parameters.query.length > 0 ? `
-  const queryParams = new URLSearchParams()
+  const queryStringCode = endpoint.parameters.query.length > 0 ? `
+  const queryParams = new URLrchParams()
   ${endpoint.parameters.query.map(p => `
   if (params.${p.name} !== undefined) {
     queryParams.append('${p.name}', String(params.${p.name}))
@@ -283,7 +283,7 @@ interface ${endpoint.operationId}Request {
   return `${paramsInterface}${requestBodyType}
 
 export async function ${endpoint.operationId}(${hasParams ? `params: ${endpoint.operationId}Params` : ''}${endpoint.requestBody ? `${hasParams ? ', ' : ''}data: ${endpoint.operationId}Request` : ''}${includeAuth ? `${hasParams || endpoint.requestBody ? ', ' : ''}token: string` : ''}): Promise<any> {
-  ${queryString}
+  ${queryStringCode}
   
   const response = await fetch(url, {
     method: '${endpoint.method}',
@@ -313,7 +313,7 @@ function generateJavaScriptCode(endpoint: APIEndpoint, baseUrl: string, includeA
 
   const pathParams = endpoint.parameters.path.map(p => p.name).join(', ')
   const queryParams = endpoint.parameters.query.length > 0 ? `
-  const queryParams = new URLSearchParams()
+  const queryParams = new URLrchParams()
   ${endpoint.parameters.query.map(p => `
   if (${p.name} !== undefined) {
     queryParams.append('${p.name}', String(${p.name}))
@@ -334,7 +334,7 @@ function generateJavaScriptCode(endpoint: APIEndpoint, baseUrl: string, includeA
   ].join(', ')
 
   return `async function ${endpoint.operationId}(${functionParams}) {
-  ${queryString}
+  ${queryParams}
   
   const response = await fetch(url, {
     method: '${endpoint.method}',
@@ -596,7 +596,7 @@ public class ${className}Client {
 
 // Helper functions
 function getTypeScriptType(type: string): string {
-  const typeMap = {
+  const typeMap: Record<string, string> = {
     'string': 'string',
     'integer': 'number',
     'number': 'number',
@@ -612,7 +612,7 @@ function getExampleValue(type: string, example?: any): string {
     return typeof example === 'string' ? `"${example}"` : String(example)
   }
   
-  const examples = {
+  const examples: Record<string, string> = {
     'string': '"example"',
     'integer': '123',
     'number': '123.45',
@@ -624,7 +624,7 @@ function getExampleValue(type: string, example?: any): string {
 }
 
 function getUsageInstructions(language: string, endpoint: APIEndpoint): React.ReactNode {
-  const instructions = {
+  const instructions: Record<string, React.ReactElement> = {
     typescript: (
       <div>
         <p><strong>Installation:</strong></p>

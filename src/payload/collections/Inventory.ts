@@ -3,7 +3,7 @@ import { CollectionConfig, AccessArgs } from 'payload'
 export const Inventory: CollectionConfig = {
   slug: 'inventory',
   admin: {
-    useAsTitle: 'name',
+    usTitle: 'name',
     description: 'Product inventory and stock management',
     group: 'Business',
     defaultColumns: ['name', 'category', 'currentStock', 'lowStockThreshold', 'unitCost'],

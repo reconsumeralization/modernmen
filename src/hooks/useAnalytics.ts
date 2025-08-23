@@ -4,7 +4,7 @@ import { useEffect, useCallback, useRef } from 'react';
 import { AnalyticsService } from '@/lib/analytics-service';
 import { UserFeedback, UserRole } from '@/types/analytics';
 
-interface UseAnalyticsOptions {
+interface UnalyticsOptions {
   contentId?: string;
   contentType?: 'guide' | 'api' | 'component';
   userRole?: UserRole;
@@ -13,7 +13,7 @@ interface UseAnalyticsOptions {
   trackTimeSpent?: boolean;
 }
 
-export function useAnalytics(options: UseAnalyticsOptions = {}) {
+export function unalytics(options: UnalyticsOptions = {}) {
   const {
     contentId,
     contentType = 'guide',
@@ -91,16 +91,16 @@ export function useAnalytics(options: UseAnalyticsOptions = {}) {
     await analyticsService.submitFeedback(fullFeedback);
   }, [contentId, contentType, userRole, analyticsService]);
 
-  const trackSearch = useCallback((query: string, resultsCount: number) => {
-    return analyticsService.trackSearch(query, resultsCount, userRole);
+  const trackrch = useCallback((query: string, resultsCount: number) => {
+    return analyticsService.trackrch(query, resultsCount, userRole);
   }, [userRole, analyticsService]);
 
-  const trackSearchClick = useCallback((query: string, resultId: string) => {
-    analyticsService.trackSearchClick(query, resultId);
+  const trackrchClick = useCallback((query: string, resultId: string) => {
+    analyticsService.trackrchClick(query, resultId);
   }, [analyticsService]);
 
-  const trackSearchRefinement = useCallback((originalQuery: string, refinedQuery: string) => {
-    analyticsService.trackSearchRefinement(originalQuery, refinedQuery);
+  const trackrchRefinement = useCallback((originalQuery: string, refinedQuery: string) => {
+    analyticsService.trackrchRefinement(originalQuery, refinedQuery);
   }, [analyticsService]);
 
   const trackCustomEvent = useCallback((eventType: string, target: string, metadata?: Record<string, any>) => {
@@ -113,16 +113,16 @@ export function useAnalytics(options: UseAnalyticsOptions = {}) {
 
   return {
     submitFeedback,
-    trackSearch,
-    trackSearchClick,
-    trackSearchRefinement,
+    trackrch,
+    trackrchClick,
+    trackrchRefinement,
     trackCustomEvent,
     sessionId: sessionIdRef.current
   };
 }
 
 // Hook for analytics dashboard data
-export function useAnalyticsDashboard(timeRange: { start: Date; end: Date }) {
+export function unalyticsDashboard(timeRange: { start: Date; end: Date }) {
   const analyticsService = AnalyticsService.getInstance();
 
   const getMetrics = useCallback(async () => {

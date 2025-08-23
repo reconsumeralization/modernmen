@@ -4,8 +4,8 @@ import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const action = searchParams.get('action') || 'health'
+    const { rchParams } = new URL(request.url)
+    const action = rchParams.get('action') || 'health'
 
     switch (action) {
       case 'health':
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
         )
     }
   } catch (error) {
-    logger.error('Payload init API error:', error)
+    logger.error('Payload init API error:', { operation: 'payload_init_api' }, error instanceof Error ? error : undefined)
     return NextResponse.json(
       {
         error: 'Payload initialization failed',
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     )
   } catch (error) {
-    logger.error('Full setup failed:', error)
+    logger.error('Full setup failed:', { operation: 'payload_full_setup' }, error instanceof Error ? error : undefined)
     return NextResponse.json(
       {
         error: 'Full setup failed',

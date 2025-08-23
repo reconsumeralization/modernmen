@@ -3,7 +3,7 @@ import { CollectionConfig, AccessArgs } from 'payload'
 export const Commissions: CollectionConfig = {
   slug: 'commissions',
   admin: {
-    useAsTitle: 'period',
+    usTitle: 'period',
     description: 'Stylist commission tracking and payouts',
     group: 'Business',
     defaultColumns: ['stylist', 'period', 'totalSales', 'commissionAmount', 'status'],

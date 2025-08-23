@@ -445,10 +445,10 @@ export class APIDocumentationExtractor {
         example: 1
       },
       {
-        name: 'search',
+        name: 'rch',
         type: 'string',
         required: false,
-        description: 'Search query string',
+        description: 'rch query string',
         example: 'john'
       }
     ]

@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react'
 import { logger } from '@/lib/logger'
 import { Button } from './button'
-import { AlertCircle, RefreshCw, Wifi, WifiOff } from 'lucide-react'
+import { AlertTriangle, RefreshCw, WifiOff } from '@/lib/icon-mapping'
 import { AsyncErrorBoundary } from './global-error-boundary'
 
 interface AsyncErrorHandlerProps {
@@ -122,7 +122,7 @@ export function AsyncErrorHandler({
         {!networkState.isOnline ? (
           <WifiOff className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
         ) : (
-          <AlertCircle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+          <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
         )}
 
         <div className="flex-1">
@@ -171,7 +171,7 @@ export function AsyncErrorHandler({
 }
 
 // Hook for handling async operations with error boundaries
-export function useAsyncErrorHandler() {
+export function usyncErrorHandler() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 

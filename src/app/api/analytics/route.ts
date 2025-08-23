@@ -1,28 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPayloadClient } from '../../../payload'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
     const { searchParams } = new URL(request.url)
     const period = searchParams.get('period') || '30'
     const type = searchParams.get('type') || 'all' // revenue, services, employees, all
 
-    const payload = await getPayloadClient()
     const days = parseInt(period)
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
 
-    const analytics = await generateAnalytics(payload, startDate, days, type)
+    const analytics = await generateAnalytics(startDate, days, type)
 
     return NextResponse.json(analytics)
 
@@ -35,39 +22,39 @@ export async function GET(request: NextRequest) {
   }
 }
 
-async function generateAnalytics(payload: any, startDate: Date, days: number, type: string) {
+async function generateAnalytics(startDate: Date, days: number, type: string) {
   // Generate date range for charts
-  const dateRange = []
+  const dateRange: string[] = []
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
     dateRange.push(date.toISOString().split('T')[0])
   }
 
-  const analytics: any = {
+  const analytics: Record<string, unknown> = {
     period: `${days} days`,
     dateRange
   }
 
   if (type === 'all' || type === 'revenue') {
-    analytics.revenue = await generateRevenueAnalytics(payload, startDate, dateRange)
+    analytics.revenue = await generateRevenueAnalytics(startDate, dateRange)
   }
 
   if (type === 'all' || type === 'services') {
-    analytics.services = await generateServiceAnalytics(payload, startDate)
+    analytics.services = await generateServiceAnalytics(startDate)
   }
 
   if (type === 'all' || type === 'employees') {
-    analytics.employees = await generateEmployeeAnalytics(payload, startDate, dateRange)
+    analytics.employees = await generateEmployeeAnalytics(startDate, dateRange)
   }
 
   if (type === 'all') {
-    analytics.summary = await generateSummaryAnalytics(payload, startDate, days)
+    analytics.summary = await generateSummaryAnalytics(startDate, days)
   }
 
   return analytics
 }
 
-async function generateRevenueAnalytics(payload: any, startDate: Date, dateRange: string[]) {
+async function generateRevenueAnalytics(startDate: Date, dateRange: string[]) {
   // In a real implementation, this would aggregate appointment data
   // For demo, generate sample data
   const revenueData = dateRange.map(date => ({
@@ -90,7 +77,7 @@ async function generateRevenueAnalytics(payload: any, startDate: Date, dateRange
   }
 }
 
-async function generateServiceAnalytics(payload: any, startDate: Date) {
+async function generateServiceAnalytics(startDate: Date) {
   // In a real implementation, this would aggregate service usage data
   const services = [
     { name: 'Hair Cut & Style', count: 234, revenue: 35100, rating: 4.8, duration: 45 },
@@ -110,7 +97,7 @@ async function generateServiceAnalytics(payload: any, startDate: Date) {
   }
 }
 
-async function generateEmployeeAnalytics(payload: any, startDate: Date, dateRange: string[]) {
+async function generateEmployeeAnalytics(startDate: Date, dateRange: string[]) {
   // Generate sample employee performance data
   const employeeData = dateRange.map(date => ({
     date,
@@ -136,7 +123,7 @@ async function generateEmployeeAnalytics(payload: any, startDate: Date, dateRang
   }
 }
 
-async function generateSummaryAnalytics(payload: any, startDate: Date, days: number) {
+async function generateSummaryAnalytics(startDate: Date, days: number) {
   // Generate summary statistics
   const previousPeriodStart = new Date(startDate.getTime() - days * 24 * 60 * 60 * 1000)
 

@@ -49,7 +49,7 @@ const dashboardGuide = {
 **Top Navigation Bar**
 - Quick access to notifications, settings, and your profile
 - Real-time alerts for important business events
-- Search functionality for customers, appointments, and staff
+- rch functionality for customers, appointments, and staff
 
 **Main Dashboard Sections**
 1. **Today's Overview** - Current day's appointments, revenue, and alerts
@@ -138,7 +138,7 @@ const todaysMetrics = {
 **Performance Metrics**
 - Daily, weekly, monthly, and yearly revenue trends
 - Service category performance (cuts, styling, treatments)
-- Peak hours and seasonal patterns
+- Peak hours and sonal patterns
 - Average transaction value and customer lifetime value
 
 **Financial Reports**
@@ -229,7 +229,7 @@ const todaysMetrics = {
 
 **Service Optimization**
 - Popular service combinations
-- Seasonal demand patterns
+- sonal demand patterns
 - Price sensitivity analysis
 - Upselling opportunity identification`,
         codeSnippets: [],
@@ -306,7 +306,7 @@ const todaysMetrics = {
     completionRate: 0,
     averageRating: 0,
     feedbackCount: 0,
-    searchRanking: 85
+    rchRanking: 85
   },
   versioning: {
     changeHistory: [],

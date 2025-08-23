@@ -1,4 +1,4 @@
-import { DocumentationPermissions, UserRole } from '@/types/documentation'
+import { DocumentationPermissions, UserRole, NavigationItem, NavigationSection } from '@/types/documentation'
 
 // Define role-based permissions for documentation sections
 export const documentationPermissions: DocumentationPermissions = {
@@ -118,6 +118,11 @@ export function hasDocumentationPermission(
 
 // Helper function to get all accessible sections for a user role
 export function getAccessibleSections(userRole: UserRole, action: 'read' | 'edit' | 'admin' = 'read'): string[] {
+  // Guard against undefined permissions map (unlikely but ensures type safety)
+  if (!documentationPermissions) {
+    return []
+  }
+
   return Object.keys(documentationPermissions).filter(section =>
     hasDocumentationPermission(userRole, section, action)
   )
@@ -148,6 +153,7 @@ export function getUserRoleFromSession(session: any): UserRole {
       return 'salon_employee'
     case 'customer':
     case 'salon_customer':
+    case 'client':
       return 'salon_customer'
     default:
       return 'guest'
@@ -155,8 +161,8 @@ export function getUserRoleFromSession(session: any): UserRole {
 }
 
 // Helper function to get role-specific navigation items
-export function getRoleBasedNavigation(userRole: UserRole) {
-  const navigation = []
+export function getRoleBasedNavigation(userRole: UserRole): NavigationItem[] {
+  const navigation: NavigationItem[] = []
 
   // Developer section
   if (hasDocumentationPermission(userRole, 'developer', 'read')) {
@@ -175,7 +181,7 @@ export function getRoleBasedNavigation(userRole: UserRole) {
 
   // Business section
   if (hasDocumentationPermission(userRole, 'business', 'read')) {
-    const businessSections = []
+    const businessSections: NavigationSection[] = []
     
     if (hasDocumentationPermission(userRole, 'business.owner', 'read')) {
       businessSections.push({ title: 'Salon Owner', href: '/documentation/business/owner' })

@@ -9,56 +9,53 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Search, 
+  rch, 
   Filter, 
   Clock, 
   TrendingUp, 
   FileText, 
   Code, 
-  Users, 
-  Settings,
-  ChevronDown,
-  ChevronRight,
+  Cog,
   X,
   Loader2,
-  AlertCircle,
+  AlertTriangle,
   Star,
   Eye,
   Calendar
-} from 'lucide-react';
+} from '@/lib/icon-mapping';
 import { 
-  SearchQuery, 
-  SearchResponse, 
-  SearchResult, 
-  SearchFilters,
+  rchQuery, 
+  rchResponse, 
+  rchResult, 
+  rchFilters,
   ContentType,
   DifficultyLevel,
   AutocompleteResult
-} from '@/types/search';
+} from '@/types/rch';
 import { UserRole } from '@/types/documentation';
-import { DocumentationSearchService } from '@/lib/search-service';
+import { DocumentationrchService } from '@/lib/rch-service';
 import { getUserRoleFromSession } from '@/lib/documentation-permissions';
 import { formatDistanceToNow } from 'date-fns';
 
-interface DocumentationSearchProps {
+interface DocumentationrchProps {
   initialQuery?: string;
   showFilters?: boolean;
   compact?: boolean;
-  onResultClick?: (result: SearchResult) => void;
+  onResultClick?: (result: rchResult) => void;
   className?: string;
 }
 
-export function DocumentationSearch({
+export function Documentationrch({
   initialQuery = '',
   showFilters = true,
   compact = false,
   onResultClick,
   className = ''
-}: DocumentationSearchProps) {
+}: DocumentationrchProps) {
   const { data: session } = useSession();
   const router = useRouter();
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const [searchService] = useState(() => new DocumentationSearchService({
+  const rchInputRef = useRef<HTMLInputElement>(null);
+  const [rchService] = useState(() => new DocumentationrchService({
     provider: 'local',
     indexName: 'documentation',
     maxResults: 50,
@@ -91,12 +88,12 @@ export function DocumentationSearch({
   }));
 
   const [query, setQuery] = useState(initialQuery);
-  const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(null);
+  const [rchResponse, setrchResponse] = useState<rchResponse | null>(null);
   const [autocomplete, setAutocomplete] = useState<AutocompleteResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [filters, setFilters] = useState<SearchFilters>({
+  const [filters, setFilters] = useState<rchFilters>({
     roles: [],
     categories: [],
     tags: [],
@@ -108,80 +105,80 @@ export function DocumentationSearch({
 
   const userRole: UserRole = getUserRoleFromSession(session);
 
-  // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce(async (searchQuery: string, searchFilters: SearchFilters) => {
-      if (!searchQuery.trim()) {
-        setSearchResponse(null);
+  // Debounced rch function
+  const debouncedrch = useCallback(
+    debounce(async (rchQuery: string, rchFilters: rchFilters) => {
+      if (!rchQuery.trim()) {
+        setrchResponse(null);
         return;
       }
 
       setLoading(true);
       try {
-        const searchQueryObj: SearchQuery = {
-          query: searchQuery,
-          filters: searchFilters,
+        const rchQueryObj: rchQuery = {
+          query: rchQuery,
+          filters: rchFilters,
           pagination: { page: 1, limit: 20, offset: 0 },
           sorting: { field: 'relevance', direction: 'desc' }
         };
 
-        const response = await searchService.search(searchQueryObj, userRole);
-        setSearchResponse(response);
+        const response = await rchService.rch(rchQueryObj, userRole);
+        setrchResponse(response);
       } catch (error) {
-        console.error('Search error:', error);
-        setSearchResponse(null);
+        console.error('rch error:', error);
+        setrchResponse(null);
       } finally {
         setLoading(false);
       }
     }, 300),
-    [searchService, userRole]
+    [rchService, userRole]
   );
 
   // Debounced autocomplete function
   const debouncedAutocomplete = useCallback(
-    debounce(async (searchQuery: string) => {
-      if (searchQuery.length < 2) {
+    debounce(async (rchQuery: string) => {
+      if (rchQuery.length < 2) {
         setAutocomplete(null);
         return;
       }
 
       try {
-        const result = await searchService.autocomplete(searchQuery, userRole);
+        const result = await rchService.autocomplete(rchQuery, userRole);
         setAutocomplete(result);
       } catch (error) {
         console.error('Autocomplete error:', error);
         setAutocomplete(null);
       }
     }, 150),
-    [searchService, userRole]
+    [rchService, userRole]
   );
 
-  // Handle search input change
-  const handleSearchChange = (value: string) => {
+  // Handle rch input change
+  const handlerchChange = (value: string) => {
     setQuery(value);
     
     if (value.trim()) {
-      debouncedSearch(value, filters);
+      debouncedrch(value, filters);
       debouncedAutocomplete(value);
       setShowAutocomplete(true);
     } else {
-      setSearchResponse(null);
+      setrchResponse(null);
       setAutocomplete(null);
       setShowAutocomplete(false);
     }
   };
 
-  // Handle search submit
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  // Handle rch submit
+  const handlerchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowAutocomplete(false);
     if (query.trim()) {
-      debouncedSearch(query, filters);
+      debouncedrch(query, filters);
     }
   };
 
   // Handle filter change
-  const handleFilterChange = (filterType: keyof SearchFilters, value: string, checked: boolean) => {
+  const handleFilterChange = (filterType: keyof rchFilters, value: string, checked: boolean) => {
     const newFilters = { ...filters };
     const filterArray = newFilters[filterType] as string[];
     
@@ -199,12 +196,12 @@ export function DocumentationSearch({
     setFilters(newFilters);
     
     if (query.trim()) {
-      debouncedSearch(query, newFilters);
+      debouncedrch(query, newFilters);
     }
   };
 
   // Handle result click
-  const handleResultClick = (result: SearchResult) => {
+  const handleResultClick = (result: rchResult) => {
     if (onResultClick) {
       onResultClick(result);
     } else {
@@ -216,7 +213,7 @@ export function DocumentationSearch({
   const handleAutocompleteSelect = (suggestion: string) => {
     setQuery(suggestion);
     setShowAutocomplete(false);
-    debouncedSearch(suggestion, filters);
+    debouncedrch(suggestion, filters);
   };
 
   // Get content type icon
@@ -227,7 +224,7 @@ export function DocumentationSearch({
       case 'api':
         return <Code className="h-4 w-4" />;
       case 'component':
-        return <Settings className="h-4 w-4" />;
+        return <Cog className="h-4 w-4" />;
       case 'page':
         return <FileText className="h-4 w-4" />;
       default:
@@ -251,22 +248,22 @@ export function DocumentationSearch({
 
   useEffect(() => {
     if (initialQuery) {
-      handleSearchChange(initialQuery);
+      handlerchChange(initialQuery);
     }
   }, [initialQuery]);
 
   return (
     <div className={`relative ${className}`}>
-      {/* Search Input */}
-      <form onSubmit={handleSearchSubmit} className="relative">
+      {/* rch Input */}
+      <form onSubmit={handlerchSubmit} className="relative">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <rch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
-            ref={searchInputRef}
+            ref={rchInputRef}
             type="text"
-            placeholder="Search documentation..."
+            placeholder="rch documentation..."
             value={query}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={(e) => handlerchChange(e.target.value)}
             onFocus={() => setShowAutocomplete(true)}
             onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
             className="pl-10 pr-12 py-3 bg-slate-800/50 border-slate-700 text-slate-200 placeholder:text-slate-400"
@@ -313,7 +310,7 @@ export function DocumentationSearch({
               <div className="p-3">
                 <h4 className="text-sm font-medium text-slate-300 mb-2 flex items-center gap-1">
                   <TrendingUp className="h-3 w-3" />
-                  Popular Searches
+                  Popular rches
                 </h4>
                 <div className="flex flex-wrap gap-1">
                   {autocomplete.popularQueries.map((query, index) => (
@@ -334,7 +331,7 @@ export function DocumentationSearch({
       )}
 
       {/* Advanced Filters */}
-      {showAdvancedFilters && showFilters && searchResponse && (
+      {showAdvancedFilters && showFilters && rchResponse && (
         <Card className="mt-4 bg-slate-800/50 border-slate-700">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-slate-100 flex items-center justify-between">
@@ -358,11 +355,11 @@ export function DocumentationSearch({
               </TabsList>
               
               <TabsContent value="content" className="space-y-3">
-                {searchResponse.facets.categories.length > 0 && (
+                {rchResponse.facets.categories.length > 0 && (
                   <div>
                     <h4 className="text-sm font-medium text-slate-200 mb-2">Categories</h4>
                     <div className="flex flex-wrap gap-2">
-                      {searchResponse.facets.categories.map((facet) => (
+                      {rchResponse.facets.categories.map((facet) => (
                         <label key={facet.value} className="flex items-center gap-2 text-sm">
                           <input
                             type="checkbox"
@@ -377,11 +374,11 @@ export function DocumentationSearch({
                   </div>
                 )}
                 
-                {searchResponse.facets.tags.length > 0 && (
+                {rchResponse.facets.tags.length > 0 && (
                   <div>
                     <h4 className="text-sm font-medium text-slate-200 mb-2">Tags</h4>
                     <div className="flex flex-wrap gap-1">
-                      {searchResponse.facets.tags.slice(0, 10).map((facet) => (
+                      {rchResponse.facets.tags.slice(0, 10).map((facet) => (
                         <Badge
                           key={facet.value}
                           variant={facet.selected ? "default" : "secondary"}
@@ -397,11 +394,11 @@ export function DocumentationSearch({
               </TabsContent>
               
               <TabsContent value="type" className="space-y-3">
-                {searchResponse.facets.contentTypes.length > 0 && (
+                {rchResponse.facets.contentTypes.length > 0 && (
                   <div>
                     <h4 className="text-sm font-medium text-slate-200 mb-2">Content Types</h4>
                     <div className="space-y-2">
-                      {searchResponse.facets.contentTypes.map((facet) => (
+                      {rchResponse.facets.contentTypes.map((facet) => (
                         <label key={facet.value} className="flex items-center gap-2 text-sm">
                           <input
                             type="checkbox"
@@ -421,11 +418,11 @@ export function DocumentationSearch({
               </TabsContent>
               
               <TabsContent value="difficulty" className="space-y-3">
-                {searchResponse.facets.difficulty.length > 0 && (
+                {rchResponse.facets.difficulty.length > 0 && (
                   <div>
                     <h4 className="text-sm font-medium text-slate-200 mb-2">Difficulty Level</h4>
                     <div className="space-y-2">
-                      {searchResponse.facets.difficulty.map((facet) => (
+                      {rchResponse.facets.difficulty.map((facet) => (
                         <label key={facet.value} className="flex items-center gap-2 text-sm">
                           <input
                             type="checkbox"
@@ -445,11 +442,11 @@ export function DocumentationSearch({
               </TabsContent>
               
               <TabsContent value="meta" className="space-y-3">
-                {searchResponse.facets.authors.length > 0 && (
+                {rchResponse.facets.authors.length > 0 && (
                   <div>
                     <h4 className="text-sm font-medium text-slate-200 mb-2">Authors</h4>
                     <div className="space-y-2">
-                      {searchResponse.facets.authors.slice(0, 5).map((facet) => (
+                      {rchResponse.facets.authors.slice(0, 5).map((facet) => (
                         <label key={facet.value} className="flex items-center gap-2 text-sm">
                           <input
                             type="checkbox"
@@ -469,24 +466,24 @@ export function DocumentationSearch({
         </Card>
       )}
 
-      {/* Search Results */}
-      {searchResponse && (
+      {/* rch Results */}
+      {rchResponse && (
         <div className="mt-6 space-y-4">
           {/* Results Header */}
           <div className="flex items-center justify-between">
             <div className="text-sm text-slate-400">
-              {searchResponse.totalCount > 0 ? (
+              {rchResponse.totalCount > 0 ? (
                 <>
-                  Found {searchResponse.totalCount} result{searchResponse.totalCount !== 1 ? 's' : ''} 
+                  Found {rchResponse.totalCount} result{rchResponse.totalCount !== 1 ? 's' : ''} 
                   {query && ` for "${query}"`}
-                  <span className="ml-2 text-xs">({searchResponse.executionTime}ms)</span>
+                  <span className="ml-2 text-xs">({rchResponse.executionTime}ms)</span>
                 </>
               ) : (
                 <>No results found{query && ` for "${query}"`}</>
               )}
             </div>
             
-            {searchResponse.totalCount > 0 && (
+            {rchResponse.totalCount > 0 && (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-400">Sort by:</span>
                 <select className="text-xs bg-slate-800 border border-slate-600 rounded px-2 py-1 text-slate-300">
@@ -500,9 +497,9 @@ export function DocumentationSearch({
           </div>
 
           {/* Results List */}
-          {searchResponse.results.length > 0 ? (
+          {rchResponse.results.length > 0 ? (
             <div className="space-y-4">
-              {searchResponse.results.map((result) => (
+              {rchResponse.results.map((result) => (
                 <Card 
                   key={result.id} 
                   className="bg-slate-800/50 border-slate-700 hover:border-cyan-600 transition-colors cursor-pointer"
@@ -597,17 +594,17 @@ export function DocumentationSearch({
             // No Results State
             <Card className="bg-slate-800/50 border-slate-700">
               <CardContent className="p-8 text-center">
-                <AlertCircle className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                <AlertTriangle className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-slate-200 mb-2">No results found</h3>
                 <p className="text-slate-400 mb-4">
-                  Try adjusting your search terms or filters to find what you're looking for.
+                  Try adjusting your rch terms or filters to find what you're looking for.
                 </p>
                 
-                {searchResponse.suggestions.length > 0 && (
+                {rchResponse.suggestions.length > 0 && (
                   <div className="mb-4">
                     <h4 className="text-sm font-medium text-slate-300 mb-2">Did you mean:</h4>
                     <div className="flex flex-wrap gap-2 justify-center">
-                      {searchResponse.suggestions.map((suggestion, index) => (
+                      {rchResponse.suggestions.map((suggestion, index) => (
                         <Button
                           key={index}
                           variant="outline"

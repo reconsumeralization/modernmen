@@ -28,7 +28,7 @@ interface HookContext {
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
-    useAsTitle: 'name',
+    usTitle: 'name',
     description: 'Salon staff and administrators',
     group: 'Administration',
   },

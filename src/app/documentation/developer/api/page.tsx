@@ -4,30 +4,61 @@ import { apiDocExtractor } from '@/lib/api-documentation-extractor'
 import { sampleAPIDocumentation } from '@/lib/sample-api-docs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { AlertCircle, InfoIcon } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  AlertTriangle, // Changed from alertTriangle
+  HelpCircle,    // Changed from helpCircle
+  Code,          // Changed from code
+  Database,      // Changed from database          // Changed from lock
+  Zap,           // Changed from zap
+  Users,         // Changed from users
+  Calendar,      // Changed from calendar
+  FileText,      // Changed from fileText
+  BarChart3,     // Changed from barChart3          // Changed from cog
+  Book,          // Changed from book
+  rch,        // Changed from rch
+  ArrowLeft,     // Changed from arrowLeft
+  ChevronRight,  // Changed from chevronRight
+  Menu,          // Changed from menu
+  ExternalLink,  // Changed from externalLink
+  Copy,          // Changed from copy
+  Download,      // Changed from download
+  Play,          // Changed from play
+  ChevronDown    // Changed from chevronDown
+} from '@/lib/icon-mapping'
+import type { DocumentationCategory } from '@/lib/types'
+import { APIDocumentationSection } from '@/types/api-documentation'
 
+/**
+ * API Documentation Page
+ * 
+ * Displays API documentation for the Modern Men Hair Salon management system.
+ * Falls back to sample data if extraction fails.
+ */
 export default async function APIDocumentationPage() {
-  let sections = []
-  let error = null
+  let sections: APIDocumentationSection[] = []
+  let error: string | null = null
   let usingSampleData = false
 
   try {
     // Extract API documentation from the codebase
-    sections = await apiDocExtractor.extractAPIDocumentation()
-    
-    // If no sections found, use sample data for demonstration
-    if (sections.length === 0) {
+    const extractedSections = await apiDocExtractor.extractAPIDocumentation()
+
+    // Use extracted sections directly if they exist
+    if (Array.isArray(extractedSections) && extractedSections.length > 0) {
+      sections = extractedSections as APIDocumentationSection[]
+    } else {
+      // If no sections found, use sample data for demonstration
       sections = sampleAPIDocumentation
       usingSampleData = true
     }
   } catch (err) {
+    // Extraction failed, fallback to sample data
+    // eslint-disable-next-line no-console
     console.error('Failed to extract API documentation:', err)
     error = err instanceof Error ? err.message : 'Unknown error occurred'
-    
-    // Fallback to sample data
     sections = sampleAPIDocumentation
     usingSampleData = true
-    error = null // Clear error since we have fallback data
   }
 
   // Configuration for API documentation
@@ -55,7 +86,7 @@ export default async function APIDocumentationPage() {
         <Card className="border-destructive">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
-              <AlertCircle className="w-5 h-5" />
+              {React.createElement(AlertTriangle, { className: "w-5 h-5" })} {/* Updated icon name */}
               API Documentation Error
             </CardTitle>
             <CardDescription>
@@ -120,7 +151,7 @@ export default async function APIDocumentationPage() {
         <Card className="mb-6 border-blue-200 bg-blue-50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-blue-800">
-              <InfoIcon className="w-5 h-5" />
+              {React.createElement(HelpCircle, { className: "w-5 h-5" })} {/* Updated icon name */}
               Sample API Documentation
             </CardTitle>
             <CardDescription className="text-blue-700">
@@ -142,7 +173,7 @@ export default async function APIDocumentationPage() {
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="secondary">
-              {sections.reduce((total, section) => total + section.endpoints.length, 0)} endpoints
+                              {sections.reduce((total, section) => total + section.endpoints.length, 0)} endpoints
             </Badge>
             <Badge variant="outline">
               {sections.length} sections
@@ -209,11 +240,12 @@ export default async function APIDocumentationPage() {
 
       {/* API Documentation Component */}
       <APIDocumentation
-        sections={sections}
+        sections={sections as unknown as APIDocumentationSection[]}
         authentication={apiConfig.authentication}
         interactiveTesting={apiConfig.interactiveTesting}
         sdkGeneration={apiConfig.sdkGeneration}
         onEndpointTest={(endpoint, result) => {
+          // eslint-disable-next-line no-console
           console.log('Endpoint test result:', { endpoint: endpoint.operationId, result })
         }}
       />

@@ -485,7 +485,7 @@ If you need help with configuration, check our [troubleshooting guide](/document
 ];
 
 // Database Management Category
-const databaseArticles: DocumentationArticle[] = [
+const databarticles: DocumentationArticle[] = [
   {
     id: createArticleId("database", "create"),
     title: "Creating Databases",
@@ -989,6 +989,6 @@ export const documentationCategories: DocumentationCategory[] = [
     title: "Database Management",
     slug: "database",
     description: "Learn how to create, manage, and optimize your databases",
-    articles: databaseArticles
+    articles: databarticles
   }
 ]; 

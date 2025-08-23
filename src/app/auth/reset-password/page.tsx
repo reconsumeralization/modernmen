@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { userchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -20,9 +20,9 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isValidToken, setIsValidToken] = useState<boolean | null>(null)
 
-  const searchParams = useSearchParams()
+  const rchParams = userchParams()
   const router = useRouter()
-  const token = searchParams.get('token')
+  const token = rchParams.get('token')
 
   useEffect(() => {
     if (!token) {
