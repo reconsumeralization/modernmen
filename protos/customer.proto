@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package modernmen;
+
+// Customer service for Modern Men Hair Salon
+service CustomerService {
+  rpc CreateCustomer(CreateCustomerRequest) returns (CustomerResponse);
+  rpc GetCustomer(GetCustomerRequest) returns (CustomerResponse);
+  rpc UpdateCustomer(UpdateCustomerRequest) returns (CustomerResponse);
+  rpc DeleteCustomer(DeleteCustomerRequest) returns (CustomerResponse);
+  rpc ListCustomers(ListCustomersRequest) returns (ListCustomersResponse);
+  rpc GetCustomerHistory(GetCustomerHistoryRequest) returns (CustomerHistoryResponse);
+}
+
+// Customer data structure
+message Customer {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string phone = 5;
+  string avatar_url = 6;
+  CustomerStatus status = 7;
+  CustomerTier tier = 8;
+  int32 loyalty_points = 9;
+  string preferred_stylist_id = 10;
+  repeated string preferences = 11;
+  string created_at = 12;
+  string updated_at = 13;
+}
+
+// Customer status enum
+enum CustomerStatus {
+  ACTIVE = 0;
+  INACTIVE = 1;
+  SUSPENDED = 2;
+  VIP = 3;
+}
+
+// Customer tier enum
+enum CustomerTier {
+  BRONZE = 0;
+  SILVER = 1;
+  GOLD = 2;
+  PLATINUM = 3;
+  DIAMOND = 4;
+}
+
+// Customer preferences
+message CustomerPreferences {
+  string customer_id = 1;
+  repeated string preferred_services = 2;
+  repeated string preferred_stylists = 3;
+  string preferred_time_slot = 4;
+  bool email_notifications = 5;
+  bool sms_notifications = 6;
+  bool marketing_emails = 7;
+  string notes = 8;
+}
+
+// Customer history entry
+message CustomerHistoryEntry {
+  string id = 1;
+  string customer_id = 2;
+  string appointment_id = 3;
+  string service_name = 4;
+  string stylist_name = 5;
+  double amount_paid = 6;
+  int32 loyalty_points_earned = 7;
+  string date = 8;
+  string notes = 9;
+}
+
+// Request/Response messages
+message CreateCustomerRequest {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+  string phone = 4;
+  string avatar_url = 5;
+  CustomerPreferences preferences = 6;
+}
+
+message GetCustomerRequest {
+  string customer_id = 1;
+  string email = 2;
+}
+
+message UpdateCustomerRequest {
+  string customer_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string phone = 5;
+  string avatar_url = 6;
+  CustomerStatus status = 7;
+  CustomerTier tier = 8;
+  CustomerPreferences preferences = 9;
+}
+
+message DeleteCustomerRequest {
+  string customer_id = 1;
+  string reason = 2;
+}
+
+message ListCustomersRequest {
+  CustomerStatus status = 1;
+  CustomerTier tier = 2;
+  string search_term = 3;
+  int32 page = 4;
+  int32 limit = 5;
+  string sort_by = 6;
+  string sort_order = 7;
+}
+
+message GetCustomerHistoryRequest {
+  string customer_id = 1;
+  string date_from = 2;
+  string date_to = 3;
+  int32 page = 4;
+  int32 limit = 5;
+}
+
+message CustomerResponse {
+  bool success = 1;
+  Customer customer = 2;
+  string message = 3;
+  string error = 4;
+}
+
+message ListCustomersResponse {
+  bool success = 1;
+  repeated Customer customers = 2;
+  int32 total = 3;
+  int32 page = 4;
+  int32 limit = 5;
+  string message = 6;
+  string error = 7;
+}
+
+message CustomerHistoryResponse {
+  bool success = 1;
+  repeated CustomerHistoryEntry history = 2;
+  int32 total = 3;
+  int32 page = 4;
+  int32 limit = 5;
+  string message = 6;
+  string error = 7;
+}

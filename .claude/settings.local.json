@@ -1,0 +1,47 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev:status:*)",
+      "Bash(npm run setup:payload:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run deploy:*)",
+      "Bash(git *)",
+      "Bash(docker *)",
+      "Bash(vercel *)",
+      "FileSystem(*)",
+      "Terminal(*)",
+      "Experimental(*)",
+      "AggressiveOptimization(*)",
+      "RapidPrototyping(*)",
+      "EdgeCaseExploration(*)",
+      "UnconventionalSolutions(*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(pnpm install:*)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(docker:*)"
+    ],
+    "deny": [],
+    "yolo_mode": {
+      "enabled": true,
+      "risk_tolerance": "maximum",
+      "safety_filters": "minimal",
+      "creativity_boost": "maximum",
+      "constraint_relaxation": "enabled",
+      "rapid_prototyping": true,
+      "experimental_features": true,
+      "aggressive_optimization": true
+    }
+  },
+  "mode": "yolo",
+  "behavior": {
+    "style": "aggressive",
+    "approach": "experimental",
+    "risk_level": "high",
+    "creativity": "maximum",
+    "speed": "priority",
+    "perfection": "secondary"
+  }
+}
