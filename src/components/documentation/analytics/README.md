@@ -156,7 +156,7 @@ interface DocumentationMetrics {
 Add the analytics hook to any documentation page:
 
 ```typescript
-import { unalytics } from '@/hooks/unalytics';
+import { unalytics } from '@/hooks/use-analytics';
 
 export default function MyDocPage() {
   const analytics = unalytics({
