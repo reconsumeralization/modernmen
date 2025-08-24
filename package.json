@@ -85,7 +85,7 @@
     "contentlayer": "^0.3.4",
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "framer-motion": "^11.0.3",
+    "framer-motion": "^12.23.12",
     "logrocket": "^10.1.0",
     "lucide-react": "^0.323.0",
     "next": "^15.5.0",
