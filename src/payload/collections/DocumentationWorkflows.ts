@@ -4,7 +4,7 @@ type CollectionConfig = any;
 export const DocumentationWorkflows: CollectionConfig = {
   slug: 'documentation-workflows',
   admin: {
-    usTitle: 'name',
+    useAsTitle: 'name',
     defaultColumns: ['name', 'isDefault', 'isActive', 'updatedAt'],
     group: 'Content Management',
     description: 'Manage approval workflows for documentation',

@@ -52,7 +52,7 @@ export function EmployeeManagement() {
   const fetchEmployees = async () => {
     try {
       setLoading(true)
-      const params = new URLrchParams()
+      const params = new URLSearchParams()
       if (rchTerm) params.set('rch', rchTerm)
       if (statusFilter !== 'all') {
         params.set('isActive', statusFilter === 'active' ? 'true' : 'false')

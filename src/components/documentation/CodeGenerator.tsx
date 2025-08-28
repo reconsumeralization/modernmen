@@ -270,7 +270,7 @@ interface ${endpoint.operationId}Request {
   })
 
   const queryStringCode = endpoint.parameters.query.length > 0 ? `
-  const queryParams = new URLrchParams()
+  const queryParams = new URLSearchParams()
   ${endpoint.parameters.query.map(p => `
   if (params.${p.name} !== undefined) {
     queryParams.append('${p.name}', String(params.${p.name}))
@@ -313,7 +313,7 @@ function generateJavaScriptCode(endpoint: APIEndpoint, baseUrl: string, includeA
 
   const pathParams = endpoint.parameters.path.map(p => p.name).join(', ')
   const queryParams = endpoint.parameters.query.length > 0 ? `
-  const queryParams = new URLrchParams()
+  const queryParams = new URLSearchParams()
   ${endpoint.parameters.query.map(p => `
   if (${p.name} !== undefined) {
     queryParams.append('${p.name}', String(${p.name}))

@@ -3,7 +3,7 @@ import { CollectionConfig, AccessArgs } from 'payload'
 export const ServicePackages: CollectionConfig = {
   slug: 'service-packages',
   admin: {
-    usTitle: 'name',
+    useAsTitle: 'name',
     description: 'Service bundles with special pricing',
     group: 'Business',
     defaultColumns: ['name', 'totalPrice', 'discountPercentage', 'isActive'],

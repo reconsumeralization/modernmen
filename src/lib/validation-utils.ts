@@ -35,7 +35,7 @@ export async function validateRequestBody<T>(
  * Validates URL rch parameters
  */
 export function validaterchParams<T>(
-  rchParams: URLrchParams,
+  rchParams: URLSearchParams,
   schema: z.ZodSchema<T>
 ): ValidationResult<T> {
   try {
