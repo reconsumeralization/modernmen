@@ -21,26 +21,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { rchParams } = new URL(request.url)
+    const { searchParams } = new URL(request.url)
     
     // Parse filter parameters
     const filter: BusinessDocumentationFilter = {
-      type: rchParams.get('type')?.split(',') as any,
-      category: rchParams.get('category')?.split(',') as any,
-      status: rchParams.get('status')?.split(',') as any,
-      difficulty: rchParams.get('difficulty')?.split(',') as any,
-      priority: rchParams.get('priority')?.split(',') as any,
-      tags: rchParams.get('tags')?.split(','),
-      author: rchParams.get('author')?.split(','),
-      rchQuery: rchParams.get('q') || undefined,
-      dateRange: rchParams.get('startDate') && rchParams.get('endDate') ? {
-        start: new Date(rchParams.get('startDate')!),
-        end: new Date(rchParams.get('endDate')!)
+      type: searchParams.get('type')?.split(',') as any,
+      category: searchParams.get('category')?.split(',') as any,
+      status: searchParams.get('status')?.split(',') as any,
+      difficulty: searchParams.get('difficulty')?.split(',') as any,
+      priority: searchParams.get('priority')?.split(',') as any,
+      tags: searchParams.get('tags')?.split(','),
+      author: searchParams.get('author')?.split(','),
+      rchQuery: searchParams.get('q') || undefined,
+      dateRange: searchParams.get('startDate') && searchParams.get('endDate') ? {
+        start: new Date(searchParams.get('startDate')!),
+        end: new Date(searchParams.get('endDate')!)
       } : undefined
     }
 
-    const page = parseInt(rchParams.get('page') || '1')
-    const limit = parseInt(rchParams.get('limit') || '20')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '20')
 
     const result = await docService.rchDocumentation(filter, user.role, page, limit)
 

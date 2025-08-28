@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Copy, Download, Code } from '@/lib/icon-mapping'
+import { Copy as CopyIcon, Download as DownloadIcon, Code as CodeIcon } from '@/lib/icon-mapping'
 import { APIEndpoint, SDKGenerationConfig, CodeGenerationTemplate } from '@/types/api-documentation'
 import { cn } from '@/lib/utils'
 

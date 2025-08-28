@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { Play, Copy, Download, Clock, AlertTriangle, CheckCircle } from '@/lib/icon-mapping'
+import { Play as PlayIcon, Copy as CopyIcon, Download as DownloadIcon, Clock, AlertTriangle, CheckCircle, AlertCircle, History as HistoryIcon } from '@/lib/icon-mapping'
 import { APIEndpoint, APITestRequest, APITestResponse, APITestHistory } from '@/types/api-documentation'
 import { cn } from '@/lib/utils'
 
