@@ -49,7 +49,7 @@ export function AuditLogs() {
   const fetchAuditLogs = async () => {
     try {
       setLoading(true)
-      const params = new URLrchParams()
+      const params = new URLSearchParams()
       if (rchTerm) params.set('rch', rchTerm)
       if (actionFilter !== 'all') params.set('action', actionFilter)
       if (resourceFilter !== 'all') params.set('resource', resourceFilter)

@@ -19,7 +19,7 @@ class ClientStorybookService {
     const url = new URL('/api/storybook', window.location.origin)
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        url.rchParams.set(key, value)
+        url.searchParams.set(key, value)
       })
     }
 
