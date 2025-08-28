@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react"
 import type React from "react"
 
-import { Upload, Download, Type, Sliders, Eye, MousePointer, RotateCcw } from "lucide-react"
+import { Upload, Download, Type, Sliders, Eye, MousePointer, RotateCcw } from "@/lib/icon-mapping"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"

@@ -95,11 +95,11 @@ export default buildConfig({
       handler: async (req: Request) => {
         try {
           const payload = await getPayloadClient()
-          const { rchParams } = new URL(req.url)
+          const { searchParams } = new URL(req.url)
 
-          const query = rchParams.get('q') || ''
-          const collection = rchParams.get('collection') || 'all'
-          const limit = parseInt(rchParams.get('limit') || '20')
+          const query = searchParams.get('q') || ''
+          const collection = searchParams.get('collection') || 'all'
+          const limit = parseInt(searchParams.get('limit') || '20')
 
           interface rchResult {
             [key: string]: any

@@ -5,9 +5,9 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader } from './card'
 import { Badge } from './badge'
 import { Button } from './button'
-import { rch, ExternalLink, Clock, User, Tag, Star, Book, Code, FileText, Cog } from '@/lib/icon-mapping'
+import { rch, ExternalLink, Clock, User, Tag, Star, BookOpen, Code, FileText, Settings } from '@/lib/icon-mapping'
 import { cn } from '@/lib/utils'
-import { rchResult } from '@/lib/rch-core'
+import { rchResult } from '@/types/search'
 
 interface rchResultsProps {
   results: rchResult[]
