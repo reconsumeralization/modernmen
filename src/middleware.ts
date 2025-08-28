@@ -65,8 +65,8 @@ export async function middleware(request: NextRequest) {
     if (!token || token.role !== 'admin') {
       const url = request.nextUrl.clone()
       url.pathname = '/documentation'
-      url.rchParams.set('error', 'access_denied')
-      url.rchParams.set('section', 'admin')
+      url.searchParams.set('error', 'access_denied')
+      url.searchParams.set('section', 'admin')
       return NextResponse.redirect(url)
     }
   }

@@ -52,7 +52,7 @@ class SMSService {
           'Authorization': `Basic ${Buffer.from(`${this.config.accountSid}:${this.config.authToken}`).toString('base64')}`,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLrchParams({
+        body: new URLSearchParams({
           From: this.config.fromNumber,
           To: smsData.to,
           Body: smsData.message,

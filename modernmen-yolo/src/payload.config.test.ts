@@ -13,7 +13,7 @@ const dirname = path.dirname(filename)
 const Users = {
   slug: 'users',
   admin: {
-    usTitle: 'name',
+    useAsTitle: 'name',
     description: 'User accounts',
   },
   auth: true,

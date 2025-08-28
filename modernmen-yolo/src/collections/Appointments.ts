@@ -3,7 +3,7 @@ import { CollectionConfig, Where, AccessArgs } from 'payload'
 export const Appointments: CollectionConfig = {
   slug: 'appointments',
   admin: {
-    usTitle: 'appointmentTitle',
+    useAsTitle: 'appointmentTitle',
     description: 'Customer appointments and bookings',
     group: 'Appointments',
     defaultColumns: ['appointmentTitle', 'customer', 'stylist', 'dateTime', 'status'],

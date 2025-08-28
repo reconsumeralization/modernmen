@@ -71,7 +71,7 @@ export function usePayloadIntegration() {
     setError(null)
 
     try {
-      const params = new URLrchParams({
+      const params = new URLSearchParams({
         q: query,
         collections: collections.join(','),
         limit: limit.toString()
@@ -106,7 +106,7 @@ export function usePayloadIntegration() {
     setError(null)
 
     try {
-      const params = new URLrchParams()
+      const params = new URLSearchParams()
       if (dateRange) {
         params.append('startDate', dateRange.start.toISOString())
         params.append('endDate', dateRange.end.toISOString())
@@ -184,7 +184,7 @@ export function usePayloadIntegration() {
     setError(null)
 
     try {
-      const params = new URLrchParams()
+      const params = new URLSearchParams()
       
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined) {

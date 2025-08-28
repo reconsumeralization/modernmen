@@ -20,7 +20,9 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isValidToken, setIsValidToken] = useState<boolean | null>(null)
 
-  const searchParams = useSearchParams()
+
+  const rchParams = useSearchParams()
+
   const router = useRouter()
   const token = searchParams.get('token')
 

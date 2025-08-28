@@ -126,7 +126,7 @@ export function APITester({ endpoint, authentication, onClose, onTest }: APITest
     })
 
     // Add query parameters
-    const queryParams = new URLrchParams()
+    const queryParams = new URLSearchParams()
     endpoint.parameters.query.forEach(param => {
       const value = parameters[param.name]
       if (value !== undefined && value !== '') {

@@ -3,7 +3,7 @@ import { CollectionConfig, AccessArgs } from 'payload'
 export const WaitList: CollectionConfig = {
   slug: 'wait-list',
   admin: {
-    usTitle: 'customerName',
+    useAsTitle: 'customerName',
     description: 'Wait list management for oversubscribed services',
     group: 'Appointments',
     defaultColumns: ['customerName', 'service', 'requestedDate', 'priority', 'status'],

@@ -37,7 +37,7 @@ export function NotificationHistory({ userId, className = '' }: NotificationHist
   const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true)
-      const params = new URLrchParams({
+      const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: '20'
       })

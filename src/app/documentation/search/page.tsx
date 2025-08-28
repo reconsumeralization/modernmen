@@ -1,14 +1,14 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { userchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Documentationrch } from '@/components/documentation/Documentationrch';
 import { Card, CardContent } from '@/components/ui/card';
 import { rch, Loader2 } from '@/lib/icon-mapping';
 
 function rchPageContent() {
-  const rchParams = userchParams();
-  const initialQuery = rchParams.get('q') || '';
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('q') || '';
 
   return (
     <div className="max-w-6xl">

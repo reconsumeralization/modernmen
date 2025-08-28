@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { DocumentationrchService } from '@/lib/rch-service'
 import { getUserRoleFromSession } from '@/lib/documentation-permissions'
-import { rchConfig } from '@/types/rch'
+import { rchConfig as RchConfig } from '@/types/rch'
 
 // Initialize rch service (same config as rch route)
-const rchConfig: rchConfig = {
+const rchConfig: RchConfig = {
   provider: 'local',
   indexName: 'documentation',
   maxResults: 50,
@@ -41,8 +41,8 @@ const rchService = new DocumentationrchService(rchConfig)
 
 export async function GET(request: NextRequest) {
   try {
-    const { rchParams } = new URL(request.url)
-    const query = rchParams.get('q') || ''
+    const { searchParams } = new URL(request.url)
+    const query = searchParams.get('q') || ''
 
     // Get user session and role
     const session = await getServerSession()

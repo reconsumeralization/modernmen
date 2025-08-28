@@ -16,7 +16,9 @@ export default function PortalLoginPage() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [providers, setProviders] = useState<any>(null)
+
   const searchParams = useSearchParams()
+
   const router = useRouter()
 
   const callbackUrl = searchParams?.get('callbackUrl') || '/portal'

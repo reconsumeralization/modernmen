@@ -3,7 +3,7 @@ import { CollectionConfig } from 'payload'
 export const Notifications: CollectionConfig = {
   slug: 'notifications',
   admin: {
-    usTitle: 'title',
+    useAsTitle: 'title',
     description: 'System notifications and alerts',
     group: 'System',
     defaultColumns: ['title', 'user', 'type', 'priority', 'read', 'createdAt'],
