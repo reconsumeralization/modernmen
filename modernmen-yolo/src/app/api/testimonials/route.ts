@@ -83,10 +83,10 @@ const sampleTestimonials: Testimonial[] = [
 
 export async function GET(request: NextRequest) {
   try {
-    const { rchParams } = new URL(request.url)
-    const stylistId = rchParams.get('stylistId')
-    const limit = parseInt(rchParams.get('limit') || '10')
-    const page = parseInt(rchParams.get('page') || '1')
+    const { searchParams } = new URL(request.url)
+    const stylistId = searchParams.get('stylistId')
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const page = parseInt(searchParams.get('page') || '1')
 
     let filteredTestimonials = sampleTestimonials
 

@@ -538,8 +538,8 @@ export class BusinessDocumentationService {
     if (data && method !== 'GET') {
       options.body = JSON.stringify(data)
     } else if (data && method === 'GET') {
-      const params = new URLrchParams(data)
-      const response = await fetch(`${url}?${params}`, options)
+      const params = new URLSearchParams(data as Record<string, string>)
+      const response = await fetch(`${url}?${params.toString()}`, options)
       return response.json()
     }
 

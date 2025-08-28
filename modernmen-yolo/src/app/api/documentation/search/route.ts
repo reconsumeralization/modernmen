@@ -41,20 +41,20 @@ const rchService = new DocumentationrchService(rchConfig)
 
 export async function GET(request: NextRequest) {
   try {
-    const { rchParams } = new URL(request.url)
-    const query = rchParams.get('q') || ''
-    const page = parseInt(rchParams.get('page') || '1')
-    const limit = parseInt(rchParams.get('limit') || '20')
-    const sortField = rchParams.get('sort') || 'relevance'
-    const sortDirection = rchParams.get('order') || 'desc'
+    const { searchParams } = new URL(request.url)
+    const query = searchParams.get('q') || ''
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '20')
+    const sortField = searchParams.get('sort') || 'relevance'
+    const sortDirection = searchParams.get('order') || 'desc'
     
     // Parse filters from query parameters
-    const categories = rchParams.get('categories')?.split(',').filter(Boolean) || []
-    const contentTypes = rchParams.get('types')?.split(',').filter(Boolean) || []
-    const tags = rchParams.get('tags')?.split(',').filter(Boolean) || []
-    const difficulty = rchParams.get('difficulty')?.split(',').filter(Boolean) || []
-    const authors = rchParams.get('authors')?.split(',').filter(Boolean) || []
-    const sections = rchParams.get('sections')?.split(',').filter(Boolean) || []
+    const categories = searchParams.get('categories')?.split(',').filter(Boolean) || []
+    const contentTypes = searchParams.get('types')?.split(',').filter(Boolean) || []
+    const tags = searchParams.get('tags')?.split(',').filter(Boolean) || []
+    const difficulty = searchParams.get('difficulty')?.split(',').filter(Boolean) || []
+    const authors = searchParams.get('authors')?.split(',').filter(Boolean) || []
+    const sections = searchParams.get('sections')?.split(',').filter(Boolean) || []
 
     // Get user session and role
     const session = await getServerSession()

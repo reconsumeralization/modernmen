@@ -46,7 +46,7 @@ export function UserManagement() {
   const fetchUsers = async () => {
     try {
       setLoading(true)
-      const params = new URLrchParams()
+      const params = new URLSearchParams()
       if (rchTerm) params.set('rch', rchTerm)
       if (roleFilter !== 'all') params.set('role', roleFilter)
       if (statusFilter !== 'all') {

@@ -6,12 +6,12 @@ import { logger } from '@/lib/logger'
 
 async function handlerch(request: NextRequest) {
   try {
-    const { rchParams } = new URL(request.url)
-    const query = rchParams.get('q')
-    const category = rchParams.get('category')
-    const type = rchParams.get('type')
-    const limit = rchParams.get('limit')
-    const offset = rchParams.get('offset')
+    const { searchParams } = new URL(request.url)
+    const query = searchParams.get('q')
+    const category = searchParams.get('category')
+    const type = searchParams.get('type')
+    const limit = searchParams.get('limit')
+    const offset = searchParams.get('offset')
 
     if (!query) {
       return NextResponse.json(
