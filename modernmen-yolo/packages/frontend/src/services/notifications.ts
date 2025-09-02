@@ -142,7 +142,7 @@ export class NotificationsService {
         ...notificationData
       }
 
-      mockNotifications.unshift(newNotification) // Add to beginning of array
+      mockNotifications.unshift(newNotification as any) // Add to beginning of array
 
       return {
         success: true,

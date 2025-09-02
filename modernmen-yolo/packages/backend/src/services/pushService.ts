@@ -1,6 +1,8 @@
-import { getModernMen } from 'ModernMen'
-// Note: ModernMen config import removed for Vercel deployment compatibility
-// import config from '@/ModernMen.config'
+// Note: ModernMen config system removed - using direct configuration
+const config = {
+  vapidKey: process.env.VAPID_PUBLIC_KEY || '',
+  privateKey: process.env.VAPID_PRIVATE_KEY || ''
+}
 
 export interface PushNotification {
   title: string
@@ -47,7 +49,7 @@ class PushService {
     subscription: PushSubscription
   ): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config })
+      const ModernMen = config
 
       // Store subscription in database (you might want to create a dedicated collection)
       // For now, we'll store it as user metadata or create a separate push subscriptions collection
@@ -64,7 +66,7 @@ class PushService {
    */
   async unregisterSubscription(userId: string, endpoint: string): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config })
+      const ModernMen = config
 
       // Remove subscription from database
 
@@ -83,7 +85,7 @@ class PushService {
     notification: PushNotification
   ): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config })
+      const ModernMen = config
 
       // Get user's subscriptions from database
       const subscriptions = await this.getUserSubscriptions(userId)
@@ -119,7 +121,7 @@ class PushService {
    */
   async sendToAll(notification: PushNotification): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config })
+      const ModernMen = config
 
       // Get all active subscriptions
       const subscriptions = await this.getAllSubscriptions()
@@ -275,7 +277,7 @@ class PushService {
    */
   private async getUserSubscriptions(userId: string): Promise<PushSubscription[]> {
     try {
-      const ModernMen = await getModernMen({ config })
+      const ModernMen = config
 
       // In a real implementation, you would query your database
       // for the user's push subscriptions
@@ -293,7 +295,7 @@ class PushService {
    */
   private async getAllSubscriptions(): Promise<PushSubscription[]> {
     try {
-      const ModernMen = await getModernMen({ config })
+      const ModernMen = config
 
       // In a real implementation, you would query your database
       // for all active push subscriptions
@@ -339,7 +341,7 @@ class PushService {
    */
   async cleanupExpiredSubscriptions(): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config })
+      const ModernMen = config
 
       // In a real implementation, you would:
       // 1. Query all subscriptions

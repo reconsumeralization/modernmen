@@ -21,6 +21,7 @@ export { useFormWizard } from "../components/ui/form-wizard"
 // -----------------------------------------------------------------------------
 // UTILITY HOOKS - Common utility hooks
 // -----------------------------------------------------------------------------
+export { useMobileOptimization } from "./use-mobile-optimization"
 export { useMobile } from "./use-mobile"
 
 // -----------------------------------------------------------------------------

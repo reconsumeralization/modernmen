@@ -4,7 +4,7 @@
 
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -155,17 +155,7 @@ export function VercelDeploymentDashboard() {
   const [progress, setProgress] = useState(0)
   const [steps, setSteps] = useState(deploymentSteps)
 
-  useEffect(() => {
-    if (deploymentStatus === 'preparing') {
-      const timer = setTimeout(() => {
-        setDeploymentStatus('deploying')
-        startDeployment()
-      }, 2000)
-      return () => clearTimeout(timer)
-    }
-  }, [deploymentStatus])
-
-  const startDeployment = () => {
+  const startDeployment = useCallback(() => {
     let stepIndex = 0
     const deployStep = () => {
       if (stepIndex < steps.length) {
@@ -199,7 +189,17 @@ export function VercelDeploymentDashboard() {
     }
 
     deployStep()
-  }
+  }, [steps])
+
+  useEffect(() => {
+    if (deploymentStatus === 'preparing') {
+      const timer = setTimeout(() => {
+        setDeploymentStatus('deploying')
+        startDeployment()
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [deploymentStatus, startDeployment])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800">

@@ -139,10 +139,13 @@ export class NotificationsService {
       const newNotification: NotificationItem = {
         id: Date.now().toString(),
         timestamp: new Date(),
-        ...notificationData
+        title: notificationData.title,
+        message: notificationData.message,
+        type: notificationData.type as 'info' | 'success' | 'warning' | 'error',
+        read: notificationData.read || false
       }
 
-      mockNotifications.unshift(newNotification) // Add to beginning of array
+      mockNotifications.unshift(newNotification as any) // Add to beginning of array
 
       return {
         success: true,

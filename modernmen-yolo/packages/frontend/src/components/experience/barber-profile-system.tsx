@@ -5,6 +5,7 @@
 "use client"
 
 import React, { useState } from "react"
+import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -162,9 +163,11 @@ export function BarberProfileCard({
           <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 relative overflow-hidden">
             {barber.portfolio[0] && (
               <>
-                <img
+                <Image
                   src={barber.portfolio[0].image}
                   alt={`${barber.name} portfolio`}
+                  width={400}
+                  height={200}
                   className={cn(
                     "w-full h-full object-cover transition-all duration-500",
                     imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105"
@@ -464,9 +467,11 @@ export function BarberProfileModal({
                 {barber.portfolio.map((item) => (
                   <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="aspect-square overflow-hidden">
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.title}
+                        width={300}
+                        height={300}
                         className="w-full h-full object-cover hover:scale-105 transition-transform"
                       />
                     </div>

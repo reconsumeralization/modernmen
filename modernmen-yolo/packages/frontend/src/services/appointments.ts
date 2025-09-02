@@ -82,7 +82,7 @@ export class AppointmentsService {
       const transformedData: Appointment[] = (data || []).map(item => ({
         id: item.id,
         customerName: item.customers?.name || 'Unknown Customer',
-        customerEmail: item.customers?.email,
+
         service: item.services?.name || 'Unknown Service',
         barber: item.staff?.name || 'Unassigned',
         time: `${item.appointment_date} ${item.start_time}`,
@@ -110,7 +110,13 @@ export class AppointmentsService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch appointments',
-        data: []
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
       }
     }
   }
@@ -167,17 +173,17 @@ export class AppointmentsService {
       const appointment: Appointment = {
         id: data.id,
         customerName: data.customers?.name || 'Unknown Customer',
-        customerEmail: data.customers?.email,
+
         service: data.services?.name || 'Unknown Service',
         barber: data.staff?.name || 'Unassigned',
         time: `${data.appointment_date} ${data.start_time}`,
         status: data.status,
-        price: data.price,
+
         duration: data.duration,
-        notes: data.notes,
-        date: data.appointment_date,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
+
+
+
+
       }
 
       return {
@@ -243,17 +249,17 @@ export class AppointmentsService {
       const appointment: Appointment = {
         id: data.id,
         customerName: data.customers?.name || 'Unknown Customer',
-        customerEmail: data.customers?.email,
+
         service: data.services?.name || 'Unknown Service',
         barber: data.staff?.name || 'Unassigned',
         time: `${data.appointment_date} ${data.start_time}`,
         status: data.status,
-        price: data.price,
+
         duration: data.duration,
-        notes: data.notes,
-        date: data.appointment_date,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
+
+
+
+
       }
 
       return {
@@ -323,17 +329,17 @@ export class AppointmentsService {
       const appointment: Appointment = {
         id: data.id,
         customerName: data.customers?.name || 'Unknown Customer',
-        customerEmail: data.customers?.email,
+
         service: data.services?.name || 'Unknown Service',
         barber: data.staff?.name || 'Unassigned',
         time: `${data.appointment_date} ${data.start_time}`,
         status: data.status,
-        price: data.price,
+
         duration: data.duration,
-        notes: data.notes,
-        date: data.appointment_date,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
+
+
+
+
       }
 
       return {
@@ -415,7 +421,7 @@ export class AppointmentsService {
       const transformedData: Appointment[] = (data || []).map(item => ({
         id: item.id,
         customerName: item.customers?.name || 'Unknown Customer',
-        customerEmail: item.customers?.email,
+
         service: item.services?.name || 'Unknown Service',
         barber: item.staff?.name || 'Unassigned',
         time: `${item.appointment_date} ${item.start_time}`,

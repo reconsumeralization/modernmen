@@ -371,7 +371,7 @@ class OfflineService {
       const transaction = this.db!.transaction(['pendingActions'], 'readonly')
       const store = transaction.objectStore('pendingActions')
       const index = store.index('synced')
-      const request = index.getAll(false) // Get unsynced actions
+      const request = index.getAll(IDBKeyRange.only(false)) // Get unsynced actions
 
       request.onsuccess = () => resolve(request.result)
       request.onerror = () => reject(new Error('Failed to get pending actions'))

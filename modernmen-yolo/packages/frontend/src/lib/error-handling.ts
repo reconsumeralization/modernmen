@@ -242,4 +242,4 @@ export function useErrorHandler(): UseErrorHandlerReturn {
 // -----------------------------------------------------------------------------
 // TYPE EXPORTS - Error-related types
 // -----------------------------------------------------------------------------
-export type { ErrorResponse }
+// ErrorResponse is already exported as interface above

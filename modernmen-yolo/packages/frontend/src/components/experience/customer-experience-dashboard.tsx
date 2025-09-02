@@ -52,7 +52,14 @@ interface BarberProfile {
   specialties: string[]
   rating: number
   experience: number // years
-  portfolio: string[]
+  portfolio: {
+    id: string
+    title: string
+    image: string
+    description: string
+    style: string
+    duration: number
+  }[]
   availability: 'available' | 'busy' | 'offline'
   nextAvailable: string
 }
@@ -76,7 +83,7 @@ interface ExperiencePreferences {
   specialRequests: string[]
 }
 
-interface CustomerExperienceDashboardProps {
+export interface CustomerExperienceDashboardProps {
   customer: CustomerProfile
   upcomingVisit?: VisitExperience
   visitHistory: VisitExperience[]
@@ -157,7 +164,7 @@ export function CustomerExperienceDashboard({
               <div>
                 <h1 className="text-2xl font-bold">Welcome back, {customer.name}!</h1>
                 <p className="text-muted-foreground">
-                  Member since {new Date(customer.dateOfBirth || customer.memberSince).getFullYear()}
+                  Member since {new Date(customer.memberSince).getFullYear()}
                   • {customer.totalVisits} visits • {customer.loyaltyTier} Member
                 </p>
               </div>
@@ -239,7 +246,7 @@ export function CustomerExperienceDashboard({
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
-                        {upcomingVisit.time}
+                        {new Date(upcomingVisit.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
                     <Button className="w-full bg-blue-600 hover:bg-blue-700">

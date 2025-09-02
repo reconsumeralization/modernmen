@@ -1,30 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-// Conditionally import ModernMen for production compatibility
-let getModernMen: any = null
-let config: any = null
-
-try {
-  const ModernMenModule = require('ModernMen')
-  getModernMen = ModernMenModule.getModernMen
-  config = require('../../../ModernMen.config').default
-} catch (error) {
-  // Mock functions for development/production without ModernMen
-  getModernMen = async () => ({})
-  config = {}
-}
+import { supabase } from '@/lib/supabase/client'
 
 export async function GET(request: NextRequest) {
   try {
-    // Check if ModernMen is available (disabled in production for Vercel)
-    if (process.env.NODE_ENV === 'production') {
-      // In production, redirect to Supabase or return mock data
-      return NextResponse.json(
-        { error: 'Admin services not available in production' },
-        { status: 503 }
-      )
-    }
-
-    const ModernMen = await getModernMen({ config })
     const { searchParams } = new URL(request.url)
 
     const category = searchParams.get('category')
@@ -32,26 +10,26 @@ export async function GET(request: NextRequest) {
     const active = searchParams.get('active') !== 'false'
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100)
 
-    const where: any = {
-      active: { equals: active },
-    }
+    let query = supabase
+      .from('services')
+      .select('*')
+      .eq('is_active', active)
+      .order('name', { ascending: true })
+      .limit(limit)
 
     if (category) {
-      where.category = { equals: category }
+      query = query.eq('category', category)
     }
 
     if (featured === 'true') {
-      where.featured = { equals: true }
+      query = query.eq('featured', true)
     }
 
-    const services = await ModernMen.find({
-      collection: 'services',
-      where,
-      sort: 'name',
-      limit,
-    })
+    const { data: services, error } = await query
 
-    return NextResponse.json(services, {
+    if (error) throw error
+
+    return NextResponse.json(services || [], {
       headers: {
         'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
       }
@@ -67,15 +45,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Disable admin operations in production
-    if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json(
-        { error: 'Admin operations not available in production' },
-        { status: 403 }
-      )
-    }
-
-    const ModernMen = await getModernMen({ config })
     const body = await request.json()
 
     // Basic validation
@@ -86,13 +55,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const service = await ModernMen.create({
-      collection: 'services',
-      data: {
-        ...body,
-        active: body.active !== false, // Default to true
-      },
-    })
+    const { data: service, error } = await supabase
+      .from('services')
+      .insert({
+        name: body.name,
+        description: body.description || '',
+        category: body.category,
+        price: body.price,
+        duration: body.duration || 30,
+        is_active: body.active !== false,
+        featured: body.featured || false,
+      })
+      .select()
+      .single()
+
+    if (error) throw error
 
     return NextResponse.json(service, { status: 201 })
   } catch (error) {

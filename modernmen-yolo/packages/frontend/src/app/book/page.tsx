@@ -310,7 +310,7 @@ export default function BookPage() {
                   <Checkbox
                     id="terms"
                     checked={agreeToTerms}
-                    onCheckedChange={setAgreeToTerms}
+                    onCheckedChange={(checked) => setAgreeToTerms(checked === true)}
                   />
                   <Label htmlFor="terms" className="text-sm leading-relaxed">
                     I agree to the terms and conditions and understand that cancellations must be made at least 24 hours in advance.

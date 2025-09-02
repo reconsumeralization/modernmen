@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { useTheme } from "next-themes"
 
 interface LogoProps {
@@ -36,9 +37,11 @@ export function Logo({ className = "", size = "md", variant = "default" }: LogoP
       : "/modernmen-logo.svg"
 
   return (
-    <img
+    <Image
       src={logoSrc}
       alt="ModernMen Hair Salon"
+      width={size === "sm" ? 32 : size === "md" ? 48 : size === "lg" ? 64 : 80}
+      height={size === "sm" ? 32 : size === "md" ? 48 : size === "lg" ? 64 : 80}
       className={`object-contain ${getSizeClasses(size)} ${className}`}
       style={{ imageRendering: "crisp-edges" }}
     />

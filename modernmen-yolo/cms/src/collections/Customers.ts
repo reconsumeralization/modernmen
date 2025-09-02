@@ -1,5 +1,8 @@
-import { CollectionConfig } from 'payload/types';
+import { CollectionConfig } from '../../payload-types';
 import BusinessIcons from '../admin/customIcons';
+
+// Explicitly type the icon to avoid TypeScript inference issues
+const CustomersIcon = (BusinessIcons as any).Customers;
 
 export const Customers: CollectionConfig = {
   slug: 'customers',
@@ -7,7 +10,7 @@ export const Customers: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'email', 'phone', 'loyaltyTier', 'totalSpent', 'lastVisit'],
     group: 'Customers',
-    icon: BusinessIcons.Customers,
+    icon: CustomersIcon,
   },
   fields: [
     {

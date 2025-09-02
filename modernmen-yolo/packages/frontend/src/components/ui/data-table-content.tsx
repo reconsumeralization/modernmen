@@ -1,10 +1,9 @@
-// =============================================================================
-// DATA TABLE CONTENT - Table content rendering
-// =============================================================================
+import * as React from "react"
+import {
+  flexRender,
+  Table as TanstackTable,
+} from "@tanstack/react-table"
 
-"use client"
-
-import { flexRender } from "@tanstack/react-table"
 import {
   Table,
   TableBody,
@@ -13,24 +12,25 @@ import {
   TableHeader,
   TableRow,
 } from "./table"
-import { ColumnDef } from "@tanstack/react-table"
 
-interface DataTableContentProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  table: any // Using any to avoid complex typing with tanstack table
+interface DataTableContentProps<TData> {
+  table: TanstackTable<TData>
+  columnsLength: number
+  emptyMessage?: string
 }
 
-export function DataTableContent<TData, TValue>({
-  columns,
+export function DataTableContent<TData>({
   table,
-}: DataTableContentProps<TData, TValue>) {
+  columnsLength,
+  emptyMessage = "No results.",
+}: DataTableContentProps<TData>) {
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((headerGroup: any) => (
+          {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header: any) => {
+              {headerGroup.headers.map((header) => {
                 return (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
@@ -47,12 +47,12 @@ export function DataTableContent<TData, TValue>({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row: any) => (
+            table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
               >
-                {row.getVisibleCells().map((cell: any) => (
+                {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(
                       cell.column.columnDef.cell,
@@ -65,10 +65,10 @@ export function DataTableContent<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell
-                colSpan={columns.length}
+                colSpan={columnsLength}
                 className="h-24 text-center"
               >
-                No results.
+                {emptyMessage}
               </TableCell>
             </TableRow>
           )}

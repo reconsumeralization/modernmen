@@ -3,13 +3,13 @@
 // =============================================================================
 
 import { useState } from "react"
-import { Notification } from "@/components/ui/notification-types"
+import { NotificationItem } from "@/components/ui/notification-types"
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<NotificationItem[]>([])
 
-  const addNotification = (notification: Omit<Notification, "id" | "timestamp" | "read">) => {
-    const newNotification: Notification = {
+  const addNotification = (notification: Omit<NotificationItem, "id" | "timestamp" | "read">) => {
+    const newNotification: NotificationItem = {
       ...notification,
       id: Math.random().toString(36).substr(2, 9),
       timestamp: new Date(),
@@ -45,7 +45,7 @@ export function useNotifications() {
     return notifications.filter(n => !n.read).length
   }
 
-  const getNotificationsByType = (type: Notification["type"]) => {
+  const getNotificationsByType = (type: NotificationItem["type"]) => {
     return notifications.filter(n => n.type === type)
   }
 

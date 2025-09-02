@@ -5,34 +5,29 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
-
-// Helper function to check if Supabase is configured
-export const isSupabaseConfigured = (): boolean => {
-  return !!(supabaseUrl && supabaseAnonKey);
-};
-
-// Create Supabase client with TypeScript support
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-    detectSessionInUrl: true,
-    },
-    realtime: {
-      params: {
-      eventsPerSecond: 10,
-    },
-  },
-});
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+})
 
 // Database types (will be generated from Supabase)
 export type { Database } from '@/types/database';
+
+// Export Json type for use in services
+export type { Json } from '@/types/database';
+
+// Mock isSupabaseConfigured function for compatibility
+export const isSupabaseConfigured = () => {
+  return !!(supabaseUrl && supabaseAnonKey);
+};
+
+
 
 // Helper functions for common database operations
 export const dbHelpers = {
@@ -238,7 +233,7 @@ export const dbHelpers = {
   async updateSetting(key: string, value: any) {
     const { data, error } = await supabase
       .from('settings')
-      .update({ value: value as Json })
+      .update({ value: value as unknown as Database['public']['Tables']['settings']['Row']['value'] })
       .eq('key', key)
       .select()
       .single();

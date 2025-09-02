@@ -1,22 +1,20 @@
-"use client"
-
 import * as React from "react"
-import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { format, isToday, isTomorrow } from "date-fns"
-import { Clock, User } from "lucide-react"
+import { useState } from "react"
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+
+import { Button } from "./button"
+import { Card, CardContent, CardHeader, CardTitle } from "./card"
+import { Badge } from "./badge"
+import { cn } from "../../lib/utils"
 
 interface Appointment {
   id: string
-  customerName: string
-  service: string
+  date: string
   time: string
-  duration: number
-  status: "confirmed" | "pending" | "completed" | "cancelled"
-  barber: string
+  service: string
+  customer: string
+  status: "confirmed" | "pending" | "cancelled" | "completed"
 }
 
 interface AppointmentCalendarProps {
@@ -24,155 +22,174 @@ interface AppointmentCalendarProps {
   selectedDate?: Date
   onDateSelect?: (date: Date) => void
   onAppointmentClick?: (appointment: Appointment) => void
-}
-
-const statusColors = {
-  confirmed: "bg-green-500",
-  pending: "bg-yellow-500",
-  completed: "bg-blue-500",
-  cancelled: "bg-red-500",
-}
-
-const statusLabels = {
-  confirmed: "Confirmed",
-  pending: "Pending",
-  completed: "Completed",
-  cancelled: "Cancelled",
+  className?: string
 }
 
 export function AppointmentCalendar({
   appointments,
-  selectedDate,
+  selectedDate = new Date(),
   onDateSelect,
   onAppointmentClick,
+  className,
 }: AppointmentCalendarProps) {
-  const [date, setDate] = React.useState<Date | undefined>(selectedDate || new Date())
+  const [currentMonth, setCurrentMonth] = useState(new Date())
 
-  const handleDateSelect = (newDate: Date | undefined) => {
-    setDate(newDate)
-    if (newDate && onDateSelect) {
-      onDateSelect(newDate)
+  const monthStart = startOfMonth(currentMonth)
+  const monthEnd = endOfMonth(currentMonth)
+  const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd })
+
+  // Add padding days for the start of the month
+  const startPadding = monthStart.getDay()
+  const paddingDays = Array.from({ length: startPadding }, (_, i) => null)
+
+  const allDays = [...paddingDays, ...calendarDays]
+
+  const getAppointmentsForDate = (date: Date) => {
+    return appointments.filter(apt =>
+      isSameDay(new Date(apt.date), date)
+    )
+  }
+
+  const handleDateClick = (date: Date) => {
+    if (onDateSelect) {
+      onDateSelect(date)
     }
   }
 
-  const getDayAppointments = (targetDate: Date) => {
-    return appointments.filter(appointment => {
-      const appointmentDate = new Date(appointment.time)
-      return format(appointmentDate, "yyyy-MM-dd") === format(targetDate, "yyyy-MM-dd")
-    })
+  const handleAppointmentClick = (appointment: Appointment) => {
+    if (onAppointmentClick) {
+      onAppointmentClick(appointment)
+    }
   }
 
-  const dayAppointments = date ? getDayAppointments(date) : []
-
-  const formatAppointmentTime = (timeString: string) => {
-    const date = new Date(timeString)
-    return format(date, "HH:mm")
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return "bg-green-100 text-green-800 border-green-200"
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+      case "cancelled":
+        return "bg-red-100 text-red-800 border-red-200"
+      case "completed":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
+    }
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Calendar */}
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Appointment Calendar
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={handleDateSelect}
-            className="rounded-md border"
-            modifiers={{
-              hasAppointments: appointments.map(apt => new Date(apt.time))
-            }}
-            modifiersStyles={{
-              hasAppointments: {
-                backgroundColor: "hsl(var(--primary))",
-                color: "hsl(var(--primary-foreground))",
-                fontWeight: "bold"
-              }
-            }}
-          />
-        </CardContent>
-      </Card>
+    <Card className={cn("w-full", className)}>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>
+          {format(currentMonth, "MMMM yyyy")}
+        </CardTitle>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {/* Day headers */}
+        <div className="grid grid-cols-7 gap-1 mb-4">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
+            <div
+              key={day}
+              className="p-2 text-center text-sm font-medium text-muted-foreground"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
 
-      {/* Daily Appointments */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
-            {date ? (
-              <>
-                {isToday(date) && "Today"}
-                {isTomorrow(date) && "Tomorrow"}
-                {!isToday(date) && !isTomorrow(date) && format(date, "EEEE, MMM d")}
-              </>
-            ) : (
-              "Select a date"
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[400px]">
-            {dayAppointments.length === 0 ? (
-              <div className="text-center text-muted-foreground py-8">
-                No appointments scheduled
+        {/* Calendar grid */}
+        <div className="grid grid-cols-7 gap-1">
+          {allDays.map((day, index) => {
+            if (!day) {
+              return <div key={`padding-${index}`} className="p-2" />
+            }
+
+            const dayAppointments = getAppointmentsForDate(day)
+            const isSelected = selectedDate && isSameDay(day, selectedDate)
+            const isCurrentMonth = isSameMonth(day, currentMonth)
+
+            return (
+              <div
+                key={day.toISOString()}
+                className={cn(
+                  "min-h-[100px] p-2 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors",
+                  isSelected && "ring-2 ring-primary",
+                  !isCurrentMonth && "text-muted-foreground bg-muted/20"
+                )}
+                onClick={() => handleDateClick(day)}
+              >
+                <div className="text-sm font-medium mb-2">
+                  {format(day, "d")}
+                </div>
+
+                {/* Appointments for this day */}
+                <div className="space-y-1">
+                  {dayAppointments.slice(0, 3).map(appointment => (
+                    <div
+                      key={appointment.id}
+                      className={cn(
+                        "text-xs p-1 rounded border cursor-pointer hover:opacity-80",
+                        getStatusColor(appointment.status)
+                      )}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleAppointmentClick(appointment)
+                      }}
+                      title={`${appointment.time} - ${appointment.service} (${appointment.customer})`}
+                    >
+                      <div className="truncate">
+                        {appointment.time} - {appointment.service}
+                      </div>
+                    </div>
+                  ))}
+
+                  {dayAppointments.length > 3 && (
+                    <div className="text-xs text-muted-foreground">
+                      +{dayAppointments.length - 3} more
+                    </div>
+                  )}
+                </div>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {dayAppointments.map((appointment) => (
-                  <div
-                    key={appointment.id}
-                    className="p-3 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-                    onClick={() => onAppointmentClick?.(appointment)}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        <span className="font-medium text-sm">
-                          {appointment.customerName}
-                        </span>
-                      </div>
-                      <Badge
-                        variant="secondary"
-                        className={`${statusColors[appointment.status]} text-white text-xs`}
-                      >
-                        {statusLabels[appointment.status]}
-                      </Badge>
-                    </div>
+            )
+          })}
+        </div>
 
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">M</span>
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        {appointment.service}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span className="text-xs">
-                          {formatAppointmentTime(appointment.time)}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          ({appointment.duration}min)
-                        </span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {appointment.barber}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </ScrollArea>
-        </CardContent>
-      </Card>
-    </div>
+        {/* Legend */}
+        <div className="flex flex-wrap gap-4 mt-6 pt-4 border-t">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
+            <span className="text-xs text-muted-foreground">Confirmed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-yellow-100 border border-yellow-200 rounded"></div>
+            <span className="text-xs text-muted-foreground">Pending</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-red-100 border border-red-200 rounded"></div>
+            <span className="text-xs text-muted-foreground">Cancelled</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
+            <span className="text-xs text-muted-foreground">Completed</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

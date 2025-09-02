@@ -15,7 +15,7 @@ import {
   DollarSign,
   Star,
   User,
-
+  Scissors,
   Phone,
   MapPin,
   CreditCard,
@@ -199,7 +199,7 @@ export default function CustomerDashboard() {
     .reduce((sum, apt, _, arr) => sum + (apt.rating || 0) / arr.length, 0)
 
   return (
-    <DashboardLayout user={{ name: "John Smith", email: "john@example.com", role: "customer" }}>
+    <DashboardLayout user={{ name: "John Smith", email: "john@example.com" }}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -221,19 +221,19 @@ export default function CustomerDashboard() {
             title="Upcoming Appointments"
             value={mockUpcomingAppointments.length.toString()}
             description="Scheduled services"
-            icon={Calendar}
+            icon={<Calendar className="h-4 w-4" />}
           />
           <StatsCard
             title="Total Spent"
             value={`$${totalSpent}`}
             description="Lifetime value"
-            icon={DollarSign}
+            icon={<DollarSign className="h-4 w-4" />}
           />
           <StatsCard
             title="Average Rating"
             value={averageRating.toFixed(1)}
             description="Service satisfaction"
-            icon={Star}
+            icon={<Star className="h-4 w-4" />}
             trend={{
               value: 4.6,
               label: "overall",
@@ -244,7 +244,7 @@ export default function CustomerDashboard() {
             title="Loyalty Points"
             value="250"
             description="Available rewards"
-            icon={Gift}
+            icon={<Gift className="h-4 w-4" />}
           />
         </div>
 
@@ -302,9 +302,7 @@ export default function CustomerDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">M</span>
-                </div>
+                <Scissors className="h-5 w-5" />
                 Services
               </CardTitle>
             </CardHeader>

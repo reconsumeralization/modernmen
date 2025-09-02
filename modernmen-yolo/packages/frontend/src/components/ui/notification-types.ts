@@ -1,48 +1,91 @@
-// =============================================================================
-// NOTIFICATION TYPES - Type definitions for notifications
-// =============================================================================
+// Notification types and interfaces
 
-export interface Notification {
+export type NotificationType = "info" | "success" | "warning" | "error"
+
+export interface NotificationItem {
   id: string
   title: string
   message: string
-  type: "info" | "success" | "warning" | "error"
-  timestamp: Date
+  type: NotificationType
   read: boolean
-  actionUrl?: string
-  actionLabel?: string
+  timestamp: Date
+  actions?: Array<{
+    label: string
+    onClick: () => void
+    variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
+  }>
+  metadata?: Record<string, any>
 }
 
-export interface NotificationCenterProps {
-  notifications: Notification[]
-  onMarkAsRead?: (id: string) => void
-  onMarkAllAsRead?: () => void
-  onDelete?: (id: string) => void
-  onAction?: (notification: Notification) => void
-  className?: string
+export interface NotificationGroup {
+  id: string
+  title: string
+  notifications: NotificationItem[]
+  unreadCount: number
 }
 
-export interface NotificationItemProps {
-  notification: Notification
-  onClick?: (notification: Notification) => void
-  onMarkAsRead?: (id: string) => void
-  onDelete?: (id: string) => void
-  onAction?: (notification: Notification) => void
+export interface NotificationPreferences {
+  email: boolean
+  push: boolean
+  inApp: boolean
+  types: {
+    info: boolean
+    success: boolean
+    warning: boolean
+    error: boolean
+  }
 }
 
-// Notification icons and colors mapping
-export const notificationIcons = {
-  info: "Info",
-  success: "CheckCircle",
-  warning: "AlertCircle",
-  error: "AlertCircle",
-} as const
+export interface NotificationSettings {
+  enabled: boolean
+  preferences: NotificationPreferences
+  quietHours: {
+    enabled: boolean
+    start: string // HH:MM format
+    end: string // HH:MM format
+  }
+}
 
-export const notificationColors = {
-  info: "text-blue-500",
-  success: "text-green-500",
-  warning: "text-yellow-500",
-  error: "text-red-500",
-} as const
+// Utility functions for notifications
+export function createNotification(
+  title: string,
+  message: string,
+  type: NotificationType = "info",
+  actions?: NotificationItem["actions"]
+): Omit<NotificationItem, "id" | "read" | "timestamp"> {
+  return {
+    title,
+    message,
+    type,
+    actions,
+  }
+}
 
-export type NotificationType = keyof typeof notificationIcons
+export function getNotificationTypeColor(type: NotificationType): string {
+  switch (type) {
+    case "error":
+      return "destructive"
+    case "warning":
+      return "secondary"
+    case "success":
+      return "default"
+    case "info":
+    default:
+      return "outline"
+  }
+}
+
+export function formatNotificationTime(timestamp: Date): string {
+  const now = new Date()
+  const diff = now.getTime() - timestamp.getTime()
+  const minutes = Math.floor(diff / (1000 * 60))
+  const hours = Math.floor(diff / (1000 * 60 * 60))
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+
+  if (minutes < 1) return "Just now"
+  if (minutes < 60) return `${minutes}m ago`
+  if (hours < 24) return `${hours}h ago`
+  if (days < 7) return `${days}d ago`
+
+  return timestamp.toLocaleDateString()
+}

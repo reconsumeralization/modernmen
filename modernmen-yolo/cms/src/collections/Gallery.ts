@@ -1,12 +1,41 @@
-import { CollectionConfig } from 'payload/types'
+import { CollectionConfig } from '../../payload-types'
 import BusinessIcons from '../admin/customIcons'
+
+// Explicitly type the icon to avoid TypeScript inference issues
+const GalleryIcon = (BusinessIcons as any).Gallery;
+
+// Type definitions for hooks and access functions
+interface HookArgs {
+  data: any;
+  req: {
+    user?: {
+      id?: string;
+      role?: string;
+    };
+  };
+  operation?: string;
+  value?: any;
+}
+
+interface AccessArgs {
+  req: {
+    user?: {
+      role?: string;
+    };
+  };
+}
+
+interface ValidationArgs {
+  data?: any;
+  siblingData?: any;
+}
 
 export const Gallery: CollectionConfig = {
   slug: 'gallery',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'featured', 'published'],
-    icon: BusinessIcons.Gallery,
+    icon: GalleryIcon,
     description: 'Manage gallery images showcasing haircuts, styles, and salon atmosphere',
     group: 'Content',
     listSearchableFields: ['title', 'description', 'altText'],
@@ -16,19 +45,19 @@ export const Gallery: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req: { user } }) => {
+    create: ({ req: { user } }: AccessArgs) => {
       return user?.role === 'admin' || user?.role === 'barber'
     },
-    update: ({ req: { user } }) => {
+    update: ({ req: { user } }: AccessArgs) => {
       return user?.role === 'admin' || user?.role === 'barber'
     },
-    delete: ({ req: { user } }) => {
+    delete: ({ req: { user } }: AccessArgs) => {
       return user?.role === 'admin'
     },
   },
   hooks: {
     beforeChange: [
-      ({ data, operation }) => {
+      ({ data, operation }: HookArgs) => {
         if (operation === 'create') {
           data.createdAt = new Date()
         }
@@ -45,7 +74,7 @@ export const Gallery: CollectionConfig = {
       admin: {
         description: 'Title for this gallery image',
       },
-      validate: (val) => {
+      validate: (val: string) => {
         if (!val || val.length < 3) {
           return 'Title must be at least 3 characters long'
         }
@@ -63,7 +92,7 @@ export const Gallery: CollectionConfig = {
       },
       hooks: {
         beforeValidate: [
-          ({ data, operation, value }) => {
+          ({ data, operation, value }: HookArgs) => {
             if (operation === 'create' && !value && data?.title) {
               return data.title
                 .toLowerCase()
@@ -104,7 +133,7 @@ export const Gallery: CollectionConfig = {
       relationTo: 'media',
       admin: {
         description: 'Optional thumbnail image (if different from main image)',
-        condition: (data) => Boolean(data?.image),
+        condition: (data: any) => Boolean(data?.image),
       },
       filterOptions: {
         mimeType: {
@@ -135,7 +164,7 @@ export const Gallery: CollectionConfig = {
       type: 'text',
       admin: {
         description: 'Optional subcategory for more specific organization',
-        condition: (data) => Boolean(data?.category),
+        condition: (data: any) => Boolean(data?.category),
       },
     },
     {
@@ -175,7 +204,7 @@ export const Gallery: CollectionConfig = {
       type: 'group',
       admin: {
         description: 'Client information (optional, for testimonials)',
-        condition: (data) => data?.category === 'testimonials',
+        condition: (data: any) => data?.category === 'testimonials',
       },
       fields: [
         {
@@ -220,7 +249,7 @@ export const Gallery: CollectionConfig = {
       type: 'group',
       admin: {
         description: 'Before and after images',
-        condition: (data) => data?.category === 'before-after',
+        condition: (data: any) => data?.category === 'before-after',
       },
       fields: [
         {
@@ -307,7 +336,7 @@ export const Gallery: CollectionConfig = {
       admin: {
         description: 'Alt text for accessibility (required for SEO)',
       },
-      validate: (val) => {
+      validate: (val: string) => {
         if (!val || val.length < 10) {
           return 'Alt text must be at least 10 characters long for accessibility'
         }
@@ -421,7 +450,7 @@ export const Gallery: CollectionConfig = {
           type: 'textarea',
           admin: {
             description: 'Custom Instagram caption',
-            condition: (data, siblingData) => siblingData?.shareOnInstagram,
+            condition: (data: any, siblingData: any) => siblingData?.shareOnInstagram,
             rows: 3,
           },
           maxLength: 2200,
@@ -431,7 +460,7 @@ export const Gallery: CollectionConfig = {
           type: 'array',
           admin: {
             description: 'Social media hashtags',
-            condition: (data, siblingData) => siblingData?.shareOnInstagram || siblingData?.shareOnFacebook,
+            condition: (data: any, siblingData: any) => siblingData?.shareOnInstagram || siblingData?.shareOnFacebook,
           },
           fields: [
             {
@@ -440,7 +469,7 @@ export const Gallery: CollectionConfig = {
               admin: {
                 placeholder: '#hashtag',
               },
-              validate: (val) => {
+              validate: (val: string) => {
                 if (val && !val.startsWith('#')) {
                   return 'Hashtag must start with #'
                 }
@@ -514,7 +543,7 @@ export const Gallery: CollectionConfig = {
             description: 'SEO title for this image (max 60 characters)',
           },
           maxLength: 60,
-          validate: (val) => {
+          validate: (val: string) => {
             if (val && val.length > 60) {
               return 'SEO title should be 60 characters or less for optimal display'
             }
@@ -529,7 +558,7 @@ export const Gallery: CollectionConfig = {
             description: 'SEO description for this image (max 160 characters)',
             rows: 3,
           },
-          validate: (val) => {
+          validate: (val: string) => {
             if (val && val.length > 160) {
               return 'SEO description should be 160 characters or less'
             }
@@ -559,7 +588,7 @@ export const Gallery: CollectionConfig = {
           admin: {
             description: 'Canonical URL (if different from default)',
           },
-          validate: (val) => {
+          validate: (val: string) => {
             if (val && !val.startsWith('http')) {
               return 'Canonical URL must be a complete URL starting with http:// or https://'
             }

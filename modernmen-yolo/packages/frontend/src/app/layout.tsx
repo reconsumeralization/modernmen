@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
+import { Toaster } from 'sonner'
+import { AuthProvider } from '@/components/auth/AuthProvider'
 // Service worker registration will be handled by next-pwa plugin
 // import PWAInstall from '@/components/ui/pwa-install'
 import './globals.css'
@@ -49,17 +50,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        {children}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-          }}
-        />
+        <AuthProvider>
+          {children}
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            duration={4000}
+          />
+        </AuthProvider>
         {/* PWA components temporarily disabled for deployment stability */}
       </body>
     </html>

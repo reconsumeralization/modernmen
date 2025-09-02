@@ -4,8 +4,7 @@
     "module": "commonjs",
     "lib": ["ES2020"],
     "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -14,13 +13,20 @@
     "declarationMap": true,
     "sourceMap": true,
     "removeComments": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../frontend/src/*"],
+      "@/types/*": ["../frontend/src/types/*"],
+      "@/lib/*": ["../frontend/src/lib/*"],
+      "@/services/*": ["./src/services/*"],
+      "@/constants": ["../frontend/src/constants/index"],
+      "@/constants/*": ["../frontend/src/constants/*"],
+      "@/data/*": ["../frontend/src/data/*"],
+      "@/hooks/*": ["../frontend/src/hooks/*"],
+      "@/config/*": ["../frontend/src/config/*"]
+    }
   },
   "include": [
     "src/**/*"

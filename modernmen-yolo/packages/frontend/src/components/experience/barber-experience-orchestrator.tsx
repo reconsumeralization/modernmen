@@ -18,6 +18,7 @@ function getServiceCategory(serviceName: string): string {
 "use client"
 
 import React, { useState, useEffect, createContext, useContext } from "react"
+import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -464,7 +465,7 @@ export function BarberDashboard({
                           })}
                         </p>
                         <Badge
-                          variant={visit.status === 'confirmed' ? 'default' : 'secondary'}
+                          variant={visit.status === 'in_service' ? 'default' : 'secondary'}
                           className="text-xs"
                         >
                           {visit.status}
@@ -793,9 +794,11 @@ function VisitCard({
                     <div className="grid grid-cols-3 gap-4">
                       {visit.photos.map((photo) => (
                         <div key={photo.id} className="space-y-2">
-                          <img
+                          <Image
                             src={photo.url}
                             alt={photo.description || `${photo.type} photo`}
+                            width={96}
+                            height={96}
                             className="w-full h-24 object-cover rounded-lg"
                           />
                           <p className="text-xs text-muted-foreground capitalize">
@@ -907,7 +910,7 @@ export function CustomerVisitExperience({
           <Button
             variant="outline"
             onClick={onRequestBreak}
-            disabled={visit.status !== 'in_progress'}
+            disabled={visit.status !== 'in_service'}
           >
             <Coffee className="h-4 w-4 mr-2" />
             Request Break

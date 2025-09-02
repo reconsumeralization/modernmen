@@ -71,7 +71,7 @@ export {
 // -----------------------------------------------------------------------------
 // NOTIFICATION TYPES - Type definitions for notifications
 // -----------------------------------------------------------------------------
-export type { Notification, NotificationCenterProps, NotificationItemProps, NotificationType } from "./notification-types"
+export type { NotificationType, NotificationGroup, NotificationPreferences, NotificationSettings } from "./notification-types"
 
 // -----------------------------------------------------------------------------
 // LAYOUT COMPONENTS - Page-level layouts from layout directory

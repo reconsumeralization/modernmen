@@ -5,7 +5,7 @@ export const StaffSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name is too long'),
   email: z.string().email('Invalid email format'),
   phone: z.string().regex(/^[\+]?[1-9][\d]{0,15}$/, 'Invalid phone number'),
-  role: z.enum(['barber', 'stylist', 'manager', 'admin'], 'Invalid role'),
+  role: z.enum(['barber', 'stylist', 'manager', 'admin'], { errorMap: () => ({ message: 'Invalid role' }) }),
   specialties: z.array(z.string()).default([]),
   bio: z.string().max(500, 'Bio is too long').optional(),
   avatar: z.string().url('Invalid avatar URL').optional(),

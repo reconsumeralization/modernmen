@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import NextImage from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -213,7 +214,7 @@ function MobileNavContent({
             <div className="flex items-center space-x-3 px-3">
               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                 {user.avatar ? (
-                  <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full" />
+                  <NextImage src={user.avatar} alt={user.name} width={40} height={40} className="w-10 h-10 rounded-full" />
                 ) : (
                   <User className="w-5 h-5" />
                 )}

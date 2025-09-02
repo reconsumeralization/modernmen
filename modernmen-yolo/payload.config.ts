@@ -2,23 +2,25 @@
 // ModernMen CMS CONFIGURATION
 // =============================================================================
 
-import { buildConfig } from 'ModernMen/config'
+// Temporary buildConfig function until Payload CMS is properly installed
+const buildConfig = (config: any) => config;
+
 import path from 'path'
 
 // Import collections
-import { Users } from './src/collections/Users'
-import { Appointments } from './src/collections/Appointments'
-import { Services } from './src/collections/Services'
-import { Settings } from './src/collections/Settings'
-import { Barbers } from './src/collections/Barbers'
-import { Gallery } from './src/collections/Gallery'
-import { Reviews } from './src/collections/Reviews'
+import { Users } from './cms/src/collections/Users'
+import { Appointments } from './cms/src/collections/Appointments'
+import { Services } from './cms/src/collections/Services'
+import { Settings } from './cms/src/collections/Settings'
+import { Barbers } from './cms/src/collections/Barbers'
+import { Gallery } from './cms/src/collections/Gallery'
+import { Reviews } from './cms/src/collections/Reviews'
 
 // Import globals
-import { SiteSettings } from './src/globals/SiteSettings'
+import { SiteSettings } from './cms/src/globals/SiteSettings'
 
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_ModernMen_URL || 'http://localhost:3001',
+  serverURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001',
   admin: {
     user: 'users',
     meta: {
@@ -39,7 +41,7 @@ export default buildConfig({
     SiteSettings,
   ],
   typescript: {
-    outputFile: path.resolve(__dirname, 'ModernMen-types.ts'),
+    outputFile: path.resolve(__dirname, 'payload-types.ts'),
   },
   graphQL: {
     schemaOutputFile: path.resolve(__dirname, 'generated-schema.graphql'),

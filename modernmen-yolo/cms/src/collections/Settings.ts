@@ -1,16 +1,31 @@
-import { CollectionConfig } from 'payload/types';
+import { CollectionConfig } from '../../payload-types';
 import BusinessIcons from '../admin/customIcons';
+
+// Explicitly type the icon to avoid TypeScript inference issues
+const SettingsIcon = (BusinessIcons as any).Settings;
+
+// Type definitions for hooks
+interface HookArgs {
+  data: any;
+  req: {
+    user?: {
+      id?: string;
+      role?: string;
+    };
+  };
+  operation?: string;
+}
 
 export const Settings: CollectionConfig = {
   slug: 'settings',
   admin: {
     useAsTitle: 'siteName',
     group: 'System',
-    icon: BusinessIcons.Settings,
+    icon: SettingsIcon,
   },
   access: {
     read: () => true,
-    update: ({ req: { user } }) => {
+    update: ({ req: { user } }: { req: { user?: { role?: string } } }) => {
       return user?.role === 'admin'
     },
   },
@@ -204,7 +219,7 @@ export const Settings: CollectionConfig = {
           type: 'number',
           defaultValue: 50,
           admin: {
-            condition: (data) => data.depositRequired,
+            condition: (data: any) => data.depositRequired,
             description: 'Deposit percentage required',
           },
         },
@@ -248,7 +263,7 @@ export const Settings: CollectionConfig = {
   timestamps: true,
   hooks: {
     beforeChange: [
-      ({ data, req, operation }) => {
+      ({ data, req, operation }: HookArgs) => {
         if (operation === 'update') {
           data.updatedBy = req.user?.id;
         }

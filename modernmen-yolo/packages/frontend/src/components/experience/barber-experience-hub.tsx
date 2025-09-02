@@ -79,7 +79,8 @@ export function BarberExperienceHub({
     dateOfBirth: "1990-05-15"
   }
 
-  const mockBarberData = {
+  // Barber data for BarberProfileCard (detailed portfolio)
+  const mockBarberDataDetailed = {
     id: "barber_456",
     name: "Mike Johnson",
     avatar: "/placeholder-user.jpg",
@@ -130,7 +131,30 @@ export function BarberExperienceHub({
         service: "Haircut",
         verified: true
       }
-    ]
+    ],
+    nextAvailable: "2024-01-22T14:00:00Z"
+  }
+
+  // Barber data for CustomerExperienceDashboard (simple portfolio)
+  const mockBarberDataSimple = {
+    id: "barber_456",
+    name: "Mike Johnson",
+    avatar: "/placeholder-user.jpg",
+    specialties: ["Haircuts", "Fades", "Beard Grooming", "Traditional Cuts"],
+    rating: 4.9,
+    experience: 8,
+    portfolio: [
+      {
+        id: "portfolio_1",
+        title: "Classic Haircut",
+        image: "/placeholder-portfolio-1.jpg",
+        description: "Professional haircut service",
+        style: "Classic",
+        duration: 45
+      }
+    ],
+    availability: "available" as const,
+    nextAvailable: "2024-01-22T14:00:00Z"
   }
 
   const mockAppointment = {
@@ -144,6 +168,7 @@ export function BarberExperienceHub({
     status: "confirmed" as const,
     currentStatus: {
       id: "status_1",
+      appointmentId: "apt_789",
       status: "confirmed" as const,
       timestamp: new Date(),
       message: "Appointment confirmed and ready",
@@ -152,12 +177,14 @@ export function BarberExperienceHub({
     statusHistory: [
       {
         id: "status_1",
+        appointmentId: "apt_789",
         status: "scheduled" as const,
         timestamp: new Date(Date.now() - 3600000),
         message: "Appointment scheduled"
       },
       {
         id: "status_2",
+        appointmentId: "apt_789",
         status: "confirmed" as const,
         timestamp: new Date(),
         message: "Appointment confirmed and ready"
@@ -301,8 +328,7 @@ export function BarberExperienceHub({
                     service: "Classic Haircut",
                     duration: 45,
                     satisfaction: 5,
-                    notes: "Looking forward to my regular cut",
-                    time: "14:00"
+                    notes: "Looking forward to my regular cut"
                   }}
                   visitHistory={[
                     {
@@ -315,7 +341,7 @@ export function BarberExperienceHub({
                       notes: "Great service as always"
                     }
                   ]}
-                  preferredBarber={mockBarberData}
+                  preferredBarber={mockBarberDataSimple}
                   experiencePrefs={{
                     ambiance: 'music',
                     beverages: ['Coffee'],
@@ -355,7 +381,7 @@ export function BarberExperienceHub({
                 className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
               >
                 <BarberProfileCard
-                  barber={mockBarberData}
+                  barber={mockBarberDataDetailed}
                   isFavorite={true}
                   onFavoriteToggle={(id) => console.log('Toggle favorite:', id)}
                   onBookAppointment={(id) => console.log('Book with barber:', id)}
@@ -386,17 +412,17 @@ export function BarberExperienceHub({
   if (userType === 'barber') {
     return (
       <BarberDashboard
-        barberId={mockBarberData.id}
-        barberName={mockBarberData.name}
-        barberAvatar={mockBarberData.avatar}
+        barberId={mockBarberDataDetailed.id}
+        barberName={mockBarberDataDetailed.name}
+        barberAvatar={mockBarberDataDetailed.avatar}
         currentVisits={[
           {
             customerId: "customer_123",
             customerName: "John Smith",
             customerAvatar: "/placeholder-user.jpg",
-            barberId: mockBarberData.id,
-            barberName: mockBarberData.name,
-            barberAvatar: mockBarberData.avatar,
+            barberId: mockBarberDataDetailed.id,
+            barberName: mockBarberDataDetailed.name,
+            barberAvatar: mockBarberDataDetailed.avatar,
             serviceId: "service_1",
             serviceName: "Classic Haircut",
             appointmentId: "apt_789",
@@ -431,7 +457,7 @@ export function BarberExperienceHub({
               entertainment: ['WiFi'],
               specialRequests: ['Extra attention to sideburns']
             },
-            status: 'in_progress',
+            status: 'in_service',
             statusMessage: 'Service in progress - applying finishing touches',
             lastUpdate: new Date(),
             messages: [
@@ -469,9 +495,9 @@ export function BarberExperienceHub({
             customerId: "customer_123",
             customerName: "John Smith",
             customerAvatar: "/placeholder-user.jpg",
-            barberId: mockBarberData.id,
-            barberName: mockBarberData.name,
-            barberAvatar: mockBarberData.avatar,
+            barberId: mockBarberDataDetailed.id,
+            barberName: mockBarberDataDetailed.name,
+            barberAvatar: mockBarberDataDetailed.avatar,
             serviceId: "service_1",
             serviceName: "Classic Haircut",
             appointmentId: "apt_789",
@@ -497,7 +523,7 @@ export function BarberExperienceHub({
               entertainment: ['WiFi'],
               specialRequests: ['Extra attention to sideburns']
             },
-            status: 'in_progress',
+            status: 'in_service',
             statusMessage: 'Service in progress',
             lastUpdate: new Date(),
             messages: [],

@@ -2,7 +2,8 @@
 // APPOINTMENTS SERVICE - Handles appointment-related data operations with Supabase
 // =============================================================================
 
-import { Appointment, ApiResponse, PaginatedResponse } from '@/types'
+import { Appointment } from '@/types/dashboard'
+import { ApiResponse, PaginatedResponse } from '@/types/common'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase/client'
 import { APPOINTMENT_STATUSES } from '@/constants'
 
@@ -11,6 +12,53 @@ export class AppointmentsService {
 
   constructor(baseUrl: string = '/api/appointments') {
     this.baseUrl = baseUrl
+  }
+
+  // Shared method to transform appointment data (eliminates A2A duplication)
+  private transformAppointmentData(item: any): Appointment {
+    return {
+      id: item.id,
+      customerName: item.customers?.name || 'Unknown Customer',
+      service: item.services?.name || 'Unknown Service',
+      barber: item.staff?.name || 'Unassigned',
+      time: `${item.appointment_date} ${item.start_time}`,
+      duration: item.duration,
+      status: item.status as 'confirmed' | 'pending' | 'cancelled' | 'completed'
+    }
+  }
+
+  // Shared method for Supabase query building (eliminates query duplication)
+  private buildAppointmentQuery(includeCount: boolean = false) {
+    const query = supabase
+      .from('appointments')
+      .select(`
+        *,
+        customers:customer_id (
+          id,
+          name,
+          email,
+          phone
+        ),
+        services:service_id (
+          id,
+          name,
+          duration
+        ),
+        staff:staff_id (
+          id,
+          name,
+          email
+        )
+      `)
+
+    return includeCount ? query.select('*', { count: 'exact', head: false }) : query
+  }
+
+  // Shared method for Supabase configuration check (eliminates instance checks)
+  private validateSupabaseConnection(): void {
+    if (!isSupabaseConfigured()) {
+      throw new Error('Supabase is not properly configured')
+    }
   }
 
   // Get all appointments with optional filtering
@@ -23,31 +71,9 @@ export class AppointmentsService {
     pagination?: { page: number; limit: number }
   ): Promise<PaginatedResponse<Appointment>> {
     try {
-      if (!isSupabaseConfigured()) {
-        throw new Error('Supabase is not properly configured')
-      }
+      this.validateSupabaseConnection()
 
-      let query = supabase
-        .from('appointments')
-        .select(`
-          *,
-          customers:customer_id (
-            id,
-            name,
-            email,
-            phone
-          ),
-          services:service_id (
-            id,
-            name,
-            duration
-          ),
-          staff:staff_id (
-            id,
-            name,
-            email
-          )
-        `, { count: 'exact' })
+      let query = this.buildAppointmentQuery(true)
 
       // Apply filters
       if (filters?.status) {
@@ -79,21 +105,7 @@ export class AppointmentsService {
       if (error) throw error
 
       // Transform the data to match our Appointment interface
-      const transformedData: Appointment[] = (data || []).map(item => ({
-        id: item.id,
-        customerName: item.customers?.name || 'Unknown Customer',
-        customerEmail: item.customers?.email,
-        service: item.services?.name || 'Unknown Service',
-        barber: item.staff?.name || 'Unassigned',
-        time: `${item.appointment_date} ${item.start_time}`,
-        status: item.status,
-        price: item.price,
-        duration: item.duration,
-        notes: item.notes,
-        date: item.appointment_date,
-        createdAt: item.created_at,
-        updatedAt: item.updated_at
-      }))
+      const transformedData: Appointment[] = (data || []).map(item => this.transformAppointmentData(item))
 
       return {
         success: true,
@@ -110,7 +122,13 @@ export class AppointmentsService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch appointments',
-        data: []
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
       }
     }
   }
@@ -118,31 +136,9 @@ export class AppointmentsService {
   // Get a single appointment by ID
   async getAppointmentById(id: string): Promise<ApiResponse<Appointment>> {
     try {
-      if (!isSupabaseConfigured()) {
-        throw new Error('Supabase is not properly configured')
-      }
+      this.validateSupabaseConnection()
 
-      const { data, error } = await supabase
-        .from('appointments')
-        .select(`
-          *,
-          customers:customer_id (
-            id,
-            name,
-            email,
-            phone
-          ),
-          services:service_id (
-            id,
-            name,
-            duration
-          ),
-          staff:staff_id (
-            id,
-            name,
-            email
-          )
-        `)
+      const { data, error } = await this.buildAppointmentQuery()
         .eq('id', id)
         .single()
 
@@ -164,21 +160,7 @@ export class AppointmentsService {
       }
 
       // Transform the data to match our Appointment interface
-      const appointment: Appointment = {
-        id: data.id,
-        customerName: data.customers?.name || 'Unknown Customer',
-        customerEmail: data.customers?.email,
-        service: data.services?.name || 'Unknown Service',
-        barber: data.staff?.name || 'Unassigned',
-        time: `${data.appointment_date} ${data.start_time}`,
-        status: data.status,
-        price: data.price,
-        duration: data.duration,
-        notes: data.notes,
-        date: data.appointment_date,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
-      }
+      const appointment: Appointment = this.transformAppointmentData(data)
 
       return {
         success: true,
@@ -243,17 +225,11 @@ export class AppointmentsService {
       const appointment: Appointment = {
         id: data.id,
         customerName: data.customers?.name || 'Unknown Customer',
-        customerEmail: data.customers?.email,
         service: data.services?.name || 'Unknown Service',
         barber: data.staff?.name || 'Unassigned',
         time: `${data.appointment_date} ${data.start_time}`,
-        status: data.status,
-        price: data.price,
         duration: data.duration,
-        notes: data.notes,
-        date: data.appointment_date,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
+        status: data.status as 'confirmed' | 'pending' | 'cancelled' | 'completed'
       }
 
       return {
@@ -323,17 +299,11 @@ export class AppointmentsService {
       const appointment: Appointment = {
         id: data.id,
         customerName: data.customers?.name || 'Unknown Customer',
-        customerEmail: data.customers?.email,
         service: data.services?.name || 'Unknown Service',
         barber: data.staff?.name || 'Unassigned',
         time: `${data.appointment_date} ${data.start_time}`,
-        status: data.status,
-        price: data.price,
         duration: data.duration,
-        notes: data.notes,
-        date: data.appointment_date,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
+        status: data.status as 'confirmed' | 'pending' | 'cancelled' | 'completed'
       }
 
       return {

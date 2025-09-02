@@ -25,7 +25,12 @@ export * from "./lib"
 // -----------------------------------------------------------------------------
 // TYPES - All TypeScript type definitions
 // -----------------------------------------------------------------------------
-export * from "./types"
+// Export specific types to avoid conflicts
+export type {
+  User,
+  Appointment,
+  ApiResponse
+} from "./types"
 
 // -----------------------------------------------------------------------------
 // DATA - Mock data and data utilities
@@ -35,7 +40,17 @@ export * from "./data"
 // -----------------------------------------------------------------------------
 // CONSTANTS - Application constants
 // -----------------------------------------------------------------------------
-export * from "./constants"
+// Export specific constants to avoid conflicts
+export {
+  APPOINTMENT_STATUSES,
+  API_ENDPOINTS,
+  UI_CONSTANTS,
+  COMPONENT_TYPES,
+  RELATIONSHIP_TYPES,
+  type AppointmentStatus,
+  type ComponentType,
+  type RelationshipType
+} from "./constants"
 
 // -----------------------------------------------------------------------------
 // CONFIGURATION - Application configuration

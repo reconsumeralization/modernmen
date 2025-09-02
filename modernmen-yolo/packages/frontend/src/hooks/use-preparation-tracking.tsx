@@ -98,7 +98,7 @@ export function usePreparationTracking({
     const isValid = requiredCompleted && errors.length === 0
 
     return { isValid, errors, requiredCompleted }
-  }, [serviceCategory, serviceName])
+  }, [serviceCategory, serviceName, state])
 
   // Update checklist item completion
   const updateChecklistItem = useCallback((itemId: string, completed: boolean) => {

@@ -37,14 +37,22 @@ import {
 import { AdminIcon } from "../ui/admin-icon"
 
 // ModernMen branded icon mapping
+const IconHome = () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>
+const IconScissors = () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>
+const IconUsers = () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>
+const IconImage = () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>
+const IconPhone = () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>
+const IconCalendar = () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>
+const IconSearch = () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>
+
 const iconMap = {
-  Home: () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>,
-  Scissors: () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>,
-  Users: () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>,
-  Image: () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>,
-  Phone: () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>,
-  Calendar: () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>,
-  Search: () => <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center"><span className="text-white text-xs font-bold">M</span></div>,
+  Home: IconHome,
+  Scissors: IconScissors,
+  Users: IconUsers,
+  Image: IconImage,
+  Phone: IconPhone,
+  Calendar: IconCalendar,
+  Search: IconSearch,
 }
 
 interface HeaderProps {
@@ -97,7 +105,7 @@ export function Header({ user, onAuthAction, className }: HeaderProps) {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
             {mainNavigation.map((item) => {
-              const Icon = iconMap[item.icon as keyof typeof iconMap]
+              const IconComponent = iconMap[item.icon as keyof typeof iconMap]
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
 
               if (item.children) {
@@ -108,7 +116,7 @@ export function Header({ user, onAuthAction, className }: HeaderProps) {
                         "text-sm font-medium transition-colors hover:text-red-600",
                         isActive && "text-red-600"
                       )}>
-                        <Icon className="w-4 h-4 mr-2" />
+                        <IconComponent />
                         {item.name}
                         <ChevronDown className="w-4 h-4 ml-1" />
                       </Button>
@@ -135,7 +143,7 @@ export function Header({ user, onAuthAction, className }: HeaderProps) {
                     "text-sm font-medium transition-colors hover:text-red-600",
                     isActive && "text-red-600"
                   )}>
-                    <Icon className="w-4 h-4 mr-2" />
+                    <IconComponent />
                     {item.name}
                     {item.badge && (
                       <Badge variant="secondary" className="ml-2 text-xs">
@@ -241,7 +249,7 @@ export function Header({ user, onAuthAction, className }: HeaderProps) {
                     {/* Mobile Navigation Links */}
                     <nav className="space-y-2">
                       {mainNavigation.map((item) => {
-                        const Icon = iconMap[item.icon as keyof typeof iconMap]
+                        const IconComponent = iconMap[item.icon as keyof typeof iconMap]
                         const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
 
                         if (item.children) {
@@ -252,7 +260,7 @@ export function Header({ user, onAuthAction, className }: HeaderProps) {
                                   variant="ghost"
                                   className="w-full justify-start text-sm font-medium"
                                 >
-                                  <Icon className="w-4 h-4 mr-3" />
+                                  <IconComponent />
                                   <span>{item.name}</span>
                                   <ChevronDown className="w-4 h-4 ml-auto" />
                                 </Button>
@@ -283,7 +291,7 @@ export function Header({ user, onAuthAction, className }: HeaderProps) {
                             )}
                             onClick={() => setMobileMenuOpen(false)}
                           >
-                            <Icon className="w-4 h-4" />
+                            <IconComponent />
                             <span>{item.name}</span>
                             {item.badge && (
                               <Badge variant="secondary" className="ml-auto text-xs">

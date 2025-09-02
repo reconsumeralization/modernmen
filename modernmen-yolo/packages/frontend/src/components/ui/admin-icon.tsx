@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { useTheme } from "next-themes"
 
 interface AdminIconProps {
@@ -34,9 +35,11 @@ export function AdminIcon({ className = "", size = 24 }: AdminIconProps) {
     : "/modernmen-admin-icon.svg"
 
   return (
-    <img
+    <Image
       src={iconSrc}
       alt="ModernMen Admin"
+      width={size}
+      height={size}
       className={className}
       style={{
         width: size,

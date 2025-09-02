@@ -1,5 +1,5 @@
-import { CollectionConfig } from 'payload/types';
-import { BusinessIcons } from '../admin';
+import { CollectionConfig } from '../payload-types';
+import BusinessIcons from '../admin/customIcons';
 
 export const RewardsOffers: CollectionConfig = {
   slug: 'rewards-offers',

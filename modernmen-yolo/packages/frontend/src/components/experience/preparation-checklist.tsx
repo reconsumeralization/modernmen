@@ -109,11 +109,11 @@ export function PreparationChecklist({
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'customer': return User
-      case 'barber': return () => (
-        <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
+      case 'barber': return Object.assign(({ className }: { className?: string }) => (
+        <div className={cn("w-5 h-5 bg-red-600 rounded-full flex items-center justify-center", className)}>
           <span className="text-white text-xs font-bold">M</span>
         </div>
-      )
+      ), { displayName: 'BarberIcon' })
       case 'supplies': return Package
       case 'safety': return Shield
       default: return CheckCircle

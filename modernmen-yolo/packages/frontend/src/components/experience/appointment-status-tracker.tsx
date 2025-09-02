@@ -267,7 +267,7 @@ export function AppointmentStatusTracker({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={onContactBarber}
+                    onClick={() => onContactBarber?.(appointment.id)}
                   >
                     <MessageSquare className="h-4 w-4 mr-1" />
                     Contact
@@ -275,7 +275,7 @@ export function AppointmentStatusTracker({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={onReschedule}
+                    onClick={() => onReschedule?.(appointment.id)}
                   >
                     <Calendar className="h-4 w-4 mr-1" />
                     Reschedule
@@ -287,7 +287,7 @@ export function AppointmentStatusTracker({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={onContactBarber}
+                  onClick={() => onContactBarber?.(appointment.id)}
                 >
                   <Coffee className="h-4 w-4 mr-1" />
                   Request Break
@@ -575,11 +575,11 @@ function AppointmentStatusModal({
         <div className="flex gap-3 mt-6 pt-4 border-t">
           {['scheduled', 'confirmed', 'checked_in'].includes(appointment.status) && (
             <>
-              <Button variant="outline" onClick={onContactBarber}>
+              <Button variant="outline" onClick={() => onContactBarber?.(appointment.id)}>
                 <MessageSquare className="mr-2 h-4 w-4" />
                 Contact Barber
               </Button>
-              <Button variant="outline" onClick={onReschedule}>
+              <Button variant="outline" onClick={() => onReschedule?.(appointment.id)}>
                 <Calendar className="mr-2 h-4 w-4" />
                 Reschedule
               </Button>
@@ -587,7 +587,7 @@ function AppointmentStatusModal({
           )}
 
           {['scheduled', 'confirmed'].includes(appointment.status) && (
-            <Button variant="destructive" onClick={onCancel}>
+            <Button variant="destructive" onClick={() => onCancel?.(appointment.id)}>
               <AlertCircle className="mr-2 h-4 w-4" />
               Cancel
             </Button>
