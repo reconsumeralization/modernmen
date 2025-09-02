@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"Processing: $file\")",
+      "Bash(done)",
+      "Read(c:\\Users\\recon\\Desktop\\modernmen\\modernmen-yolo\\docs\\diagrams/**)",
+      "Read(c:\\Users\\recon\\Desktop\\modernmen\\modernmen-yolo\\cms\\src\\collections/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

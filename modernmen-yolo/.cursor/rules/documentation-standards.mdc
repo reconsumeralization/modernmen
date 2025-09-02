@@ -1,0 +1,1010 @@
+---
+alwaysApply: true
+description: Documentation standards and practices for the codebase
+---
+
+# 📚 Documentation Standards & Practices
+
+## 🎯 Documentation Hierarchy
+
+### 1. Code Comments (Inline Documentation)
+```typescript
+// ✅ Good: Descriptive function documentation
+/**
+ * Creates a new appointment booking
+ * @param bookingData - The appointment details
+ * @returns Promise resolving to created appointment
+ * @throws {ValidationError} When booking data is invalid
+ * @throws {ConflictError} When time slot is unavailable
+ */
+async function createAppointment(bookingData: BookingData): Promise<Appointment> {
+  // Input validation
+  validateBookingData(bookingData)
+
+  // Check availability
+  const available = await checkTimeSlotAvailability(bookingData)
+  if (!available) {
+    throw new ConflictError('Time slot is not available')
+  }
+
+  // Create appointment record
+  const appointment = await db.appointments.create(bookingData)
+
+  // Send confirmation email
+  await sendBookingConfirmation(appointment)
+
+  return appointment
+}
+
+// ❌ Avoid: Non-descriptive comments
+// This function does something
+function doSomething(data: any): any {
+  // Loop through data
+  for (let item of data) {
+    // Process item
+    processItem(item)
+  }
+}
+```
+
+### 2. Component Documentation
+```typescript
+// src/components/ui/Button/Button.tsx
+interface ButtonProps {
+  /** The button content */
+  children: React.ReactNode
+  /** Button variant styling */
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+  /** Button size */
+  size?: 'default' | 'sm' | 'lg' | 'icon'
+  /** Click handler */
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  /** Whether the button is disabled */
+  disabled?: boolean
+  /** Whether to show loading state */
+  loading?: boolean
+  /** Additional CSS classes */
+  className?: string
+}
+
+/**
+ * A customizable button component with multiple variants and sizes
+ *
+ * @example
+ * ```tsx
+ * <Button variant="primary" size="lg" onClick={handleClick}>
+ *   Click me
+ * </Button>
+ *
+ * <Button loading disabled>
+ *   Processing...
+ * </Button>
+ * ```
+ */
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variant = 'default',
+  size = 'default',
+  onClick,
+  disabled = false,
+  loading = false,
+  className,
+  ...props
+}) => {
+  // Implementation...
+}
+```
+
+### 3. Hook Documentation
+```typescript
+// src/hooks/useAuth.ts
+interface UseAuthReturn {
+  /** Current authenticated user or null */
+  user: User | null
+  /** Whether authentication is in progress */
+  loading: boolean
+  /** Any authentication error */
+  error: string | null
+  /** Login function */
+  login: (credentials: LoginCredentials) => Promise<void>
+  /** Logout function */
+  logout: () => Promise<void>
+  /** Check if user has specific role */
+  hasRole: (role: string) => boolean
+}
+
+/**
+ * Authentication hook for managing user sessions
+ *
+ * Provides login, logout, and user state management with automatic
+ * token refresh and error handling.
+ *
+ * @example
+ * ```tsx
+ * const { user, login, logout, loading } = useAuth()
+ *
+ * useEffect(() => {
+ *   if (!user && !loading) {
+ *     router.push('/login')
+ *   }
+ * }, [user, loading])
+ *
+ * const handleLogin = async () => {
+ *   try {
+ *     await login({ email, password })
+ *     router.push('/dashboard')
+ *   } catch (error) {
+ *     console.error('Login failed:', error)
+ *   }
+ * }
+ * ```
+ */
+export function useAuth(): UseAuthReturn {
+  // Implementation...
+}
+```
+
+## 📖 README Documentation Standards
+
+### Project README Structure
+```markdown
+# Project Name
+
+Brief description of what the project does and its main purpose.
+
+## 🚀 Features
+
+- Feature 1: Description
+- Feature 2: Description
+- Feature 3: Description
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 15, React 18, TypeScript
+- **Backend**: ModernMen CMS, Supabase, PostgreSQL
+- **Styling**: Tailwind CSS, Framer Motion
+- **Testing**: Jest, React Testing Library, Playwright
+
+## 📋 Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Supabase account
+- Stripe account (for payments)
+
+## 🚀 Getting Started
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/username/project-name.git
+
+# Navigate to project directory
+cd project-name
+
+# Install dependencies
+npm install
+```
+
+### Environment Setup
+
+```bash
+# Copy environment template
+cp .env.example .env.local
+
+# Fill in required environment variables
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+STRIPE_PUBLIC_KEY=your_stripe_public_key
+```
+
+### Development
+
+```bash
+# Start development server
+npm run dev
+
+# Start with Turbopack (faster)
+npm run dev:turbo
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js app router
+├── components/            # React components
+│   ├── ui/               # Reusable UI components
+│   └── layout/           # Layout components
+├── hooks/                # Custom React hooks
+├── services/            # API services
+├── lib/                 # Utility libraries
+├── types/               # TypeScript definitions
+├── data/                # Mock data & constants
+└── constants/           # Application constants
+```
+
+## 🎯 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run test suite |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run type-check` | Run TypeScript type checking |
+
+## 🔧 Configuration
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
+| `STRIPE_PUBLIC_KEY` | Stripe publishable key | Yes |
+| `NEXT_PUBLIC_APP_NAME` | Application name | No |
+
+### Feature Flags
+
+```typescript
+// src/config/features.ts
+export const FEATURES = {
+  BOOKING_SYSTEM: process.env.NEXT_PUBLIC_ENABLE_BOOKING === 'true',
+  PAYMENT_PROCESSING: process.env.NEXT_PUBLIC_ENABLE_PAYMENTS === 'true',
+  NOTIFICATIONS: process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS === 'true',
+  ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true'
+}
+```
+
+## 🧪 Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run specific test file
+npm run test -- Button.test.tsx
+```
+
+### Test Structure
+
+```
+src/
+├── __tests__/           # Test setup and utilities
+├── components/
+│   └── ui/
+│       └── Button/
+│           ├── Button.test.tsx
+│           └── Button.stories.tsx
+└── services/
+    └── __tests__/
+        └── appointments.test.ts
+```
+
+## 🚀 Deployment
+
+### Vercel Deployment
+
+1. Connect repository to Vercel
+2. Configure environment variables
+3. Deploy to production
+
+### Manual Deployment
+
+```bash
+# Build the application
+npm run build
+
+# Start production server
+npm run start
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Commit Message Format
+
+```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+
+## 📝 API Documentation
+
+### Authentication
+
+All API endpoints require authentication via JWT token in the Authorization header:
+
+```
+Authorization: Bearer <jwt_token>
+```
+
+### Endpoints
+
+#### Appointments
+
+**GET /api/appointments**
+- Get user's appointments
+- Query parameters: `status`, `date`, `limit`, `offset`
+
+**POST /api/appointments**
+- Create new appointment
+- Body: `{ customerId, serviceId, stylistId, date, time }`
+
+**PUT /api/appointments/:id**
+- Update appointment
+- Body: Partial appointment data
+
+#### Services
+
+**GET /api/services**
+- Get available services
+- Query parameters: `category`, `active`
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Build fails with TypeScript errors**
+```bash
+# Clear Next.js cache
+rm -rf .next
+
+# Reinstall dependencies
+rm -rf node_modules package-lock.json
+npm install
+
+# Check TypeScript configuration
+npm run type-check
+```
+
+**Database connection issues**
+```bash
+# Check environment variables
+echo $NEXT_PUBLIC_SUPABASE_URL
+
+# Test database connection
+npm run db:test
+```
+
+**Styling issues**
+```bash
+# Clear Tailwind cache
+rm -rf .next/cache
+
+# Rebuild CSS
+npm run build:css
+```
+
+## 📊 Performance
+
+### Bundle Analysis
+
+```bash
+# Analyze bundle size
+npm run build:analyze
+
+# View bundle report
+open .next/static/chunks/bundle-analyzer.html
+```
+
+### Performance Monitoring
+
+The application includes performance monitoring for:
+- Core Web Vitals
+- API response times
+- Bundle size
+- Runtime errors
+
+## 📞 Support
+
+For support, email support@modernmen.com or join our Discord community.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) - The React framework
+- [Supabase](https://supabase.com/) - Backend as a Service
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
+- [ModernMen CMS](https://ModernMencms.com/) - Headless CMS
+```
+
+### Component READMEs
+```markdown
+# Button Component
+
+A flexible button component with multiple variants, sizes, and states.
+
+## Usage
+
+```tsx
+import { Button } from '@/components/ui/button'
+
+// Basic usage
+<Button>Click me</Button>
+
+// With variants
+<Button variant="destructive">Delete</Button>
+<Button variant="outline">Cancel</Button>
+
+// With sizes
+<Button size="sm">Small</Button>
+<Button size="lg">Large</Button>
+
+// With loading state
+<Button loading>Processing...</Button>
+
+// With icons
+<Button>
+  <DownloadIcon className="mr-2 h-4 w-4" />
+  Download
+</Button>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | - | Button content |
+| `variant` | `ButtonVariant` | `'default'` | Visual style variant |
+| `size` | `ButtonSize` | `'default'` | Button size |
+| `disabled` | `boolean` | `false` | Whether button is disabled |
+| `loading` | `boolean` | `false` | Show loading spinner |
+| `onClick` | `function` | - | Click handler |
+| `className` | `string` | - | Additional CSS classes |
+
+## Variants
+
+- `default`: Primary button style
+- `destructive`: Red button for dangerous actions
+- `outline`: Outlined button style
+- `secondary`: Muted button style
+- `ghost`: Transparent button
+- `link`: Link-style button
+
+## Sizes
+
+- `sm`: Small button (padding: 0.5rem 1rem)
+- `default`: Default button (padding: 0.75rem 1.5rem)
+- `lg`: Large button (padding: 1rem 2rem)
+- `icon`: Icon-only button (square shape)
+
+## Accessibility
+
+- Proper ARIA attributes
+- Keyboard navigation support
+- Screen reader compatibility
+- Focus management
+- High contrast support
+
+## Examples
+
+### Form Submission
+```tsx
+const [loading, setLoading] = useState(false)
+
+const handleSubmit = async () => {
+  setLoading(true)
+  try {
+    await submitForm(data)
+    // Success handling
+  } catch (error) {
+    // Error handling
+  } finally {
+    setLoading(false)
+  }
+}
+
+return (
+  <Button onClick={handleSubmit} loading={loading} disabled={!isValid}>
+    {loading ? 'Submitting...' : 'Submit Form'}
+  </Button>
+)
+```
+
+### Async Action with Confirmation
+```tsx
+const [confirming, setConfirming] = useState(false)
+
+const handleDelete = async () => {
+  if (!confirming) {
+    setConfirming(true)
+    return
+  }
+
+  setConfirming(false)
+  await deleteItem(id)
+}
+
+return (
+  <Button
+    variant="destructive"
+    onClick={handleDelete}
+    loading={loading}
+  >
+    {confirming ? 'Click again to confirm' : 'Delete Item'}
+  </Button>
+)
+```
+
+### Link Button
+```tsx
+import Link from 'next/link'
+
+<Link href="/dashboard" passHref>
+  <Button asChild>
+    <a>Go to Dashboard</a>
+  </Button>
+</Link>
+```
+```
+
+## 📋 API Documentation Standards
+
+### Endpoint Documentation
+```typescript
+/**
+ * GET /api/appointments
+ * Retrieve user's appointments with optional filtering
+ *
+ * @query {string} status - Filter by appointment status (confirmed, pending, cancelled)
+ * @query {string} date - Filter by date (YYYY-MM-DD format)
+ * @query {string} stylistId - Filter by stylist ID
+ * @query {number} limit - Maximum number of results (default: 20, max: 100)
+ * @query {number} offset - Pagination offset (default: 0)
+ *
+ * @response {Appointment[]} data - Array of appointment objects
+ * @response {number} total - Total number of appointments
+ * @response {number} page - Current page number
+ * @response {number} totalPages - Total number of pages
+ *
+ * @example
+ * GET /api/appointments?status=confirmed&limit=10
+ *
+ * @response 200
+ * {
+ *   "data": [
+ *     {
+ *       "id": "123",
+ *       "customerName": "John Doe",
+ *       "service": "Haircut",
+ *       "date": "2024-01-15",
+ *       "time": "14:30",
+ *       "status": "confirmed"
+ *     }
+ *   ],
+ *   "total": 1,
+ *   "page": 1,
+ *   "totalPages": 1
+ * }
+ *
+ * @error 401 Unauthorized
+ * @error 500 Internal Server Error
+ */
+```
+
+### Type Definitions Documentation
+```typescript
+/**
+ * Appointment booking data structure
+ */
+export interface Appointment {
+  /** Unique appointment identifier */
+  id: string
+
+  /** Customer information */
+  customer: {
+    /** Customer ID */
+    id: string
+    /** Full customer name */
+    name: string
+    /** Customer email address */
+    email: string
+    /** Customer phone number */
+    phone: string
+  }
+
+  /** Service information */
+  service: {
+    /** Service ID */
+    id: string
+    /** Service name */
+    name: string
+    /** Service duration in minutes */
+    duration: number
+    /** Service price */
+    price: number
+    /** Service category */
+    category: string
+  }
+
+  /** Stylist information */
+  stylist: {
+    /** Stylist ID */
+    id: string
+    /** Stylist name */
+    name: string
+    /** Stylist specialties */
+    specialties: string[]
+  }
+
+  /** Appointment scheduling */
+  date: string           // ISO date string (YYYY-MM-DD)
+  time: string           // Time string (HH:MM)
+  duration: number       // Duration in minutes
+
+  /** Appointment status */
+  status: AppointmentStatus
+
+  /** Additional information */
+  notes?: string         // Customer notes
+  internalNotes?: string // Staff-only notes
+
+  /** Metadata */
+  createdAt: string      // ISO timestamp
+  updatedAt: string      // ISO timestamp
+}
+
+/**
+ * Appointment status enumeration
+ */
+export type AppointmentStatus =
+  | 'confirmed'    // Appointment is confirmed and scheduled
+  | 'pending'      // Awaiting confirmation
+  | 'cancelled'   // Appointment has been cancelled
+  | 'completed'   // Appointment has been completed
+  | 'no_show'     // Customer did not show up
+```
+
+## 🎨 Storybook Documentation
+
+### Component Stories
+```typescript
+// src/components/ui/Button/Button.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react'
+import { Button } from './Button'
+import { DownloadIcon, HeartIcon } from 'lucide-react'
+
+const meta: Meta<typeof Button> = {
+  title: 'UI/Button',
+  component: Button,
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'A versatile button component with multiple variants and sizes.'
+      }
+    }
+  },
+  argTypes: {
+    variant: {
+      control: { type: 'select' },
+      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
+      description: 'The visual style variant of the button',
+      table: {
+        defaultValue: { summary: 'default' },
+        type: { summary: 'string' }
+      }
+    },
+    size: {
+      control: { type: 'select' },
+      options: ['sm', 'default', 'lg', 'icon'],
+      description: 'The size of the button',
+      table: {
+        defaultValue: { summary: 'default' }
+      }
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Whether the button is disabled',
+      table: {
+        defaultValue: { summary: 'false' }
+      }
+    },
+    loading: {
+      control: 'boolean',
+      description: 'Whether to show loading state',
+      table: {
+        defaultValue: { summary: 'false' }
+      }
+    }
+  },
+  args: {
+    children: 'Button'
+  }
+}
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+// Basic usage
+export const Default: Story = {}
+
+// All variants
+export const Variants: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Button variant="default">Default</Button>
+      <Button variant="destructive">Destructive</Button>
+      <Button variant="outline">Outline</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="ghost">Ghost</Button>
+      <Button variant="link">Link</Button>
+    </div>
+  )
+}
+
+// All sizes
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex items-center gap-4">
+      <Button size="sm">Small</Button>
+      <Button size="default">Default</Button>
+      <Button size="lg">Large</Button>
+      <Button size="icon">
+        <HeartIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
+
+// States
+export const States: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Button>Normal</Button>
+      <Button loading>Loading</Button>
+      <Button disabled>Disabled</Button>
+      <Button loading disabled>Loading & Disabled</Button>
+    </div>
+  )
+}
+
+// With icons
+export const WithIcons: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <Button>
+        <DownloadIcon className="mr-2 h-4 w-4" />
+        Download
+      </Button>
+      <Button variant="outline">
+        <HeartIcon className="mr-2 h-4 w-4" />
+        Favorite
+      </Button>
+    </div>
+  )
+}
+
+// Interactive example
+export const Interactive: Story = {
+  render: () => {
+    const [count, setCount] = React.useState(0)
+
+    return (
+      <Button onClick={() => setCount(count + 1)}>
+        Clicked {count} times
+      </Button>
+    )
+  }
+}
+```
+
+## 📊 Architecture Decision Records (ADRs)
+
+### ADR Template
+```markdown
+# [Number]: [Title]
+
+## Status
+[Proposed | Accepted | Rejected | Deprecated | Superseded]
+
+## Context
+[Describe the context and problem statement]
+
+## Decision
+[Describe the decision made and the solution]
+
+## Consequences
+[Describe the positive and negative consequences]
+
+## Alternatives Considered
+[List alternative solutions and why they were rejected]
+
+## Implementation
+[Describe how the decision will be implemented]
+
+## References
+[Links to relevant documentation, issues, or discussions]
+```
+
+### Example ADR
+```markdown
+# ADR 001: Choice of State Management Solution
+
+## Status
+Accepted
+
+## Context
+The application needs a robust state management solution that can handle:
+- Complex booking workflows
+- Real-time appointment updates
+- User authentication state
+- Form state management
+- Global application state
+
+## Decision
+We will use React Query (TanStack Query) for server state management and Zustand for client state management.
+
+## Rationale
+- React Query provides excellent server state management with caching, background refetching, and optimistic updates
+- Zustand offers a simple, lightweight solution for client state without the complexity of Redux
+- Together they provide a complete state management solution
+
+## Consequences
+
+### Positive
+- Simplified state management code
+- Better performance with automatic caching
+- Improved developer experience
+- Reduced boilerplate code
+
+### Negative
+- Additional dependency on external libraries
+- Learning curve for team members new to these libraries
+
+## Alternatives Considered
+
+### Redux Toolkit
+- Pros: Mature ecosystem, powerful debugging tools
+- Cons: Complex setup, verbose boilerplate, overkill for our needs
+
+### Context API + useReducer
+- Pros: No external dependencies, built into React
+- Cons: Verbose for complex state, no caching, manual optimization required
+
+### SWR
+- Pros: Similar to React Query, good caching
+- Cons: Less mature ecosystem, fewer features
+
+## Implementation
+1. Install React Query and Zustand
+2. Create store definitions for client state
+3. Wrap app with QueryClient provider
+4. Migrate existing state management to new solution
+5. Update documentation and examples
+
+## References
+- [React Query Documentation](https://tanstack.com/query/latest)
+- [Zustand Documentation](https://docs.pmnd.rs/zustand/getting-started/introduction)
+- [GitHub Issue #123](https://github.com/company/project/issues/123)
+```
+
+## 🔧 Development Guidelines
+
+### Code Review Checklist
+- [ ] Code follows established patterns and conventions
+- [ ] Functions have proper JSDoc documentation
+- [ ] Components have TypeScript interfaces
+- [ ] Error handling is implemented
+- [ ] Tests are included and passing
+- [ ] Performance considerations are addressed
+- [ ] Accessibility requirements are met
+- [ ] Documentation is updated
+
+### Pull Request Template
+```markdown
+## Description
+[Brief description of the changes]
+
+## Type of Change
+- [ ] Bug fix (non-breaking change)
+- [ ] New feature (non-breaking change)
+- [ ] Breaking change
+- [ ] Documentation update
+- [ ] Refactoring
+- [ ] Performance improvement
+
+## How Has This Been Tested?
+- [ ] Unit tests pass
+- [ ] Integration tests pass
+- [ ] E2E tests pass
+- [ ] Manual testing completed
+- [ ] Performance tests pass
+
+## Checklist
+- [ ] My code follows the project's style guidelines
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
+
+## Screenshots (if applicable)
+[Add screenshots of UI changes]
+
+## Additional Notes
+[Any additional information or context]
+```
+
+## 📈 Documentation Maintenance
+
+### Regular Updates
+- Update README when adding new features
+- Update API documentation when changing endpoints
+- Update component documentation when props change
+- Update deployment docs when process changes
+
+### Automated Documentation
+```typescript
+// scripts/generate-docs.ts
+import { writeFileSync, mkdirSync } from 'fs'
+import { join } from 'path'
+import { Project } from 'ts-morph'
+
+const project = new Project({
+  tsConfigFilePath: 'tsconfig.json'
+})
+
+function generateComponentDocs() {
+  const sourceFiles = project.getSourceFiles('src/components/**/*.tsx')
+
+  sourceFiles.forEach(file => {
+    const componentName = file.getBaseNameWithoutExtension()
+    const interfaces = file.getInterfaces()
+    const functions = file.getFunctions()
+
+    // Generate documentation
+    const docs = {
+      name: componentName,
+      props: interfaces.map(iface => ({
+        name: iface.getName(),
+        properties: iface.getProperties().map(prop => ({
+          name: prop.getName(),
+          type: prop.getType().getText(),
+          hasQuestionToken: prop.hasQuestionToken()
+        }))
+      })),
+      examples: [] // Extract from stories
+    }
+
+    // Write documentation file
+    const docsDir = join('docs', 'components')
+    mkdirSync(docsDir, { recursive: true })
+    writeFileSync(
+      join(docsDir, `${componentName}.json`),
+      JSON.stringify(docs, null, 2)
+    )
+  })
+}
+
+generateComponentDocs()
+```
+
+This comprehensive documentation strategy ensures that the Modern Men Hair Salon codebase remains well-documented, maintainable, and accessible to all team members. The documentation covers everything from inline code comments to high-level architecture decisions, providing multiple layers of information for different audiences and use cases.

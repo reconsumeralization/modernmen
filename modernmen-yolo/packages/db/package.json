@@ -1,0 +1,29 @@
+{
+  "name": "@modernmen/db",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Database schema, migrations, and types for Modern Men Hair Salon",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "supabase start",
+    "build": "tsc -p tsconfig.json",
+    "start": "supabase status",
+    "lint": "echo 'No linting for DB package'",
+    "type-check": "tsc --noEmit",
+    "migrate": "supabase db push",
+    "generate-types": "supabase gen types typescript --local > src/database.ts",
+    "reset": "supabase db reset",
+    "seed": "supabase db seed",
+    "test": "echo 'Database tests would run here'"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "zod": "^3.22.4",
+    "@modernmen/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3",
+    "supabase": "^1.136.3"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {},
+    "lint:fix": {},
+    "type-check": {},
+    "test": {},
+    "test:ci": {},
+    "test:coverage": {},
+    "clean": {
+      "cache": false
+    },
+    "db:push": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "deploy": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "build:analyze": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "build:profile": {
+      "dependsOn": ["^build"],
+      "cache": false
+    }
+  },
+  "globalDependencies": [
+    "package.json",
+    "turbo.json",
+    "tsconfig.json",
+    "tailwind.config.js",
+    "postcss.config.js"
+  ]
+}

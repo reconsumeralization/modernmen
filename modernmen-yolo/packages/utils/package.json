@@ -1,0 +1,33 @@
+{
+  "name": "@modernmen/utils",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared utilities and helpers for Modern Men Hair Salon",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc -p tsconfig.json",
+    "start": "echo 'Utils package has no start command'",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage --watchAll=false"
+  },
+  "dependencies": {
+    "zod": "^3.22.4",
+    "date-fns": "^3.0.6",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.8"
+  }
+}

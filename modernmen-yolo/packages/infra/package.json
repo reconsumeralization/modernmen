@@ -1,0 +1,22 @@
+{
+  "name": "@modernmen/infra",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Infrastructure configurations and deployment scripts for Modern Men Hair Salon",
+  "scripts": {
+    "deploy": "vercel --prod",
+    "deploy:staging": "vercel --prod=false",
+    "build": "echo 'Infra package has no build'",
+    "start": "echo 'Infra package has no start'",
+    "lint": "echo 'No linting for infra configs'",
+    "test": "echo 'Infrastructure tests would run here'",
+    "docker:build": "docker build -t modernmen-app .",
+    "docker:push": "docker push modernmen-app",
+    "docker:run": "docker run -p 3000:3000 modernmen-app",
+    "health-check": "curl -f https://modernmen-app.vercel.app/api/health",
+    "logs": "vercel logs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5"
+  }
+}

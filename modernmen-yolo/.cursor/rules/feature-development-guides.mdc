@@ -1,0 +1,701 @@
+---
+alwaysApply: false
+description: Feature development guidelines and implementation patterns
+---
+
+# 🚀 Feature Development Guides
+
+## 🎯 Feature Implementation Checklist
+
+### Pre-Development Phase
+- [ ] **User Story Review**: Check **[User Journey Flow](docs/diagrams/user-journey-flow.md)**
+- [ ] **Architecture Review**: Consult **[System Architecture](docs/diagrams/system-architecture.md)**
+- [ ] **Component Inventory**: Review **[Component Hierarchy](docs/diagrams/component-hierarchy.md)**
+- [ ] **API Requirements**: Verify **[API Architecture](docs/diagrams/api-architecture.md)**
+- [ ] **Database Schema**: Confirm **[Database Schema](docs/diagrams/database-schema.md)**
+
+### Development Phase
+- [ ] **Type Definitions**: Create/update types in `src/types/`
+- [ ] **Service Layer**: Add API calls in `src/services/`
+- [ ] **UI Components**: Build components in `src/components/ui/`
+- [ ] **Custom Hooks**: Add logic in `src/hooks/`
+- [ ] **State Management**: Implement using established patterns
+- [ ] **Error Handling**: Add proper error boundaries and fallbacks
+- [ ] **Loading States**: Implement skeleton screens and loading indicators
+
+### Testing Phase
+- [ ] **Unit Tests**: Test individual components and functions
+- [ ] **Integration Tests**: Test component interactions
+- [ ] **API Tests**: Test service layer functionality
+- [ ] **Visual Tests**: Check responsive design across breakpoints
+- [ ] **Accessibility Tests**: Verify WCAG compliance
+
+### Deployment Phase
+- [ ] **Performance Check**: Verify loading times and bundle sizes
+- [ ] **SEO Optimization**: Check meta tags and structured data
+- [ ] **Mobile Testing**: Test on various devices and browsers
+- [ ] **Error Monitoring**: Set up error tracking and alerts
+
+## 📋 Feature Categories & Implementation Patterns
+
+### 1. 🔐 Authentication Features
+
+#### User Registration
+```typescript
+// 1. Types (src/types/auth.ts)
+interface UserRegistration {
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  phone?: string
+}
+
+// 2. Service (src/services/authService.ts)
+class AuthService {
+  async register(userData: UserRegistration): Promise<ApiResponse<User>> {
+    // Implementation
+  }
+}
+
+// 3. Component (src/components/auth/RegisterForm.tsx)
+const RegisterForm = () => {
+  const [formData, setFormData] = useState<UserRegistration>({})
+  const { register, loading, error } = useAuth()
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    await register(formData)
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Form fields */}
+    </form>
+  )
+}
+```
+
+#### Login/Logout
+```typescript
+// Hook implementation (src/hooks/useAuth.ts)
+export const useAuth = () => {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const login = async (credentials: LoginCredentials) => {
+    setLoading(true)
+    try {
+      const response = await authService.login(credentials)
+      setUser(response.data)
+      // Redirect to dashboard
+    } catch (error) {
+      // Handle error
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { user, login, logout, loading }
+}
+```
+
+### 2. 📅 Booking System Features
+
+#### Appointment Creation
+```typescript
+// 1. Types (src/types/booking.ts)
+interface BookingData {
+  serviceId: string
+  stylistId: string
+  date: string
+  time: string
+  customerNotes?: string
+}
+
+// 2. Service (src/services/bookingService.ts)
+class BookingService {
+  async createBooking(bookingData: BookingData): Promise<ApiResponse<Appointment>> {
+    // Validate availability
+    // Create appointment
+    // Send confirmation
+  }
+
+  async checkAvailability(date: string, stylistId: string): Promise<TimeSlot[]> {
+    // Check stylist availability
+  }
+}
+
+// 3. Component (src/components/booking/BookingWizard.tsx)
+const BookingWizard = () => {
+  const [step, setStep] = useState(1)
+  const [bookingData, setBookingData] = useState<Partial<BookingData>>({})
+
+  const steps = [
+    { id: 1, title: 'Select Service', component: ServiceSelection },
+    { id: 2, title: 'Choose Stylist', component: StylistSelection },
+    { id: 3, title: 'Pick Date & Time', component: DateTimeSelection },
+    { id: 4, title: 'Confirm Details', component: BookingConfirmation }
+  ]
+
+  return (
+    <div className="booking-wizard">
+      {/* Step indicator */}
+      {/* Current step component */}
+    </div>
+  )
+}
+```
+
+#### Calendar Integration
+```typescript
+// Calendar hook (src/hooks/useCalendar.ts)
+export const useCalendar = (stylistId: string) => {
+  const [availability, setAvailability] = useState<TimeSlot[]>([])
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+
+  useEffect(() => {
+    if (stylistId) {
+      fetchAvailability(stylistId)
+    }
+  }, [stylistId])
+
+  const fetchAvailability = async (id: string) => {
+    const slots = await bookingService.getAvailability(id)
+    setAvailability(slots)
+  }
+
+  return {
+    availability,
+    selectedDate,
+    setSelectedDate,
+    isDateAvailable: (date: Date) => {
+      // Check if date has available slots
+    }
+  }
+}
+```
+
+### 3. 👤 User Profile Features
+
+#### Profile Management
+```typescript
+// Profile component (src/components/profile/UserProfile.tsx)
+const UserProfile = () => {
+  const { user, updateProfile } = useAuth()
+  const [isEditing, setIsEditing] = useState(false)
+  const [formData, setFormData] = useState(user || {})
+
+  const handleSave = async () => {
+    try {
+      await updateProfile(formData)
+      setIsEditing(false)
+      // Show success message
+    } catch (error) {
+      // Handle error
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Profile Information</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isEditing ? (
+          <ProfileEditForm
+            data={formData}
+            onChange={setFormData}
+            onSave={handleSave}
+            onCancel={() => setIsEditing(false)}
+          />
+        ) : (
+          <ProfileDisplay
+            user={user}
+            onEdit={() => setIsEditing(true)}
+          />
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+```
+
+### 4. 📊 Dashboard Features
+
+#### Analytics Dashboard
+```typescript
+// Dashboard hook (src/hooks/useDashboard.ts)
+export const useDashboard = () => {
+  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  const fetchDashboardData = async () => {
+    try {
+      const [statsData, appointmentsData, customersData] = await Promise.all([
+        statsService.getDashboardStats(),
+        appointmentsService.getRecentAppointments(),
+        customersService.getRecentCustomers()
+      ])
+
+      setStats({
+        ...statsData,
+        recentAppointments: appointmentsData,
+        recentCustomers: customersData
+      })
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { stats, loading, refetch: fetchDashboardData }
+}
+
+// Dashboard component (src/components/dashboard/AnalyticsDashboard.tsx)
+const AnalyticsDashboard = () => {
+  const { stats, loading } = useDashboard()
+
+  if (loading) {
+    return <DashboardSkeleton />
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <RevenueStatsCard stats={stats.revenue} />
+      <AppointmentsStatsCard stats={stats.appointments} />
+      <CustomersStatsCard stats={stats.customers} />
+      <ConversionStatsCard stats={stats.conversion} />
+    </div>
+  )
+}
+```
+
+### 5. 🔔 Notification Features
+
+#### Real-time Notifications
+```typescript
+// Notification system (src/hooks/useNotifications.ts)
+export const useNotifications = () => {
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  useEffect(() => {
+    // Set up real-time subscription
+    const subscription = supabase
+      .channel('notifications')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notifications'
+      }, (ModernMen) => {
+        setNotifications(prev => [ModernMen.new, ...prev])
+        setUnreadCount(prev => prev + 1)
+      })
+      .subscribe()
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const markAsRead = async (id: string) => {
+    await notificationService.markAsRead(id)
+    setNotifications(prev =>
+      prev.map(n => n.id === id ? { ...n, read: true } : n)
+    )
+    setUnreadCount(prev => Math.max(0, prev - 1))
+  }
+
+  return {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead: async () => {
+      await notificationService.markAllAsRead()
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+      setUnreadCount(0)
+    }
+  }
+}
+```
+
+## 🎨 UI/UX Implementation Patterns
+
+### Loading States
+```typescript
+// Skeleton components
+const AppointmentCardSkeleton = () => (
+  <Card>
+    <CardHeader>
+      <Skeleton className="h-4 w-[250px]" />
+      <Skeleton className="h-4 w-[200px]" />
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+      </div>
+    </CardContent>
+  </Card>
+)
+
+// Loading wrapper
+const withLoading = (Component) => {
+  return ({ loading, ...props }) => {
+    if (loading) return <AppointmentCardSkeleton />
+    return <Component {...props} />
+  }
+}
+```
+
+### Error Boundaries
+```typescript
+// Error boundary component
+class FeatureErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // Log to error reporting service
+    logError(error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <ErrorFallback
+          error={this.state.error}
+          onRetry={() => this.setState({ hasError: false, error: null })}
+        />
+      )
+    }
+
+    return this.props.children
+  }
+}
+```
+
+### Optimistic Updates
+```typescript
+// Optimistic booking update
+const createAppointment = async (appointmentData) => {
+  // Optimistic update
+  const optimisticAppointment = {
+    id: `temp-${Date.now()}`,
+    ...appointmentData,
+    status: 'pending'
+  }
+
+  setAppointments(prev => [...prev, optimisticAppointment])
+
+  try {
+    const response = await appointmentsService.create(appointmentData)
+    // Replace optimistic update with real data
+    setAppointments(prev =>
+      prev.map(app =>
+        app.id === optimisticAppointment.id ? response.data : app
+      )
+    )
+  } catch (error) {
+    // Remove optimistic update on error
+    setAppointments(prev =>
+      prev.filter(app => app.id !== optimisticAppointment.id)
+    )
+    throw error
+  }
+}
+```
+
+## 🔧 Performance Optimization Patterns
+
+### Code Splitting
+```typescript
+// Route-based code splitting
+const AppointmentBooking = lazy(() => import('./AppointmentBooking'))
+const UserProfile = lazy(() => import('./UserProfile'))
+
+const AppRoutes = () => (
+  <Suspense fallback={<PageSkeleton />}>
+    <Routes>
+      <Route path="/book" element={<AppointmentBooking />} />
+      <Route path="/profile" element={<UserProfile />} />
+    </Routes>
+  </Suspense>
+)
+```
+
+### Data Fetching Optimization
+```typescript
+// Parallel data fetching
+const Dashboard = () => {
+  const [dashboardData, setDashboardData] = useState(null)
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      const [stats, appointments, customers] = await Promise.all([
+        statsService.getOverview(),
+        appointmentsService.getRecent(),
+        customersService.getRecent()
+      ])
+
+      setDashboardData({ stats, appointments, customers })
+    }
+
+    fetchDashboard()
+  }, [])
+
+  // Render dashboard with data
+}
+```
+
+### Memoization
+```typescript
+// Expensive calculations
+const appointmentStats = useMemo(() => {
+  return appointments.reduce((stats, appointment) => {
+    stats[appointment.status] = (stats[appointment.status] || 0) + 1
+    return stats
+  }, {})
+}, [appointments])
+
+// Component memoization
+const AppointmentCard = memo(({ appointment, onClick }) => {
+  return (
+    <Card onClick={() => onClick(appointment)}>
+      <CardHeader>
+        <CardTitle>{appointment.customerName}</CardTitle>
+      </CardHeader>
+      {/* Other content */}
+    </Card>
+  )
+})
+```
+
+## 📱 Responsive Design Patterns
+
+### Mobile-First Components
+```typescript
+// Responsive button component
+const ResponsiveButton = ({ children, className = '', ...props }) => (
+  <button
+    className={cn(
+      // Base mobile styles
+      'w-full px-4 py-2 text-sm font-medium rounded-md',
+      // Tablet styles
+      'md:w-auto md:px-6 md:py-3 md:text-base',
+      // Desktop styles
+      'lg:px-8 lg:py-4 lg:text-lg',
+      // Custom classes
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </button>
+)
+```
+
+### Adaptive Layouts
+```typescript
+// Adaptive grid layout
+const AdaptiveGrid = ({ children, className = '' }) => (
+  <div
+    className={cn(
+      // Mobile: single column
+      'grid grid-cols-1 gap-4',
+      // Tablet: 2 columns
+      'md:grid-cols-2',
+      // Desktop: 3 columns
+      'lg:grid-cols-3',
+      // Large desktop: 4 columns
+      'xl:grid-cols-4',
+      className
+    )}
+  >
+    {children}
+  </div>
+)
+```
+
+## 🧪 Testing Patterns
+
+### Component Testing
+```typescript
+// Component test
+describe('AppointmentCard', () => {
+  it('displays appointment information correctly', () => {
+    const mockAppointment = {
+      id: '1',
+      customerName: 'John Doe',
+      service: 'Haircut',
+      date: '2024-01-15',
+      time: '14:30'
+    }
+
+    render(<AppointmentCard appointment={mockAppointment} />)
+
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+    expect(screen.getByText('Haircut')).toBeInTheDocument()
+    expect(screen.getByText('Jan 15, 2024')).toBeInTheDocument()
+  })
+
+  it('calls onClick when clicked', () => {
+    const mockOnClick = jest.fn()
+    const mockAppointment = { id: '1', customerName: 'John Doe' }
+
+    render(<AppointmentCard appointment={mockAppointment} onClick={mockOnClick} />)
+
+    fireEvent.click(screen.getByRole('button'))
+    expect(mockOnClick).toHaveBeenCalledWith(mockAppointment)
+  })
+})
+```
+
+### Integration Testing
+```typescript
+// Integration test
+describe('Booking Flow', () => {
+  it('completes full booking process', async () => {
+    // Mock API responses
+    mockServer.use(
+      rest.post('/api/appointments', (req, res, ctx) => {
+        return res(ctx.json({ id: '123', status: 'confirmed' }))
+      })
+    )
+
+    render(<BookingWizard />)
+
+    // Step 1: Select service
+    await userEvent.click(screen.getByText('Haircut'))
+    await userEvent.click(screen.getByText('Next'))
+
+    // Step 2: Select stylist
+    await userEvent.click(screen.getByText('Jane Smith'))
+    await userEvent.click(screen.getByText('Next'))
+
+    // Step 3: Select date/time
+    // ... continue testing
+
+    // Verify booking completion
+    expect(screen.getByText('Booking Confirmed!')).toBeInTheDocument()
+  })
+})
+```
+
+## 🚀 Deployment Patterns
+
+### Feature Flags
+```typescript
+// Feature flag implementation
+const FEATURE_FLAGS = {
+  NEW_BOOKING_FLOW: process.env.NEXT_PUBLIC_NEW_BOOKING_FLOW === 'true',
+  ANALYTICS_DASHBOARD: process.env.NEXT_PUBLIC_ANALYTICS_DASHBOARD === 'true',
+  NOTIFICATION_SYSTEM: process.env.NEXT_PUBLIC_NOTIFICATION_SYSTEM === 'true'
+}
+
+// Usage in components
+const BookingWizard = () => {
+  if (FEATURE_FLAGS.NEW_BOOKING_FLOW) {
+    return <NewBookingWizard />
+  }
+
+  return <LegacyBookingWizard />
+}
+```
+
+### Progressive Rollout
+```typescript
+// A/B testing implementation
+const useFeatureVariant = (featureName: string) => {
+  const [variant, setVariant] = useState('control')
+
+  useEffect(() => {
+    // Get user variant from server or local storage
+    const userVariant = getUserVariant(featureName)
+    setVariant(userVariant)
+  }, [featureName])
+
+  return variant
+}
+
+// Usage
+const BookingButton = () => {
+  const variant = useFeatureVariant('booking-button')
+
+  if (variant === 'variant-a') {
+    return <Button variant="primary">Book Now (A)</Button>
+  }
+
+  return <Button variant="secondary">Schedule Appointment</Button>
+}
+```
+
+## 📊 Monitoring & Analytics
+
+### Error Tracking
+```typescript
+// Error boundary with tracking
+const FeatureErrorBoundary = ({ featureName, children }) => {
+  const handleError = (error, errorInfo) => {
+    // Track error
+    analytics.track('error', {
+      feature: featureName,
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString()
+    })
+  }
+
+  return (
+    <ErrorBoundary
+      fallback={<ErrorFallback />}
+      onError={handleError}
+    >
+      {children}
+    </ErrorBoundary>
+  )
+}
+```
+
+### Performance Monitoring
+```typescript
+// Performance tracking
+const usePerformanceTracking = (componentName: string) => {
+  useEffect(() => {
+    const startTime = performance.now()
+
+    return () => {
+      const endTime = performance.now()
+      const duration = endTime - startTime
+
+      analytics.track('component_render_time', {
+        component: componentName,
+        duration,
+        timestamp: new Date().toISOString()
+      })
+    }
+  }, [componentName])
+}
+
+// Usage in components
+const Dashboard = () => {
+  usePerformanceTracking('Dashboard')
+
+  return (
+    <div>
+      {/* Dashboard content */}
+    </div>
+  )
+}
+```

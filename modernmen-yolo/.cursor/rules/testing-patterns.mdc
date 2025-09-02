@@ -1,0 +1,934 @@
+---
+globs: **/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx
+description: Testing patterns and best practices for the application
+---
+
+# 🧪 Testing Patterns & Best Practices
+
+## 🏗️ Testing Architecture Overview
+
+### Test File Organization
+```
+src/
+├── components/
+│   ├── Button/
+│   │   ├── Button.tsx
+│   │   ├── Button.test.tsx          # Component tests
+│   │   ├── Button.stories.tsx       # Storybook stories
+│   │   └── __tests__/               # Additional test files
+│   │       └── Button.integration.test.tsx
+│   └── ui/
+│       ├── index.ts
+│       └── __tests__/
+│           └── ui-components.test.tsx
+├── services/
+│   ├── appointments.ts
+│   ├── __tests__/
+│   │   ├── appointments.test.ts
+│   │   ├── appointments.integration.test.ts
+│   │   └── mocks/
+│   │       └── appointmentMocks.ts
+├── hooks/
+│   ├── useAuth.ts
+│   └── __tests__/
+│       └── useAuth.test.ts
+└── __tests__/
+    ├── setup.ts                     # Test setup and configuration
+    ├── utils/                       # Test utilities
+    └── e2e/                         # End-to-end tests
+```
+
+### Test Categories
+```typescript
+// 1. Unit Tests - Test individual functions/components
+describe('Button Component', () => { /* ... */ })
+
+// 2. Integration Tests - Test component interactions
+describe('AppointmentBooking Integration', () => { /* ... */ })
+
+// 3. E2E Tests - Test complete user flows
+describe('Complete Booking Flow', () => { /* ... */ })
+
+// 4. Visual Regression Tests - Test UI consistency
+describe('Button Visual Regression', () => { /* ... */ })
+```
+
+## 🧩 Component Testing Patterns
+
+### Basic Component Test
+```typescript
+// src/components/ui/Button/Button.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import { Button } from './Button'
+
+describe('Button', () => {
+  it('renders with correct text', () => {
+    render(<Button>Hello World</Button>)
+
+    expect(screen.getByRole('button', { name: /hello world/i })).toBeInTheDocument()
+  })
+
+  it('calls onClick when clicked', () => {
+    const handleClick = jest.fn()
+    render(<Button onClick={handleClick}>Click me</Button>)
+
+    fireEvent.click(screen.getByRole('button'))
+
+    expect(handleClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('applies correct variant styles', () => {
+    render(<Button variant="destructive">Delete</Button>)
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveClass('bg-destructive')
+  })
+
+  it('is disabled when disabled prop is true', () => {
+    render(<Button disabled>Disabled</Button>)
+
+    expect(screen.getByRole('button')).toBeDisabled()
+  })
+
+  it('shows loading spinner when loading', () => {
+    render(<Button loading>Loading</Button>)
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+  })
+})
+```
+
+### Component with Async Data
+```typescript
+// src/components/appointments/AppointmentList.test.tsx
+import { render, screen, waitFor } from '@testing-library/react'
+import { AppointmentList } from './AppointmentList'
+import { appointmentsService } from '@/services'
+
+// Mock the service
+jest.mock('@/services', () => ({
+  appointmentsService: {
+    getAppointments: jest.fn()
+  }
+}))
+
+const mockAppointments = [
+  {
+    id: '1',
+    customerName: 'John Doe',
+    service: 'Haircut',
+    date: '2024-01-15',
+    time: '14:30',
+    status: 'confirmed'
+  }
+]
+
+describe('AppointmentList', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('shows loading state initially', () => {
+    appointmentsService.getAppointments.mockImplementation(
+      () => new Promise(() => {}) // Never resolves
+    )
+
+    render(<AppointmentList />)
+
+    expect(screen.getByText('Loading appointments...')).toBeInTheDocument()
+  })
+
+  it('displays appointments when loaded', async () => {
+    appointmentsService.getAppointments.mockResolvedValue({
+      success: true,
+      data: mockAppointments
+    })
+
+    render(<AppointmentList />)
+
+    await waitFor(() => {
+      expect(screen.getByText('John Doe')).toBeInTheDocument()
+      expect(screen.getByText('Haircut')).toBeInTheDocument()
+    })
+  })
+
+  it('shows error message when API fails', async () => {
+    appointmentsService.getAppointments.mockResolvedValue({
+      success: false,
+      error: 'Failed to load appointments'
+    })
+
+    render(<AppointmentList />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to load appointments')).toBeInTheDocument()
+    })
+  })
+})
+```
+
+### Custom Hook Testing
+```typescript
+// src/hooks/useAuth.test.ts
+import { renderHook, act, waitFor } from '@testing-library/react'
+import { useAuth } from './useAuth'
+import { authService } from '@/services'
+
+// Mock the service
+jest.mock('@/services', () => ({
+  authService: {
+    login: jest.fn(),
+    logout: jest.fn(),
+    getCurrentUser: jest.fn()
+  }
+}))
+
+describe('useAuth', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('initializes with null user', () => {
+    const { result } = renderHook(() => useAuth())
+
+    expect(result.current.user).toBeNull()
+    expect(result.current.loading).toBe(false)
+  })
+
+  it('logs in user successfully', async () => {
+    const mockUser = { id: '1', email: 'test@example.com' }
+    authService.login.mockResolvedValue({
+      success: true,
+      data: mockUser
+    })
+
+    const { result } = renderHook(() => useAuth())
+
+    act(() => {
+      result.current.login({ email: 'test@example.com', password: 'password' })
+    })
+
+    await waitFor(() => {
+      expect(result.current.user).toEqual(mockUser)
+      expect(result.current.loading).toBe(false)
+    })
+
+    expect(authService.login).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      password: 'password'
+    })
+  })
+
+  it('handles login error', async () => {
+    authService.login.mockResolvedValue({
+      success: false,
+      error: 'Invalid credentials'
+    })
+
+    const { result } = renderHook(() => useAuth())
+
+    act(() => {
+      result.current.login({ email: 'test@example.com', password: 'wrong' })
+    })
+
+    await waitFor(() => {
+      expect(result.current.user).toBeNull()
+      expect(result.current.error).toBe('Invalid credentials')
+    })
+  })
+})
+```
+
+## 🔧 Service Layer Testing
+
+### Service Unit Tests
+```typescript
+// src/services/__tests__/appointments.test.ts
+import { appointmentsService } from '../appointments'
+import { apiClient } from '@/lib/apiClient'
+
+// Mock the API client
+jest.mock('@/lib/apiClient')
+
+const mockApiClient = apiClient as jest.Mocked<typeof apiClient>
+
+describe('AppointmentsService', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  describe('getAppointments', () => {
+    it('fetches appointments successfully', async () => {
+      const mockAppointments = [
+        { id: '1', customerName: 'John Doe', status: 'confirmed' }
+      ]
+
+      mockApiClient.get.mockResolvedValue({
+        success: true,
+        data: mockAppointments
+      })
+
+      const result = await appointmentsService.getAppointments()
+
+      expect(result.success).toBe(true)
+      expect(result.data).toEqual(mockAppointments)
+      expect(mockApiClient.get).toHaveBeenCalledWith('/appointments')
+    })
+
+    it('handles API errors', async () => {
+      mockApiClient.get.mockResolvedValue({
+        success: false,
+        error: 'API Error'
+      })
+
+      const result = await appointmentsService.getAppointments()
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('API Error')
+    })
+
+    it('applies filters correctly', async () => {
+      const filters = { status: 'confirmed', date: '2024-01-15' }
+
+      mockApiClient.get.mockResolvedValue({
+        success: true,
+        data: []
+      })
+
+      await appointmentsService.getAppointments(filters)
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        '/appointments?status=confirmed&date=2024-01-15'
+      )
+    })
+  })
+
+  describe('createAppointment', () => {
+    it('creates appointment successfully', async () => {
+      const appointmentData = {
+        customerId: '1',
+        serviceId: '2',
+        date: '2024-01-15',
+        time: '14:30'
+      }
+
+      const createdAppointment = { id: '123', ...appointmentData }
+
+      mockApiClient.post.mockResolvedValue({
+        success: true,
+        data: createdAppointment
+      })
+
+      const result = await appointmentsService.createAppointment(appointmentData)
+
+      expect(result.success).toBe(true)
+      expect(result.data).toEqual(createdAppointment)
+      expect(mockApiClient.post).toHaveBeenCalledWith('/appointments', appointmentData)
+    })
+  })
+})
+```
+
+## 🔄 Integration Testing
+
+### Component Integration Tests
+```typescript
+// src/components/__tests__/BookingWizard.integration.test.tsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { BookingWizard } from '../BookingWizard'
+import { servicesService, stylistsService } from '@/services'
+
+// Mock services
+jest.mock('@/services')
+
+describe('BookingWizard Integration', () => {
+  beforeEach(() => {
+    // Reset all mocks
+    jest.clearAllMocks()
+
+    // Mock successful service responses
+    servicesService.getServices.mockResolvedValue({
+      success: true,
+      data: [
+        { id: '1', name: 'Haircut', duration: 30, price: 25 },
+        { id: '2', name: 'Beard Trim', duration: 15, price: 15 }
+      ]
+    })
+
+    stylistsService.getStylists.mockResolvedValue({
+      success: true,
+      data: [
+        { id: '1', name: 'Jane Smith', specialties: ['Haircut'] },
+        { id: '2', name: 'John Doe', specialties: ['Beard Trim'] }
+      ]
+    })
+  })
+
+  it('completes full booking flow', async () => {
+    const mockOnComplete = jest.fn()
+
+    render(<BookingWizard onComplete={mockOnComplete} />)
+
+    // Step 1: Service Selection
+    await waitFor(() => {
+      expect(screen.getByText('Select a Service')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Haircut'))
+    fireEvent.click(screen.getByText('Next'))
+
+    // Step 2: Stylist Selection
+    await waitFor(() => {
+      expect(screen.getByText('Choose a Stylist')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Jane Smith'))
+    fireEvent.click(screen.getByText('Next'))
+
+    // Step 3: Date/Time Selection
+    await waitFor(() => {
+      expect(screen.getByText('Select Date & Time')).toBeInTheDocument()
+    })
+
+    // Mock date/time selection
+    fireEvent.click(screen.getByText('2:00 PM'))
+    fireEvent.click(screen.getByText('Next'))
+
+    // Step 4: Confirmation
+    await waitFor(() => {
+      expect(screen.getByText('Confirm Booking')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Confirm Booking'))
+
+    // Verify completion
+    await waitFor(() => {
+      expect(mockOnComplete).toHaveBeenCalled()
+    })
+  })
+
+  it('handles service loading error', async () => {
+    servicesService.getServices.mockResolvedValue({
+      success: false,
+      error: 'Failed to load services'
+    })
+
+    render(<BookingWizard />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to load services')).toBeInTheDocument()
+    })
+  })
+
+  it('allows going back to previous steps', async () => {
+    render(<BookingWizard />)
+
+    // Navigate to step 2
+    await waitFor(() => {
+      expect(screen.getByText('Select a Service')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Haircut'))
+    fireEvent.click(screen.getByText('Next'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Choose a Stylist')).toBeInTheDocument()
+    })
+
+    // Go back to step 1
+    fireEvent.click(screen.getByText('Back'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Select a Service')).toBeInTheDocument()
+    })
+  })
+})
+```
+
+## 🌐 End-to-End Testing
+
+### E2E Test with Playwright
+```typescript
+// e2e/booking-flow.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Complete Booking Flow', () => {
+  test('should complete appointment booking', async ({ page }) => {
+    // Navigate to booking page
+    await page.goto('/book')
+
+    // Step 1: Select service
+    await page.click('text=Haircut')
+    await page.click('text=Next')
+
+    // Step 2: Select stylist
+    await page.click('text=Jane Smith')
+    await page.click('text=Next')
+
+    // Step 3: Select date and time
+    await page.click('[data-testid="date-2024-01-15"]')
+    await page.click('text=2:00 PM')
+    await page.click('text=Next')
+
+    // Step 4: Enter customer details
+    await page.fill('[placeholder="Full Name"]', 'John Doe')
+    await page.fill('[placeholder="Email"]', 'john@example.com')
+    await page.fill('[placeholder="Phone"]', '+1234567890')
+    await page.click('text=Next')
+
+    // Step 5: Confirm booking
+    await page.click('text=Confirm Booking')
+
+    // Verify success
+    await expect(page.locator('text=Booking Confirmed!')).toBeVisible()
+    await expect(page.locator('text=Appointment scheduled')).toBeVisible()
+  })
+
+  test('should handle booking conflicts', async ({ page }) => {
+    // Navigate to booking page
+    await page.goto('/book')
+
+    // Select fully booked time slot
+    await page.click('text=Haircut')
+    await page.click('text=Next')
+    await page.click('text=Jane Smith')
+    await page.click('text=Next')
+    await page.click('[data-testid="date-2024-01-15"]')
+    await page.click('text=2:00 PM (Unavailable)')
+
+    // Verify error message
+    await expect(page.locator('text=This time slot is unavailable')).toBeVisible()
+  })
+
+  test('should validate required fields', async ({ page }) => {
+    await page.goto('/book')
+
+    // Try to proceed without selecting service
+    await page.click('text=Next')
+
+    // Verify validation error
+    await expect(page.locator('text=Please select a service')).toBeVisible()
+  })
+})
+```
+
+## 🎭 Visual Regression Testing
+
+### Storybook Visual Tests
+```typescript
+// .storybook/main.ts
+export default {
+  stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: [
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    '@storybook/addon-a11y',
+    '@storybook/addon-storyshots-puppeteer' // Visual regression
+  ],
+  framework: '@storybook/react-vite'
+}
+
+// src/components/ui/Button/Button.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react'
+import { Button } from './Button'
+
+const meta: Meta<typeof Button> = {
+  title: 'UI/Button',
+  component: Button,
+  parameters: {
+    layout: 'centered',
+    chromatic: { disableSnapshot: false } // Enable visual testing
+  },
+  argTypes: {
+    variant: {
+      control: { type: 'select' },
+      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link']
+    },
+    size: {
+      control: { type: 'select' },
+      options: ['default', 'sm', 'lg', 'icon']
+    }
+  }
+}
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  args: {
+    children: 'Click me',
+    variant: 'default'
+  }
+}
+
+export const Destructive: Story = {
+  args: {
+    children: 'Delete',
+    variant: 'destructive'
+  }
+}
+
+export const Loading: Story = {
+  args: {
+    children: 'Loading...',
+    loading: true
+  }
+}
+
+export const Disabled: Story = {
+  args: {
+    children: 'Disabled',
+    disabled: true
+  }
+}
+```
+
+## 🛠️ Test Utilities & Helpers
+
+### Custom Test Hooks
+```typescript
+// src/__tests__/utils/testHooks.tsx
+import { render, RenderOptions } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter } from 'react-router-dom'
+
+// Custom render function with providers
+const customRender = (
+  ui: React.ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'>
+) => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false }
+    }
+  })
+
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        {children}
+      </BrowserRouter>
+    </QueryClientProvider>
+  )
+
+  return render(ui, { wrapper, ...options })
+}
+
+// Re-export everything
+export * from '@testing-library/react'
+export { customRender as render }
+
+// Custom hooks for testing
+export const createMockUser = (overrides = {}) => ({
+  id: '1',
+  email: 'test@example.com',
+  name: 'Test User',
+  role: 'customer',
+  ...overrides
+})
+
+export const createMockAppointment = (overrides = {}) => ({
+  id: '1',
+  customerId: '1',
+  serviceId: '1',
+  stylistId: '1',
+  date: '2024-01-15',
+  time: '14:30',
+  status: 'confirmed',
+  ...overrides
+})
+```
+
+### API Mocking
+```typescript
+// src/__tests__/mocks/handlers.ts
+import { rest } from 'msw'
+
+export const handlers = [
+  // Appointments API
+  rest.get('/api/appointments', (req, res, ctx) => {
+    return res(ctx.json({
+      success: true,
+      data: [
+        {
+          id: '1',
+          customerName: 'John Doe',
+          service: 'Haircut',
+          date: '2024-01-15',
+          time: '14:30',
+          status: 'confirmed'
+        }
+      ]
+    }))
+  }),
+
+  rest.post('/api/appointments', async (req, res, ctx) => {
+    const body = await req.json()
+
+    return res(ctx.json({
+      success: true,
+      data: {
+        id: Date.now().toString(),
+        ...body,
+        status: 'confirmed'
+      }
+    }))
+  }),
+
+  // Auth API
+  rest.post('/api/auth/login', async (req, res, ctx) => {
+    const { email, password } = await req.json()
+
+    if (email === 'test@example.com' && password === 'password') {
+      return res(ctx.json({
+        success: true,
+        data: {
+          user: { id: '1', email, name: 'Test User' },
+          token: 'mock-jwt-token'
+        }
+      }))
+    }
+
+    return res(ctx.status(401), ctx.json({
+      success: false,
+      error: 'Invalid credentials'
+    }))
+  })
+]
+
+// src/__tests__/setup.ts
+import { beforeAll, afterEach, afterAll } from 'vitest'
+import { setupServer } from 'msw/node'
+import { handlers } from './mocks/handlers'
+
+export const server = setupServer(...handlers)
+
+// Establish API mocking before all tests
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+
+// Reset any request handlers that may be added during tests
+afterEach(() => server.resetHandlers())
+
+// Clean up after all tests are done
+afterAll(() => server.close())
+```
+
+## 📊 Test Coverage & Quality
+
+### Coverage Configuration
+```typescript
+// vitest.config.ts
+/// <reference types="vitest" />
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/__tests__/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/__tests__/',
+        'src/**/*.d.ts',
+        'src/**/*.config.*',
+        'src/**/*.stories.*'
+      ],
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80
+        }
+      }
+    }
+  }
+})
+```
+
+### Test Quality Gates
+```typescript
+// scripts/test-quality.js
+const fs = require('fs')
+const path = require('path')
+
+const checkTestQuality = () => {
+  const testFiles = findTestFiles()
+  let issues = []
+
+  testFiles.forEach(file => {
+    const content = fs.readFileSync(file, 'utf8')
+
+    // Check for common issues
+    if (!content.includes('describe(')) {
+      issues.push(`${file}: Missing test suite`)
+    }
+
+    if (!content.includes('it(') && !content.includes('test(')) {
+      issues.push(`${file}: No test cases`)
+    }
+
+    if (content.includes('console.log')) {
+      issues.push(`${file}: Contains console.log statements`)
+    }
+
+    // Check for proper async handling
+    if (content.includes('async') && !content.includes('await')) {
+      issues.push(`${file}: Async function without await`)
+    }
+  })
+
+  if (issues.length > 0) {
+    console.error('Test quality issues found:')
+    issues.forEach(issue => console.error(`  - ${issue}`))
+    process.exit(1)
+  }
+}
+
+const findTestFiles = () => {
+  const testFiles = []
+
+  const walk = (dir) => {
+    const files = fs.readdirSync(dir)
+
+    files.forEach(file => {
+      const filePath = path.join(dir, file)
+      const stat = fs.statSync(filePath)
+
+      if (stat.isDirectory() && !file.startsWith('.') && file !== 'node_modules') {
+        walk(filePath)
+      } else if (file.endsWith('.test.ts') || file.endsWith('.test.tsx')) {
+        testFiles.push(filePath)
+      }
+    })
+  }
+
+  walk('./src')
+  return testFiles
+}
+
+checkTestQuality()
+```
+
+## 🚀 Continuous Integration
+
+### GitHub Actions Workflow
+```yaml
+# .github/workflows/test.yml
+name: Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run type checking
+        run: npm run type-check
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+
+      - name: Check test quality
+        run: node scripts/test-quality.js
+```
+
+## 📈 Performance Testing
+
+### Component Performance Tests
+```typescript
+// src/components/__tests__/AppointmentList.performance.test.tsx
+import { render } from '@testing-library/react'
+import { AppointmentList } from '../AppointmentList'
+
+// Generate large dataset for performance testing
+const generateAppointments = (count: number) => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i.toString(),
+    customerName: `Customer ${i}`,
+    service: 'Haircut',
+    date: '2024-01-15',
+    time: '14:30',
+    status: 'confirmed'
+  }))
+}
+
+describe('AppointmentList Performance', () => {
+  it('renders 100 appointments within performance budget', () => {
+    const appointments = generateAppointments(100)
+
+    const startTime = performance.now()
+
+    render(<AppointmentList appointments={appointments} />)
+
+    const endTime = performance.now()
+    const renderTime = endTime - startTime
+
+    // Performance budget: 100ms for 100 items
+    expect(renderTime).toBeLessThan(100)
+  })
+
+  it('handles list updates efficiently', () => {
+    const initialAppointments = generateAppointments(50)
+    const { rerender } = render(<AppointmentList appointments={initialAppointments} />)
+
+    const updatedAppointments = [...initialAppointments,
+      ...generateAppointments(25).map(app => ({ ...app, status: 'pending' }))
+    ]
+
+    const startTime = performance.now()
+
+    rerender(<AppointmentList appointments={updatedAppointments} />)
+
+    const endTime = performance.now()
+    const updateTime = endTime - startTime
+
+    // Update budget: 50ms for list updates
+    expect(updateTime).toBeLessThan(50)
+  })
+})
+```
+
+This comprehensive testing strategy ensures code quality, prevents regressions, and maintains a reliable user experience across all components and features of the Modern Men Hair Salon application. The testing patterns cover unit tests, integration tests, end-to-end tests, visual regression tests, and performance tests, providing multiple layers of quality assurance. 
+
+The approach integrates seamlessly with modern development workflows, leveraging tools like Vitest, React Testing Library, Playwright, and Storybook to create a robust testing ecosystem that scales with the application's complexity. By implementing these patterns, we ensure consistent, maintainable, and high-quality code that meets both functional and performance requirements.

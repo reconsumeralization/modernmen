@@ -1,0 +1,733 @@
+---
+globs: src/services/*.ts,src/hooks/*.ts,src/components/**/*.tsx
+description: API integration patterns and best practices for service layer
+---
+
+# 🌐 API Integration Patterns
+
+## 🔧 Service Layer Architecture
+
+### Base Service Class
+```typescript
+// src/services/baseService.ts
+export abstract class BaseService {
+  protected baseUrl: string
+  protected apiKey?: string
+
+  constructor(baseUrl: string, apiKey?: string) {
+    this.baseUrl = baseUrl
+    this.apiKey = apiKey
+  }
+
+  protected async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<ApiResponse<T>> {
+    try {
+      const url = `${this.baseUrl}${endpoint}`
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(this.apiKey && { 'Authorization': `Bearer ${this.apiKey}` }),
+        ...options.headers
+      }
+
+      const response = await fetch(url, { ...options, headers })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new AppError(data.message || 'API request failed', 'API_ERROR', response.status)
+      }
+
+      return {
+        success: true,
+        data
+      }
+    } catch (error) {
+      return handleApiError(error, `API ${options.method || 'GET'} ${endpoint}`)
+    }
+  }
+
+  protected async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, { method: 'GET' })
+  }
+
+  protected async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined
+    })
+  }
+
+  protected async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined
+    })
+  }
+
+  protected async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, { method: 'DELETE' })
+  }
+}
+```
+
+### Specialized Service Classes
+```typescript
+// src/services/appointments.ts
+export class AppointmentsService extends BaseService {
+  constructor() {
+    super('/api/appointments', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  }
+
+  async getAppointments(filters?: AppointmentFilters): Promise<ApiResponse<Appointment[]>> {
+    const queryParams = new URLSearchParams()
+
+    if (filters?.status) queryParams.set('status', filters.status)
+    if (filters?.date) queryParams.set('date', filters.date)
+    if (filters?.stylistId) queryParams.set('stylistId', filters.stylistId)
+
+    const endpoint = queryParams.toString() ? `?${queryParams.toString()}` : ''
+    return this.get<Appointment[]>(endpoint)
+  }
+
+  async createAppointment(appointmentData: CreateAppointmentData): Promise<ApiResponse<Appointment>> {
+    return this.post<Appointment>('', appointmentData)
+  }
+
+  async updateAppointment(id: string, updates: Partial<Appointment>): Promise<ApiResponse<Appointment>> {
+    return this.put<Appointment>(`/${id}`, updates)
+  }
+
+  async cancelAppointment(id: string): Promise<ApiResponse<boolean>> {
+    return this.delete<boolean>(`/${id}`)
+  }
+}
+
+// Singleton instance
+export const appointmentsService = new AppointmentsService()
+```
+
+## 🎣 Custom Hooks for API Integration
+
+### Data Fetching Hook
+```typescript
+// src/hooks/useApi.ts
+import { useState, useEffect, useCallback } from 'react'
+import { ApiResponse } from '@/types'
+import { handleApiError } from '@/lib/error-handling'
+
+interface UseApiOptions<T> {
+  immediate?: boolean
+  onSuccess?: (data: T) => void
+  onError?: (error: string) => void
+}
+
+export function useApi<T>(
+  apiCall: () => Promise<ApiResponse<T>>,
+  options: UseApiOptions<T> = {}
+) {
+  const [data, setData] = useState<T | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const execute = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await apiCall()
+
+      if (response.success && response.data) {
+        setData(response.data)
+        options.onSuccess?.(response.data)
+      } else {
+        const errorMessage = response.error || 'An unexpected error occurred'
+        setError(errorMessage)
+        options.onError?.(errorMessage)
+      }
+    } catch (err) {
+      const errorResponse = handleApiError(err, 'API call')
+      setError(errorResponse.error)
+      options.onError?.(errorResponse.error)
+    } finally {
+      setLoading(false)
+    }
+  }, [apiCall, options])
+
+  useEffect(() => {
+    if (options.immediate) {
+      execute()
+    }
+  }, [execute, options.immediate])
+
+  return {
+    data,
+    loading,
+    error,
+    execute,
+    refetch: execute
+  }
+}
+```
+
+### Mutation Hook
+```typescript
+// src/hooks/useMutation.ts
+import { useState, useCallback } from 'react'
+import { ApiResponse } from '@/types'
+import { handleApiError } from '@/lib/error-handling'
+
+interface UseMutationOptions<TData, TVariables> {
+  onSuccess?: (data: TData) => void
+  onError?: (error: string) => void
+  onSettled?: () => void
+}
+
+export function useMutation<TData, TVariables = any>(
+  mutationFn: (variables: TVariables) => Promise<ApiResponse<TData>>,
+  options: UseMutationOptions<TData, TVariables> = {}
+) {
+  const [data, setData] = useState<TData | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const mutate = useCallback(async (variables: TVariables) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await mutationFn(variables)
+
+      if (response.success && response.data) {
+        setData(response.data)
+        options.onSuccess?.(response.data)
+      } else {
+        const errorMessage = response.error || 'Mutation failed'
+        setError(errorMessage)
+        options.onError?.(errorMessage)
+      }
+    } catch (err) {
+      const errorResponse = handleApiError(err, 'Mutation')
+      setError(errorResponse.error)
+      options.onError?.(errorResponse.error)
+    } finally {
+      setLoading(false)
+      options.onSettled?.()
+    }
+  }, [mutationFn, options])
+
+  const reset = useCallback(() => {
+    setData(null)
+    setError(null)
+    setLoading(false)
+  }, [])
+
+  return {
+    data,
+    loading,
+    error,
+    mutate,
+    reset
+  }
+}
+```
+
+## 📊 Data Fetching Patterns
+
+### Parallel Data Fetching
+```typescript
+// src/hooks/useDashboard.ts
+export const useDashboard = () => {
+  const appointmentsQuery = useApi(
+    () => appointmentsService.getRecentAppointments(),
+    { immediate: true }
+  )
+
+  const statsQuery = useApi(
+    () => statsService.getDashboardStats(),
+    { immediate: true }
+  )
+
+  const customersQuery = useApi(
+    () => customersService.getRecentCustomers(),
+    { immediate: true }
+  )
+
+  const loading = appointmentsQuery.loading || statsQuery.loading || customersQuery.loading
+  const error = appointmentsQuery.error || statsQuery.error || customersQuery.error
+
+  return {
+    data: {
+      appointments: appointmentsQuery.data,
+      stats: statsQuery.data,
+      customers: customersQuery.data
+    },
+    loading,
+    error,
+    refetch: () => {
+      appointmentsQuery.refetch()
+      statsQuery.refetch()
+      customersQuery.refetch()
+    }
+  }
+}
+```
+
+### Sequential Data Fetching
+```typescript
+// src/hooks/useBookingFlow.ts
+export const useBookingFlow = (serviceId: string) => {
+  const [currentStep, setCurrentStep] = useState(0)
+
+  // Step 1: Get service details
+  const serviceQuery = useApi(
+    () => servicesService.getService(serviceId),
+    { immediate: true }
+  )
+
+  // Step 2: Get available stylists (depends on service)
+  const stylistsQuery = useApi(
+    () => stylistsService.getStylistsForService(serviceId),
+    { immediate: !!serviceQuery.data }
+  )
+
+  // Step 3: Get availability (depends on stylist selection)
+  const [selectedStylist, setSelectedStylist] = useState<string | null>(null)
+  const availabilityQuery = useApi(
+    () => availabilityService.getAvailability(selectedStylist!),
+    { immediate: !!selectedStylist }
+  )
+
+  return {
+    service: serviceQuery.data,
+    stylists: stylistsQuery.data,
+    availability: availabilityQuery.data,
+    currentStep,
+    setCurrentStep,
+    setSelectedStylist,
+    loading: serviceQuery.loading || stylistsQuery.loading || availabilityQuery.loading
+  }
+}
+```
+
+## 🔄 Optimistic Updates
+
+### Optimistic Mutation Hook
+```typescript
+// src/hooks/useOptimisticMutation.ts
+export function useOptimisticMutation<TData, TVariables = any>(
+  mutationFn: (variables: TVariables) => Promise<ApiResponse<TData>>,
+  options: {
+    onMutate?: (variables: TVariables) => void
+    onError?: (variables: TVariables, error: string) => void
+    onSuccess?: (data: TData) => void
+  } = {}
+) {
+  const [optimisticData, setOptimisticData] = useState<TData | null>(null)
+  const mutation = useMutation(mutationFn, {
+    onSuccess: (data) => {
+      setOptimisticData(null)
+      options.onSuccess?.(data)
+    },
+    onError: (error, variables) => {
+      setOptimisticData(null)
+      options.onError?.(variables, error)
+    }
+  })
+
+  const mutate = useCallback(async (variables: TVariables) => {
+    // Apply optimistic update
+    options.onMutate?.(variables)
+
+    // Execute mutation
+    await mutation.mutate(variables)
+  }, [mutation, options])
+
+  return {
+    ...mutation,
+    mutate,
+    optimisticData
+  }
+}
+```
+
+### Appointment Booking with Optimistic Updates
+```typescript
+// src/hooks/useBooking.ts
+export const useBooking = () => {
+  const [appointments, setAppointments] = useState<Appointment[]>([])
+
+  const createBookingMutation = useOptimisticMutation(
+    (bookingData: CreateAppointmentData) => appointmentsService.createAppointment(bookingData),
+    {
+      onMutate: (bookingData) => {
+        // Optimistic update: add appointment to list immediately
+        const optimisticAppointment: Appointment = {
+          id: `temp-${Date.now()}`,
+          ...bookingData,
+          status: 'confirmed',
+          createdAt: new Date().toISOString()
+        }
+        setAppointments(prev => [...prev, optimisticAppointment])
+      },
+      onError: (bookingData, error) => {
+        // Rollback: remove optimistic appointment
+        setAppointments(prev => prev.filter(app => !app.id.startsWith('temp-')))
+      },
+      onSuccess: (newAppointment) => {
+        // Replace optimistic appointment with real data
+        setAppointments(prev =>
+          prev.map(app =>
+            app.id.startsWith('temp-') ? newAppointment : app
+          )
+        )
+      }
+    }
+  )
+
+  return {
+    appointments,
+    createBooking: createBookingMutation.mutate,
+    creating: createBookingMutation.loading,
+    error: createBookingMutation.error
+  }
+}
+```
+
+## 🗄️ Caching Strategies
+
+### React Query Integration
+```typescript
+// src/lib/queryClient.ts
+import { QueryClient } from '@tanstack/react-query'
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      retry: (failureCount, error) => {
+        // Don't retry on 4xx errors
+        if (error instanceof AppError && error.statusCode >= 400 && error.statusCode < 500) {
+          return false
+        }
+        return failureCount < 3
+      }
+    },
+    mutations: {
+      retry: false
+    }
+  }
+})
+
+// src/hooks/useAppointments.ts
+export const useAppointments = (filters?: AppointmentFilters) => {
+  return useQuery({
+    queryKey: ['appointments', filters],
+    queryFn: () => appointmentsService.getAppointments(filters),
+    select: (response) => response.data
+  })
+}
+
+export const useCreateAppointment = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: appointmentsService.createAppointment,
+    onSuccess: () => {
+      // Invalidate and refetch appointments
+      queryClient.invalidateQueries({ queryKey: ['appointments'] })
+    }
+  })
+}
+```
+
+## 🔄 Real-time Subscriptions
+
+### Supabase Real-time Integration
+```typescript
+// src/hooks/useRealtimeAppointments.ts
+export const useRealtimeAppointments = () => {
+  const [appointments, setAppointments] = useState<Appointment[]>([])
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    // Set up real-time subscription
+    const subscription = supabase
+      .channel('appointments')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'appointments'
+      }, (ModernMen) => {
+        switch (ModernMen.eventType) {
+          case 'INSERT':
+            setAppointments(prev => [...prev, ModernMen.new])
+            break
+          case 'UPDATE':
+            setAppointments(prev =>
+              prev.map(app =>
+                app.id === ModernMen.new.id ? ModernMen.new : app
+              )
+            )
+            break
+          case 'DELETE':
+            setAppointments(prev =>
+              prev.filter(app => app.id !== ModernMen.old.id)
+            )
+            break
+        }
+
+        // Update React Query cache
+        queryClient.invalidateQueries({ queryKey: ['appointments'] })
+      })
+      .subscribe()
+
+    return () => subscription.unsubscribe()
+  }, [queryClient])
+
+  return { appointments }
+}
+```
+
+## 🛡️ Error Handling Patterns
+
+### API Error Boundary
+```typescript
+// src/components/ApiErrorBoundary.tsx
+interface ApiErrorBoundaryProps {
+  children: React.ReactNode
+  fallback?: React.ComponentType<{ error: string; retry: () => void }>
+  onError?: (error: string) => void
+}
+
+export const ApiErrorBoundary: React.FC<ApiErrorBoundaryProps> = ({
+  children,
+  fallback: Fallback = DefaultErrorFallback,
+  onError
+}) => {
+  const [error, setError] = useState<string | null>(null)
+
+  const handleError = useCallback((error: string) => {
+    setError(error)
+    onError?.(error)
+  }, [onError])
+
+  const retry = useCallback(() => {
+    setError(null)
+  }, [])
+
+  if (error) {
+    return <Fallback error={error} retry={retry} />
+  }
+
+  return (
+    <ApiErrorContext.Provider value={{ handleError }}>
+      {children}
+    </ApiErrorContext.Provider>
+  )
+}
+
+// Default error fallback
+const DefaultErrorFallback: React.FC<{ error: string; retry: () => void }> = ({
+  error,
+  retry
+}) => (
+  <div className="flex flex-col items-center justify-center p-8 text-center">
+    <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+    <h3 className="text-lg font-semibold mb-2">Something went wrong</h3>
+    <p className="text-muted-foreground mb-4">{error}</p>
+    <Button onClick={retry}>Try Again</Button>
+  </div>
+)
+```
+
+### Global API Error Handler
+```typescript
+// src/lib/apiErrorHandler.ts
+export const setupApiErrorHandler = () => {
+  // Intercept fetch requests
+  const originalFetch = window.fetch
+  window.fetch = async (...args) => {
+    try {
+      const response = await originalFetch(...args)
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+
+        // Log to error reporting service
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'exception', {
+            description: `API Error: ${response.status} ${response.statusText}`,
+            fatal: false
+          })
+        }
+
+        throw new AppError(
+          errorData.message || `HTTP ${response.status}`,
+          'API_ERROR',
+          response.status
+        )
+      }
+
+      return response
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error
+      }
+
+      // Network error
+      throw new NetworkError('Network request failed')
+    }
+  }
+}
+```
+
+## 📊 API Performance Monitoring
+
+### Request/Response Interceptor
+```typescript
+// src/lib/apiMonitor.ts
+interface ApiMetrics {
+  endpoint: string
+  method: string
+  duration: number
+  statusCode: number
+  timestamp: Date
+  userAgent?: string
+}
+
+export class ApiMonitor {
+  private metrics: ApiMetrics[] = []
+
+  interceptRequest = (url: string, config: RequestInit) => {
+    const startTime = Date.now()
+    const originalConfig = { ...config }
+
+    return {
+      ...originalConfig,
+      headers: {
+        ...originalConfig.headers,
+        'X-Request-Start': startTime.toString()
+      }
+    }
+  }
+
+  interceptResponse = (response: Response, url: string, method: string) => {
+    const startTime = parseInt(response.headers.get('X-Request-Start') || '0')
+    const duration = Date.now() - startTime
+
+    const metrics: ApiMetrics = {
+      endpoint: url,
+      method,
+      duration,
+      statusCode: response.status,
+      timestamp: new Date(),
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined
+    }
+
+    this.metrics.push(metrics)
+
+    // Send metrics to analytics
+    if (duration > 1000) {
+      console.warn(`Slow API request: ${method} ${url} took ${duration}ms`)
+    }
+
+    return response
+  }
+
+  getMetrics() {
+    return [...this.metrics]
+  }
+
+  getAverageResponseTime() {
+    if (this.metrics.length === 0) return 0
+
+    const total = this.metrics.reduce((sum, metric) => sum + metric.duration, 0)
+    return total / this.metrics.length
+  }
+}
+
+export const apiMonitor = new ApiMonitor()
+```
+
+## 🚀 API Optimization Techniques
+
+### Request Batching
+```typescript
+// src/services/batchService.ts
+export class BatchService extends BaseService {
+  private batchQueue: Array<{
+    id: string
+    request: () => Promise<any>
+    resolve: (value: any) => void
+    reject: (error: any) => void
+  }> = []
+
+  private batchTimeout: NodeJS.Timeout | null = null
+
+  async addToBatch<T>(
+    id: string,
+    request: () => Promise<ApiResponse<T>>
+  ): Promise<ApiResponse<T>> {
+    return new Promise((resolve, reject) => {
+      this.batchQueue.push({
+        id,
+        request,
+        resolve: (value) => resolve(value as ApiResponse<T>),
+        reject
+      })
+
+      // Schedule batch execution
+      if (!this.batchTimeout) {
+        this.batchTimeout = setTimeout(() => this.executeBatch(), 100)
+      }
+    })
+  }
+
+  private async executeBatch() {
+    const queue = [...this.batchQueue]
+    this.batchQueue = []
+    this.batchTimeout = null
+
+    try {
+      // Execute all requests in parallel
+      const results = await Promise.allSettled(
+        queue.map(item => item.request())
+      )
+
+      // Resolve/reject individual promises
+      results.forEach((result, index) => {
+        const item = queue[index]
+
+        if (result.status === 'fulfilled') {
+          item.resolve(result.value)
+        } else {
+          item.reject(result.reason)
+        }
+      })
+    } catch (error) {
+      // Handle batch execution error
+      queue.forEach(item => item.reject(error))
+    }
+  }
+}
+```
+
+### Response Compression
+```typescript
+// src/services/compressedService.ts
+export class CompressedService extends BaseService {
+  protected async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<ApiResponse<T>> {
+    const headers = {
+      ...options.headers,
+      'Accept-Encoding': 'gzip, deflate, br'
+    }
+
+    return super.request<T>(endpoint, { ...options, headers })
+  }
+}
+```

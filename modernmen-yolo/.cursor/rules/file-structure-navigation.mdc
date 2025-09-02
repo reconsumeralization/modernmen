@@ -1,0 +1,276 @@
+---
+alwaysApply: true
+description: File structure navigation and organization patterns
+---
+
+# 📁 File Structure Navigation Guide
+
+## 🗂️ Project Organization Overview
+
+```
+modernmen-yolo/
+├── 📁 docs/                    # Documentation
+│   └── 📁 diagrams/           # Architecture diagrams
+├── 📁 src/                    # Source code
+│   ├── 📁 app/               # Next.js app router
+│   ├── 📁 components/        # React components
+│   ├── 📁 hooks/            # Custom React hooks
+│   ├── 📁 services/         # Data services & API
+│   ├── 📁 lib/              # Utilities & helpers
+│   ├── 📁 types/            # TypeScript definitions
+│   ├── 📁 data/             # Mock data & constants
+│   ├── 📁 config/           # Configuration files
+│   └── 📁 constants/        # Application constants
+├── 📁 .cursor/              # Cursor AI rules
+└── 📄 package.json         # Dependencies
+```
+
+## 🎯 Quick File Location Guide
+
+### When You Need to...
+| Task | Location | Example Path |
+|------|----------|--------------|
+| **Create UI Component** | `src/components/ui/` | `src/components/ui/CustomButton.tsx` |
+| **Add Custom Hook** | `src/hooks/` | `src/hooks/useCustomFeature.ts` |
+| **Create API Service** | `src/services/` | `src/services/userService.ts` |
+| **Add Type Definition** | `src/types/` | `src/types/User.ts` |
+| **Add Utility Function** | `src/lib/` | `src/lib/formatters.ts` |
+| **Add Mock Data** | `src/data/` | `src/data/mockUsers.ts` |
+| **Configuration** | `src/config/` | `src/config/database.ts` |
+| **Constants** | `src/constants/` | `src/constants/appConstants.ts` |
+| **Page Component** | `src/app/` | `src/app/dashboard/page.tsx` |
+
+## 🔍 Component Organization Patterns
+
+### UI Components (`src/components/ui/`)
+```
+ui/
+├── 📄 index.ts              # Main exports
+├── 📄 button.tsx           # Button component
+├── 📄 input.tsx            # Input component
+├── 📄 card.tsx             # Card component
+├── 📄 data-table.tsx       # Data table (split into parts)
+├── 📄 data-table-toolbar.tsx
+├── 📄 data-table-content.tsx
+├── 📄 data-table-pagination.tsx
+├── 📄 notification-center.tsx
+├── 📄 notification-item.tsx
+└── 📄 notification-types.ts
+```
+
+### Page Components (`src/app/`)
+```
+app/
+├── 📁 admin/
+│   └── 📁 dashboard/
+│       └── 📄 page.tsx
+├── 📁 customer/
+│   └── 📁 dashboard/
+│       └── 📄 page.tsx
+└── 📄 layout.tsx
+```
+
+### Service Layer (`src/services/`)
+```
+services/
+├── 📄 index.ts              # Service exports
+├── 📄 appointments.ts      # Appointment operations
+├── 📄 stats.ts             # Statistics operations
+└── 📄 notifications.ts     # Notification operations
+```
+
+## 📋 File Naming Conventions
+
+### Components
+- **PascalCase**: `UserProfile.tsx`, `DataTable.tsx`
+- **Index files**: `index.ts` for folder exports
+- **Types**: `*-types.ts` for related types
+- **Hooks**: `use*.ts` for custom hooks
+
+### Services & Utilities
+- **camelCase**: `userService.ts`, `dateUtils.ts`
+- **Descriptive names**: `appointmentService.ts`, `notificationService.ts`
+- **Index exports**: Centralize exports in `index.ts`
+
+### Configuration & Constants
+- **Descriptive**: `databaseConfig.ts`, `appConstants.ts`
+- **Grouped by domain**: `authConstants.ts`, `apiConstants.ts`
+
+## 🔗 Import/Export Patterns
+
+### Centralized Exports (Recommended)
+```typescript
+// ✅ Good: Import from index
+import { Button, Card, DataTable } from '@/components/ui'
+
+// ❌ Avoid: Direct file imports
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+```
+
+### Service Layer Imports
+```typescript
+// ✅ Good: Import from services index
+import { appointmentsService, statsService } from '@/services'
+
+// ❌ Avoid: Direct service imports
+import { AppointmentsService } from '@/services/appointments'
+```
+
+### Type Imports
+```typescript
+// ✅ Good: Import from types index
+import { User, Appointment, ApiResponse } from '@/types'
+
+// ✅ Also good: Import specific type files
+import { User } from '@/types/common'
+```
+
+## 🚀 Quick Navigation Commands
+
+### Find Components
+```bash
+# Find all UI components
+find src/components/ui -name "*.tsx"
+
+# Find specific component
+find src -name "*button*" -type f
+
+# Find components by pattern
+ls src/components/ui/*table*
+```
+
+### Find Services & Hooks
+```bash
+# Find all services
+ls src/services/*.ts
+
+# Find all hooks
+ls src/hooks/*.ts
+
+# Find types
+ls src/types/*.ts
+```
+
+### Search by Content
+```bash
+# Find files containing specific text
+grep -r "useState" src/components/
+
+# Find API endpoints
+grep -r "api/" src/
+
+# Find database queries
+grep -r "SELECT\|INSERT\|UPDATE" src/
+```
+
+## 📂 File Organization Rules
+
+### 1. **Single Responsibility**
+- Each file should have one clear purpose
+- Large files should be split (like `data-table.tsx` → multiple files)
+- Related functionality should be grouped
+
+### 2. **Consistent Structure**
+- Always use `index.ts` for folder exports
+- Follow established naming conventions
+- Keep similar files in the same directory
+
+### 3. **Import Hierarchy**
+```
+src/index.ts          # Main app exports
+├── components/index.ts    # Component exports
+├── services/index.ts      # Service exports
+├── types/index.ts        # Type exports
+└── hooks/index.ts        # Hook exports
+```
+
+### 4. **File Size Guidelines**
+- **Components**: < 200 lines (split if larger)
+- **Services**: < 150 lines (split by domain)
+- **Utilities**: < 100 lines (single responsibility)
+- **Types**: < 50 lines per file (group related types)
+
+## 🔧 Development Workflow
+
+### Adding New Features
+
+1. **Plan the structure** - Check existing patterns in relevant directories
+2. **Create types first** - Define interfaces in `src/types/`
+3. **Build services** - Add API calls in `src/services/`
+4. **Create components** - Build UI in `src/components/ui/`
+5. **Add hooks** - Custom logic in `src/hooks/`
+6. **Update exports** - Add to relevant `index.ts` files
+
+### Example: Adding User Management
+
+```bash
+# 1. Create types
+touch src/types/user.ts
+
+# 2. Create service
+touch src/services/userService.ts
+
+# 3. Create components
+touch src/components/ui/user-profile.tsx
+touch src/components/ui/user-list.tsx
+
+# 4. Create hook
+touch src/hooks/useUser.ts
+
+# 5. Update exports
+echo "export { UserService } from './userService'" >> src/services/index.ts
+echo "export { UserProfile, UserList } from './user-profile'" >> src/components/ui/index.ts
+echo "export { useUser } from './useUser'" >> src/hooks/index.ts
+```
+
+## 📊 File Structure Health Check
+
+### Quick Assessment Commands
+```bash
+# Check file sizes (find large files)
+find src -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -nr | head -10
+
+# Check for unused files
+find src -name "*.ts" -o -name "*.tsx" | xargs grep -l "export" | wc -l
+
+# Check import consistency
+grep -r "from '@/components/ui/" src/ | head -5
+
+# Check for missing index files
+find src -type d -name "*" | while read dir; do
+  if [ ! -f "$dir/index.ts" ]; then
+    echo "Missing index.ts in $dir"
+  fi
+done
+```
+
+### Maintenance Tasks
+- [ ] Review file sizes monthly
+- [ ] Clean up unused imports
+- [ ] Update index files when adding new files
+- [ ] Refactor large files into smaller modules
+- [ ] Ensure consistent naming patterns
+
+## 🎯 Best Practices
+
+### Do's ✅
+- Use centralized exports via index files
+- Follow established naming conventions
+- Keep files focused and single-purpose
+- Group related functionality together
+- Use TypeScript for type safety
+
+### Don'ts ❌
+- Don't import directly from implementation files
+- Don't create deep nested folder structures
+- Don't mix concerns in single files
+- Don't use inconsistent naming patterns
+- Don't forget to update index files
+
+## 📚 Related Documentation
+
+- **[Project README](src/README.md)** - Complete development guide
+- **[Architecture Diagrams](docs/diagrams/)** - System design documentation
+- **[Component Library](src/components/ui/)** - Available UI components
+- **[API Documentation](docs/diagrams/api-architecture.md)** - API endpoints and usage

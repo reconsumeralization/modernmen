@@ -1,0 +1,123 @@
+---
+alwaysApply: true
+description: Reference to all project architecture diagrams and visual guides
+---
+
+# 📊 Project Diagrams Reference Guide
+
+## 🎯 Always Reference These Diagrams
+
+### Core Architecture Diagrams
+- **[System Architecture](docs/diagrams/system-architecture.md)** - Complete system overview with Next.js, ModernMen CMS, Supabase
+- **[Component Hierarchy](docs/diagrams/component-hierarchy.md)** - UI component organization and relationships
+- **[Data Flow](docs/diagrams/data-flow.md)** - Request/response cycles and data synchronization
+- **[Database Schema](docs/diagrams/database-schema.md)** - Entity relationships and table structures
+
+### User Experience Diagrams
+- **[User Journey Flow](docs/diagrams/user-journey-flow.md)** - Customer experience from discovery to retention
+- **[Page Navigation](docs/diagrams/page-navigation.md)** - Complete routing structure and user flows
+- **[Mobile Responsive](docs/diagrams/mobile-responsive.md)** - Breakpoint system and responsive design
+
+### Technical Implementation
+- **[API Architecture](docs/diagrams/api-architecture.md)** - RESTful API design and endpoints
+- **[Component State Flow](docs/diagrams/component-state-flow.md)** - State management patterns
+- **[Development Workflow](docs/diagrams/development-workflow.md)** - Git flow and deployment process
+
+## 🗺️ Quick Reference Map
+
+```
+📁 docs/diagrams/
+├── 📋 README.md (Project overview)
+├── 🏗️ system-architecture.md (Tech stack & integration)
+├── 👥 user-journey-flow.md (Customer experience)
+├── 🧩 component-hierarchy.md (UI organization)
+├── 🔄 data-flow.md (Data synchronization)
+├── 🗺️ page-navigation.md (Routing & navigation)
+├── 🗄️ database-schema.md (Data relationships)
+├── 🌐 api-architecture.md (API design)
+├── 📱 mobile-responsive.md (Responsive design)
+├── 🎨 component-state-flow.md (State management)
+├── 🔧 development-workflow.md (Development process)
+├── 📈 implementation-roadmap.md (Project phases)
+├── 📊 system-metrics-dashboard.md (Analytics)
+└── 🎯 final-system-overview.md (Completion status)
+```
+
+## 📖 How to Use These Diagrams
+
+### When Starting New Features
+1. Check **[User Journey Flow](docs/diagrams/user-journey-flow.md)** for user experience requirements
+2. Review **[Component Hierarchy](docs/diagrams/component-hierarchy.md)** for existing UI patterns
+3. Consult **[API Architecture](docs/diagrams/api-architecture.md)** for data integration
+4. Verify **[Database Schema](docs/diagrams/database-schema.md)** for data structure
+
+### When Debugging Issues
+1. Check **[Data Flow](docs/diagrams/data-flow.md)** for data synchronization problems
+2. Review **[Page Navigation](docs/diagrams/page-navigation.md)** for routing issues
+3. Consult **[Component State Flow](docs/diagrams/component-state-flow.md)** for state management bugs
+
+### When Planning Architecture Changes
+1. Reference **[System Architecture](docs/diagrams/system-architecture.md)** for integration points
+2. Check **[Mobile Responsive](docs/diagrams/mobile-responsive.md)** for responsive requirements
+3. Review **[Development Workflow](docs/diagrams/development-workflow.md)** for deployment impact
+
+## 🔍 Key Architecture Decisions
+
+### Technology Stack
+- **Frontend**: Next.js 15 + React 18 + TypeScript
+- **Backend**: ModernMen CMS + Supabase + PostgreSQL
+- **Styling**: Tailwind CSS + Framer Motion
+- **Deployment**: Vercel + CI/CD pipeline
+
+### Design Patterns
+- **Mobile-First**: Responsive design with progressive enhancement
+- **Component-Based**: Reusable UI components with consistent API
+- **Service Layer**: Centralized data operations with error handling
+- **State Management**: React hooks with optimistic updates
+
+### Data Architecture
+- **Real-time Sync**: Supabase real-time subscriptions
+- **Optimistic Updates**: Immediate UI feedback with rollback
+- **Caching Strategy**: Multi-layer caching (Browser → CDN → API → Database)
+- **Error Boundaries**: Graceful error handling and recovery
+
+## 📋 Implementation Checklist
+
+### Before Starting Development
+- [ ] Reviewed relevant diagram(s) for feature requirements
+- [ ] Checked existing component patterns in **[Component Hierarchy](docs/diagrams/component-hierarchy.md)**
+- [ ] Verified API endpoints in **[API Architecture](docs/diagrams/api-architecture.md)**
+- [ ] Confirmed database schema in **[Database Schema](docs/diagrams/database-schema.md)**
+
+### During Development
+- [ ] Follow mobile-first responsive patterns from **[Mobile Responsive](docs/diagrams/mobile-responsive.md)**
+- [ ] Implement proper error handling from **[Data Flow](docs/diagrams/data-flow.md)**
+- [ ] Use consistent state management from **[Component State Flow](docs/diagrams/component-state-flow.md)**
+
+### Before Deployment
+- [ ] Verified user journey integration from **[User Journey Flow](docs/diagrams/user-journey-flow.md)**
+- [ ] Tested navigation flows from **[Page Navigation](docs/diagrams/page-navigation.md)**
+- [ ] Confirmed system integration from **[System Architecture](docs/diagrams/system-architecture.md)**
+
+## 🎯 Quick Commands
+
+```bash
+# View system architecture
+code docs/diagrams/system-architecture.md
+
+# Check user journey requirements
+code docs/diagrams/user-journey-flow.md
+
+# Review component organization
+code docs/diagrams/component-hierarchy.md
+
+# Check API documentation
+code docs/diagrams/api-architecture.md
+```
+
+## 📚 Additional Resources
+
+- **[Project README](src/README.md)** - Code organization and development guidelines
+- **[Component Documentation](src/components/ui/)** - Individual component usage
+- **[API Documentation](docs/diagrams/api-architecture.md)** - Complete API reference
+- **[Database Documentation](docs/diagrams/database-schema.md)** - Schema and relationships

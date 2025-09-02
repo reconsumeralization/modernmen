@@ -1,0 +1,363 @@
+/* ModernMen Admin Custom Styles */
+
+/* Override default Payload logo on login page */
+body div[class*="login"] svg[class*="graphic-logo"],
+body div[class*="login"] svg[viewBox="0 0 180 50"],
+body div[class*="login"] svg[width="180"][height="50"] {
+  display: none !important;
+}
+
+/* Replace with ModernMen logo */
+body div[class*="login"] div[class*="logo"]::before {
+  content: '';
+  display: block;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1rem;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500"><title>ModernMen Login Logo</title><defs><style>:root { --bg: %231f2937; --fg: %23ffffff; } .ring { fill: none; stroke: var(--fg); stroke-width: 18; }</style><linearGradient id="shimmerGradLeft" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--fg)" stop-opacity="0.4"><animate attributeName="stop-opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></stop><stop offset="100%" stop-color="var(--fg)" stop-opacity="0.1"><animate attributeName="stop-opacity" values="0.1;0.4;0.1" dur="3s" repeatCount="indefinite"/></stop></linearGradient><linearGradient id="shimmerGradRight" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="var(--fg)" stop-opacity="0.4"><animate attributeName="stop-opacity" values="0.1;0.4;0.1" dur="3s" repeatCount="indefinite"/></stop><stop offset="100%" stop-color="var(--fg)" stop-opacity="0"><animate attributeName="stop-opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></stop></linearGradient></defs><rect width="500" height="500" fill="var(--bg)"/><circle cx="250" cy="250" r="230" class="ring"/><g transform="translate(150,110)"><path d="M0 0H30L50 130L70 0H100V260H70V100L50 200L30 100V260H0Z M85 0H115L135 130L155 0H185V260H155V100L135 200L115 100V260H85Z" fill="var(--fg)"/><g><path d="-2 -2H28L48 128L68 -2H98V258H68V98L48 198L28 98V258H-2Z M83 -2H113L133 128L153 -2H183V258H153V98L133 198L113 98V258H83Z" fill="url(%23shimmerGradLeft)"/><animateTransform attributeName="transform" type="rotate" from="0 105 130" to="5 105 130" dur="2s" repeatCount="indefinite" additive="sum"/><animateTransform attributeName="transform" type="rotate" from="5 105 130" to="0 105 130" dur="2s" begin="2s" repeatCount="indefinite" additive="sum"/></g><g><path d="2 2H32L52 132L72 2H102V262H72V102L52 202L32 102V262H2Z M87 2H117L137 132L157 2H187V262H157V102L137 202L117 102V262H87Z" fill="url(%23shimmerGradRight)"/><animateTransform attributeName="transform" type="rotate" from="0 105 130" to="-5 105 130" dur="2.5s" repeatCount="indefinite" additive="sum"/><animateTransform attributeName="transform" type="rotate" from="-5 105 130" to="0 105 130" dur="2.5s" begin="2.5s" repeatCount="indefinite" additive="sum"/></g></g></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Override default Payload logo in admin header */
+body header svg[class*="graphic-logo"],
+body header svg[viewBox="0 0 180 50"],
+body header svg[width="180"][height="50"] {
+  display: none !important;
+}
+
+/* Replace header logo with ModernMen logo */
+body header div[class*="logo"]::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 32px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500"><title>ModernMen Admin Logo</title><defs><style>:root { --bg: %23000000; --fg: %23ffffff; } .ring { fill: none; stroke: var(--fg); stroke-width: 18; }</style><linearGradient id="shimmerGradLeftDark" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--fg)" stop-opacity="0.4"><animate attributeName="stop-opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></stop><stop offset="100%" stop-color="var(--fg)" stop-opacity="0.1"><animate attributeName="stop-opacity" values="0.1;0.4;0.1" dur="3s" repeatCount="indefinite"/></stop></linearGradient><linearGradient id="shimmerGradRightDark" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="var(--fg)" stop-opacity="0.4"><animate attributeName="stop-opacity" values="0.1;0.4;0.1" dur="3s" repeatCount="indefinite"/></stop><stop offset="100%" stop-color="var(--fg)" stop-opacity="0"><animate attributeName="stop-opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/></stop></linearGradient></defs><rect width="500" height="500" fill="var(--bg)"/><circle cx="250" cy="250" r="230" class="ring"/><g transform="translate(150,110)"><path d="M0 0H30L50 130L70 0H100V260H70V100L50 200L30 100V260H0Z M85 0H115L135 130L155 0H185V260H155V100L135 200L115 100V260H85Z" fill="var(--fg)"/><g><path d="-2 -2H28L48 128L68 -2H98V258H68V98L48 198L28 98V258H-2Z M83 -2H113L133 128L153 -2H183V258H153V98L133 198L113 98V258H83Z" fill="url(%23shimmerGradLeftDark)"/><animateTransform attributeName="transform" type="rotate" from="0 105 130" to="5 105 130" dur="2s" repeatCount="indefinite" additive="sum"/><animateTransform attributeName="transform" type="rotate" from="5 105 130" to="0 105 130" dur="2s" begin="2s" repeatCount="indefinite" additive="sum"/></g><g><path d="2 2H32L52 132L72 2H102V262H72V102L52 202L32 102V262H2Z M87 2H117L137 132L157 2H187V262H157V102L137 202L117 102V262H87Z" fill="url(%23shimmerGradRightDark)"/><animateTransform attributeName="transform" type="rotate" from="0 105 130" to="-5 105 130" dur="2.5s" repeatCount="indefinite" additive="sum"/><animateTransform attributeName="transform" type="rotate" from="-5 105 130" to="0 105 130" dur="2.5s" begin="2.5s" repeatCount="indefinite" additive="sum"/></g></g></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Override any other default Payload logos */
+svg[class*="graphic-logo"],
+svg[viewBox="0 0 180 50"],
+svg[width="180"][height="50"] {
+  display: none !important;
+}
+
+/* Add ModernMen branding text */
+body header div[class*="logo"]::after {
+  content: 'ModernMen';
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* ModernMen theme variables */
+:root {
+  --custom-primary-color: #1f2937;
+  --custom-secondary-color: #374151;
+  --custom-brand-text: 'ModernMen';
+}
+
+/* Apply custom colors to key UI elements */
+button[class*="primary"],
+.btn-primary {
+  background-color: var(--custom-primary-color) !important;
+}
+
+/* Navigation styling */
+nav[class*="nav"] {
+  border-right: 2px solid var(--custom-primary-color);
+}
+
+/* Login page styling */
+body div[class*="login"] {
+  background: linear-gradient(135deg, var(--custom-primary-color) 0%, var(--custom-secondary-color) 100%);
+}
+
+/* Form styling */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--custom-primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(var(--custom-primary-color), 0.2) !important;
+}
+
+/* Override favicon */
+link[rel="icon"],
+link[rel="shortcut icon"] {
+  href: '/modernmen-logo-dark.svg' !important;
+}
+
+/* Custom collection icons - these will be handled by the customIcons.ts file */
+.collection-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* ModernMen responsive design */
+@media (max-width: 768px) {
+  body div[class*="login"] div[class*="logo"]::before {
+    width: 80px;
+    height: 80px;
+  }
+  
+  body header div[class*="logo"]::after {
+    font-size: 14px;
+  }
+}
+
+/* ModernMen admin theme colors */
+:root {
+  --theme-elevation-0: #ffffff;
+  --theme-elevation-50: #f9fafb;
+  --theme-elevation-100: #f3f4f6;
+  --theme-elevation-150: #e5e7eb;
+  --theme-elevation-200: #d1d5db;
+  --theme-elevation-300: #9ca3af;
+  --theme-elevation-400: #6b7280;
+  --theme-elevation-500: #4b5563;
+  --theme-elevation-600: #374151;
+  --theme-elevation-700: #1f2937;
+  --theme-elevation-800: #111827;
+  --theme-elevation-900: #000000;
+  --theme-elevation-1000: #000000;
+
+  --theme-success-50: #f0fdf4;
+  --theme-success-100: #dcfce7;
+  --theme-success-500: #22c55e;
+  --theme-success-600: #16a34a;
+
+  --theme-error-50: #fef2f2;
+  --theme-error-100: #fee2e2;
+  --theme-error-500: #ef4444;
+  --theme-error-600: #dc2626;
+
+  --theme-warning-50: #fffbeb;
+  --theme-warning-100: #fef3c7;
+  --theme-warning-500: #f59e0b;
+  --theme-warning-600: #d97706;
+
+  --theme-text: #1f2937;
+  --theme-text-light: #6b7280;
+  --theme-border: #d1d5db;
+  --theme-input-bg: #ffffff;
+  --theme-input-border: #d1d5db;
+  --theme-input-border-focus: #3b82f6;
+
+  --theme-bg: #ffffff;
+  --theme-bg-hover: #f9fafb;
+  --theme-bg-active: #f3f4f6;
+
+  --theme-primary: #1f2937;
+  --theme-primary-hover: #111827;
+  --theme-primary-light: #374151;
+
+  --theme-secondary: #6b7280;
+  --theme-secondary-hover: #4b5563;
+  --theme-secondary-light: #9ca3af;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --theme-elevation-0: #000000;
+    --theme-elevation-50: #111827;
+    --theme-elevation-100: #1f2937;
+    --theme-elevation-150: #374151;
+    --theme-elevation-200: #4b5563;
+    --theme-elevation-300: #6b7280;
+    --theme-elevation-400: #9ca3af;
+    --theme-elevation-500: #d1d5db;
+    --theme-elevation-600: #e5e7eb;
+    --theme-elevation-700: #f3f4f6;
+    --theme-elevation-800: #f9fafb;
+    --theme-elevation-900: #ffffff;
+    --theme-elevation-1000: #ffffff;
+
+    --theme-text: #ffffff;
+    --theme-text-light: #9ca3af;
+    --theme-border: #374151;
+    --theme-input-bg: #1f2937;
+    --theme-input-border: #4b5563;
+    --theme-input-border-focus: #60a5fa;
+
+    --theme-bg: #000000;
+    --theme-bg-hover: #111827;
+    --theme-bg-active: #1f2937;
+
+    --theme-primary: #60a5fa;
+    --theme-primary-hover: #3b82f6;
+    --theme-primary-light: #93c5fd;
+
+    --theme-secondary: #9ca3af;
+    --theme-secondary-hover: #d1d5db;
+    --theme-secondary-light: #e5e7eb;
+  }
+}
+
+/* Environment-specific overrides */
+[data-environment="development"] {
+  --custom-primary-color: #3b82f6; /* Blue for development */
+}
+
+[data-environment="staging"] {
+  --custom-primary-color: #f59e0b; /* Amber for staging */
+}
+
+[data-environment="production"] {
+  --custom-primary-color: #10b981; /* Green for production */
+}
+
+/* Brand-specific overrides can be added here */
+[data-brand="modernmen"] {
+  --custom-login-logo: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500"><title>ModernMen Logo</title><rect width="500" height="500" fill="%231f2937"/><circle cx="250" cy="250" r="230" fill="none" stroke="%23ffffff" stroke-width="18"/></svg>');
+  --custom-brand-text: 'Modern Men';
+}
+
+/* ModernMen-specific admin enhancements */
+.modernmen-admin {
+  /* Enhanced collection icons */
+  .collection-icon {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .collection-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Custom button styling */
+  .btn-modernmen {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-modernmen:hover {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
+  }
+  
+  /* Enhanced form styling */
+  .form-modernmen input:focus,
+  .form-modernmen textarea:focus,
+  .form-modernmen select:focus {
+    border-color: #1f2937 !important;
+    box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1) !important;
+  }
+  
+  /* Custom card styling */
+  .card-modernmen {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+  
+  .card-modernmen:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+  
+  /* Status indicators */
+  .status-active {
+    background: #dcfce7;
+    color: #166534;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .status-inactive {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .status-pending {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+/* Enhanced navigation styling */
+nav[class*="nav"] {
+  background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+}
+
+nav[class*="nav"] a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+}
+
+/* Enhanced table styling */
+table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+table tr:hover {
+  background: #f9fafb;
+}
+
+/* Enhanced button styling */
+button[type="submit"],
+button[type="button"] {
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+button[type="submit"]:hover,
+button[type="button"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading states */
+.loading-modernmen {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-modernmen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
