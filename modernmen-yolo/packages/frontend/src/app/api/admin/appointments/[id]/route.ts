@@ -102,7 +102,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // TODO: Send update notification if needed
+    
     // if (updates.status && updates.status !== existing.status) {
     //   await sendAppointmentUpdateNotification(data);
     // }
@@ -162,7 +162,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // TODO: Send cancellation notification
+    
     // await sendAppointmentCancellationNotification(existing);
 
     return NextResponse.json({

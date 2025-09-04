@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { CheckCircle, Circle, AlertTriangle, ExternalLink, RefreshCw, HelpCircle } from '@/lib/icon-mapping'
+import { CheckCircle, Circle, AlertTriangle, ExternalLink, RefreshCw, HelpCircle, Info } from '@/lib/icon-mapping'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

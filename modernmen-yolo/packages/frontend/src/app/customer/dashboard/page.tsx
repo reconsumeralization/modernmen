@@ -9,6 +9,10 @@ import { BookingModal } from "@/components/ui/booking-modal"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { LoyaltyProgram } from "@/components/customer/LoyaltyProgram"
+import { AppointmentReview } from "@/components/customer/AppointmentReview"
+import { AppointmentManager } from "@/components/customer/AppointmentManager"
 import {
   Calendar,
   Clock,
@@ -19,7 +23,9 @@ import {
   Phone,
   MapPin,
   CreditCard,
-  Gift
+  Gift,
+  Settings,
+  MessageSquare
 } from "lucide-react"
 
 // Mock data - in real app this would come from API
@@ -206,7 +212,7 @@ export default function CustomerDashboard() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">My Dashboard</h1>
             <p className="text-muted-foreground">
-              Manage your appointments and account preferences.
+              Manage your appointments, loyalty rewards, and account preferences.
             </p>
           </div>
           <Button onClick={() => setShowBookingModal(true)}>
@@ -248,145 +254,106 @@ export default function CustomerDashboard() {
           />
         </div>
 
-        {/* Upcoming Appointments */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Upcoming Appointments
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {mockUpcomingAppointments.length === 0 ? (
-              <div className="text-center py-8">
-                <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">No upcoming appointments</h3>
-                <p className="text-muted-foreground mb-4">
-                  Ready for your next grooming session?
-                </p>
-                <Button onClick={() => setShowBookingModal(true)}>
-                  Book Your Next Appointment
-                </Button>
-              </div>
-            ) : (
-              <DataTable
-                columns={upcomingColumns}
-                data={mockUpcomingAppointments}
-                searchKey="service"
-                searchPlaceholder="Search appointments..."
-              />
-            )}
-          </CardContent>
-        </Card>
+        {/* Enhanced Dashboard with Tabs */}
+        <Tabs defaultValue="appointments" className="w-full">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="appointments">Appointments</TabsTrigger>
+            <TabsTrigger value="loyalty">Loyalty</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            <TabsTrigger value="services">Services</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
 
-        {/* Appointment History */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Appointment History
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DataTable
-              columns={historyColumns}
-              data={mockAppointmentHistory}
-              searchKey="service"
-              searchPlaceholder="Search history..."
-            />
-          </CardContent>
-        </Card>
+          <TabsContent value="appointments" className="space-y-6">
+            <AppointmentManager />
+          </TabsContent>
 
-        {/* Quick Actions */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Scissors className="h-5 w-5" />
-                Services
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Browse our complete range of grooming services
-              </p>
-              <Link href="/services">
-                <Button className="w-full">View All Services</Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <TabsContent value="loyalty" className="space-y-6">
+            <LoyaltyProgram />
+          </TabsContent>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Our Team
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Meet our expert barbers and stylists
-              </p>
-              <Link href="/team">
-                <Button className="w-full" variant="outline">Meet the Team</Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <TabsContent value="reviews" className="space-y-6">
+            <AppointmentReview />
+          </TabsContent>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Phone className="h-5 w-5" />
-                Contact Us
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Need help? Get in touch with our team
-              </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4" />
-                  <span>(555) 123-4567</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="h-4 w-4" />
-                  <span>123 Main St, City, ST</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          <TabsContent value="services" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Scissors className="h-5 w-5" />
+                    Services
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">
+                    Browse our complete range of grooming services
+                  </p>
+                  <Link href="/services">
+                    <Button className="w-full">View All Services</Button>
+                  </Link>
+                </CardContent>
+              </Card>
 
-        {/* Loyalty Program */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Gift className="h-5 w-5" />
-              Loyalty Program
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="font-medium">Current Points: 250</p>
-                <p className="text-sm text-muted-foreground">
-                  Next reward at 300 points
-                </p>
-              </div>
-              <Badge variant="secondary">Gold Member</Badge>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Our Team
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">
+                    Meet our expert barbers and stylists
+                  </p>
+                  <Link href="/team">
+                    <Button className="w-full" variant="outline">Meet the Team</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Phone className="h-5 w-5" />
+                    Contact Us
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">
+                    Need help? Get in touch with our team
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="h-4 w-4" />
+                      <span>(555) 123-4567</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <MapPin className="h-4 w-4" />
+                      <span>123 Main St, City, ST</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <div className="w-full bg-secondary rounded-full h-2 mb-4">
-              <div
-                className="bg-primary h-2 rounded-full"
-                style={{ width: "83%" }}
-              />
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Earn 1 point for every $1 spent. Redeem points for discounts and free services.
-            </p>
-          </CardContent>
-        </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  Account Settings
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Account settings and preferences will be available here soon.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Booking Modal */}

@@ -7,6 +7,7 @@ import { cn } from "../../lib/utils"
 import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
 import { Logo } from "../ui/logo"
+import { ModernMenLogo } from "@/lib/video-branding"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -99,7 +100,7 @@ export function Header({ user, onAuthAction, className }: HeaderProps) {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <Logo size="lg" className="h-10 lg:h-12" />
+            <ModernMenLogo variant="primary" className="h-10 lg:h-12 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -234,7 +235,7 @@ export function Header({ user, onAuthAction, className }: HeaderProps) {
                 <div className="flex flex-col h-full">
                   <div className="flex items-center justify-between p-4 border-b">
                     <div className="flex items-center space-x-2">
-                      <Logo size="sm" className="w-8 h-8" />
+                      <ModernMenLogo variant="icon" className="w-8 h-8" />
                       <div>
                         <div className="font-semibold text-sm">Modern Men</div>
                         <div className="text-xs text-muted-foreground">Hair Salon</div>

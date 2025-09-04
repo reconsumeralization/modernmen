@@ -14,7 +14,7 @@ export default function SupportPage() {
     {
       title: 'Email Support',
       description: 'Get detailed help via email. Best for complex issues or when you need to share screenshots.',
-      icon: <Mail className="h-6 w-6 text-blue-400" />,
+      icon: <Bell className="h-6 w-6 text-blue-400" />,
       contact: 'support@modernmenhairsalon.com',
       responseTime: '24-48 hours',
       availability: '24/7',
@@ -34,7 +34,7 @@ export default function SupportPage() {
     {
       title: 'Live Chat',
       description: 'Quick help through our live chat system during business hours.',
-      icon: <MessageCircle className="h-6 w-6 text-purple-400" />,
+      icon: <MessageSquare className="h-6 w-6 text-purple-400" />,
       contact: 'Available in-app',
       responseTime: '5-10 minutes',
       availability: 'Mon-Fri 9AM-6PM EST',
@@ -56,7 +56,7 @@ export default function SupportPage() {
   const supportCategories = [
     {
       category: 'Technical Issues',
-      icon: <AlertCircle className="h-5 w-5 text-red-400" />,
+      icon: <AlertTriangle className="h-5 w-5 text-red-400" />,
       description: 'System errors, performance problems, or technical difficulties',
       examples: ['Login problems', 'System crashes', 'Data not saving', 'Performance issues'],
       recommendedChannel: 'Email or Phone',
@@ -117,7 +117,7 @@ export default function SupportPage() {
 
       {/* Emergency Alert */}
       <Alert className="mb-8 border-red-700/50 bg-red-900/20">
-        <AlertCircle className="h-4 w-4" />
+        <AlertTriangle className="h-4 w-4" />
         <AlertTitle>System Emergency?</AlertTitle>
         <AlertDescription>
           For critical system outages or security issues, call our emergency hotline: 

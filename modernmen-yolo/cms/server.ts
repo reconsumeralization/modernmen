@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 const start = async () => {
   await payload.init({
     secret: process.env.PAYLOAD_SECRET || 'your-secret-key',
-    mongoURL: process.env.MONGODB_URI || process.env.DATABASE_URI || `mongodb://localhost:27017/${process.env.DB_NAME || 'business-cms'}`,    
+    mongodbURL: process.env.MONGODB_URI || process.env.DATABASE_URI || `mongodb://localhost:27017/${process.env.DB_NAME || 'business-cms'}`,    
     express: app,
     onInit: () => {
       payload.logger.info(`Payload Admin URL: ${payload.getAdminURL()}`);

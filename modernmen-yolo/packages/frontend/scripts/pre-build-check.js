@@ -7,6 +7,7 @@
 
 const fs = require('fs')
 const path = require('path')
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env.local') })
 
 console.log('🔍 Running Pre-Build Validation Checks...\n')
 
@@ -147,7 +148,7 @@ function checkConfigurationFiles() {
 function checkBuildOutput() {
   console.log('🏗️ Checking Build Output Directory...')
 
-  const buildDirs = ['dist', '.next', 'out']
+  const buildDirs = ['.next']
 
   const existingDirs = buildDirs.filter(dir => {
     return fs.existsSync(path.join(process.cwd(), dir))

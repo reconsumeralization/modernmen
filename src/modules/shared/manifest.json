@@ -1,0 +1,26 @@
+{
+  "name": "shared-module",
+  "version": "1.0.0",
+  "description": "Shared UI components and utilities for Modern Men Hair Salon",
+  "type": "shared",
+  "enabled": true,
+  "dependencies": [],
+  "exports": {
+    "DemoCard": "./components/DemoCard",
+    "DemoLayout": "./components/DemoLayout",
+    "SharedButton": "./components/SharedButton",
+    "SharedUtils": "./utils/shared-utils"
+  },
+  "components": [
+    "DemoCard",
+    "DemoLayout",
+    "SharedButton"
+  ],
+  "pages": [],
+  "hooks": [],
+  "utils": [
+    "SharedUtils"
+  ],
+  "permissions": [],
+  "routes": []
+}

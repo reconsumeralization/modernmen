@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Send confirmation notification
+    
     // await sendAppointmentConfirmation(data);
 
     return NextResponse.json({

@@ -1,26 +1,44 @@
-// Twilio import - conditionally loaded for production
+// Twilio import - server-side only
 let twilio: any = null
-try {
-  twilio = require('twilio')
-} catch (error) {
-  // Mock twilio for development
+
+// Only load Twilio on server side
+if (typeof window === 'undefined') {
+  try {
+    twilio = require('twilio')
+  } catch (error) {
+    // Mock twilio for development
+    twilio = function(accountSid: string, authToken: string) {
+      return {
+        messages: {
+          create: async (options: any) => {
+            console.log('Mock SMS sent:', options)
+            return { sid: 'mock-sid-' + Date.now() }
+          }
+        }
+      }
+    }
+  }
+} else {
+  // Client-side mock
   twilio = function(accountSid: string, authToken: string) {
     return {
       messages: {
         create: async (options: any) => {
-          console.log('Mock SMS sent:', options)
-          return { sid: 'mock-sid-' + Date.now() }
+          console.log('Client-side SMS mock:', options)
+          return { sid: 'client-mock-sid-' + Date.now() }
         }
       }
     }
   }
 }
 
-if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
-  throw new Error('TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN environment variables are required')
+// Only check environment variables on server side
+if (typeof window === 'undefined' && (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN)) {
+  console.warn('TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN environment variables are required for SMS functionality')
 }
 
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
+// Only initialize client on server side
+const client = typeof window === 'undefined' ? twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN) : null
 const fromPhoneNumber = process.env.TWILIO_PHONE_NUMBER || ''
 
 export interface SMSRecipient {
@@ -135,6 +153,12 @@ class SMSService {
    * Core SMS sending function
    */
   private async sendSMS(to: string, body: string): Promise<void> {
+    // Check if client is available (server-side only)
+    if (!client) {
+      console.log(`SMS mock sent to ${to}: ${body}`)
+      return
+    }
+
     try {
       // Ensure phone number is in E.164 format
       const formattedNumber = this.formatPhoneNumber(to)

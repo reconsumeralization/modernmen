@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { DeprecationWarning as DeprecationWarningType } from '@/types/version-control';
-import { AlertTriangle, Clock, ExternalLink, X, ArrowRight, HelpCircle } from '@/lib/icon-mapping';
+import { AlertTriangle, Clock, ExternalLink, X, ArrowRight, HelpCircle, Info } from '@/lib/icon-mapping';
 import { formatDistanceToNow, format } from 'date-fns';
 
 interface DeprecationWarningProps {
@@ -53,7 +53,7 @@ export function DeprecationWarning({
   const getSeverityIcon = () => {
     switch (warning.severity) {
       case 'error':
-        return <AlertCircle className="h-4 w-4" />;
+        return <AlertTriangle className="h-4 w-4" />;
       case 'warning':
         return <AlertTriangle className="h-4 w-4" />;
       case 'info':

@@ -1,8 +1,12 @@
+'use client'
+
 import { Star, Award, Calendar, Users } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { useEffect } from 'react'
+import { analyticsService, EVENT_ACTIONS, EVENT_CATEGORIES } from '@/lib/analytics'
 
 const teamMembers = [
   {
@@ -56,6 +60,71 @@ const teamMembers = [
 ]
 
 export default function TeamPage() {
+  // Track page view on component mount
+  useEffect(() => {
+    analyticsService.trackPageView('/team', 'Team - Modern Men Hair Salon')
+  }, [])
+
+  // Track barber profile view
+  const handleBarberView = (barberId: string, barberName: string, specialties: string[]) => {
+    analyticsService.trackBarberInteraction(barberId, EVENT_ACTIONS.BARBER_PROFILE_VIEWED, {
+      barber_name: barberName,
+      specialties: specialties.join(', '),
+      page_location: 'team_page',
+      timestamp: new Date().toISOString()
+    })
+  }
+
+  // Track barber booking button click
+  const handleBarberBookClick = (barberId: string, barberName: string, rating: number, reviews: number) => {
+    analyticsService.trackBarberInteraction(barberId, 'barber_book_click', {
+      barber_name: barberName,
+      rating: rating,
+      review_count: reviews,
+      page_location: 'team_page',
+      timestamp: new Date().toISOString()
+    })
+
+    // Track as conversion event
+    analyticsService.trackEvent({
+      action: 'barber_booking_initiated',
+      category: EVENT_CATEGORIES.CONVERSION,
+      label: barberId,
+      customParameters: {
+        barber_name: barberName,
+        rating: rating,
+        review_count: reviews,
+        booking_source: 'team_page',
+        timestamp: new Date().toISOString()
+      }
+    })
+  }
+
+  // Track rating clicks
+  const handleRatingClick = (barberId: string, barberName: string, rating: number) => {
+    analyticsService.trackBarberInteraction(barberId, EVENT_ACTIONS.BARBER_RATING_CLICKED, {
+      barber_name: barberName,
+      rating: rating,
+      page_location: 'team_page',
+      timestamp: new Date().toISOString()
+    })
+  }
+
+  // Track main CTA button clicks
+  const handleMainCTAClick = () => {
+    analyticsService.trackEvent({
+      action: EVENT_ACTIONS.BUTTON_CLICK,
+      category: EVENT_CATEGORIES.USER_ENGAGEMENT,
+      label: 'main_team_cta',
+      customParameters: {
+        button_text: 'Book Your Appointment',
+        page_location: 'team_page',
+        cta_type: 'primary',
+        timestamp: new Date().toISOString()
+      }
+    })
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -78,7 +147,11 @@ export default function TeamPage() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8">
             {teamMembers.map((member) => (
-              <Card key={member.id} className="overflow-hidden hover:shadow-xl transition-shadow">
+              <Card
+                key={member.id}
+                className="overflow-hidden hover:shadow-xl transition-shadow"
+                onMouseEnter={() => handleBarberView(member.id, member.name, member.specialties)}
+              >
                 <div className="md:flex">
                   {/* Image Section */}
                   <div className="md:w-1/3 bg-slate-100 flex items-center justify-center p-8">
@@ -95,7 +168,11 @@ export default function TeamPage() {
                           <CardTitle className="text-2xl mb-1">{member.name}</CardTitle>
                           <p className="text-primary font-medium">{member.role}</p>
                         </div>
-                        <Badge variant="secondary" className="flex items-center gap-1">
+                        <Badge
+                          variant="secondary"
+                          className="flex items-center gap-1 cursor-pointer hover:bg-secondary/80"
+                          onClick={() => handleRatingClick(member.id, member.name, member.rating)}
+                        >
                           <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                           {member.rating}
                         </Badge>
@@ -145,7 +222,10 @@ export default function TeamPage() {
                       </div>
 
                       {/* Action Button */}
-                      <Button className="w-full">
+                      <Button
+                        className="w-full"
+                        onClick={() => handleBarberBookClick(member.id, member.name, member.rating, member.reviews)}
+                      >
                         <Link href={`/book?barber=${member.id}`}>
                           Book with {member.name.split(' ')[0]}
                         </Link>
@@ -243,7 +323,12 @@ export default function TeamPage() {
           <p className="text-xl mb-8 text-primary-foreground/80 max-w-2xl mx-auto">
             Book an appointment with one of our expert barbers and experience the difference professional grooming makes.
           </p>
-          <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
+          <Button
+            size="lg"
+            variant="secondary"
+            className="text-lg px-8 py-6"
+            onClick={handleMainCTAClick}
+          >
             <Link href="/book">
               Book Your Appointment
             </Link>

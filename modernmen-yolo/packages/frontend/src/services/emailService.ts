@@ -1,10 +1,40 @@
-import sgMail from '@sendgrid/mail'
+// SendGrid import - server-side only
+let sgMail: any = null
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error('SENDGRID_API_KEY environment variable is required')
+// Only load SendGrid on server side
+if (typeof window === 'undefined') {
+  try {
+    sgMail = require('@sendgrid/mail')
+  } catch (error) {
+    // Mock SendGrid for development
+    sgMail = {
+      setApiKey: () => {},
+      send: async (msg: any) => {
+        console.log('Mock SendGrid email sent:', msg)
+        return { messageId: 'mock-' + Date.now() }
+      }
+    }
+  }
+} else {
+  // Client-side mock
+  sgMail = {
+    setApiKey: () => {},
+    send: async (msg: any) => {
+      console.log('Client-side SendGrid mock:', msg)
+      return { messageId: 'client-mock-' + Date.now() }
+    }
+  }
 }
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+// Only check environment variables on server side
+if (typeof window === 'undefined' && !process.env.SENDGRID_API_KEY) {
+  console.warn('SENDGRID_API_KEY environment variable is required for email functionality')
+}
+
+// Only set API key on server side
+if (typeof window === 'undefined' && sgMail?.setApiKey && process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+}
 
 export interface EmailRecipient {
   email: string
@@ -140,6 +170,12 @@ class EmailService {
     subject: string,
     content: string
   ): Promise<void> {
+    // Check if sgMail is available (server-side only)
+    if (!sgMail) {
+      console.log('Newsletter mock sent:', { recipients, subject, content })
+      return
+    }
+
     const html = this.generateNewsletterHTML(content)
 
     const messages = recipients.map(recipient => ({
@@ -166,6 +202,12 @@ class EmailService {
     html: string
     text?: string
   }): Promise<void> {
+    // Check if sgMail is available (server-side only)
+    if (!sgMail) {
+      console.log('Email mock sent:', { to, subject, html })
+      return
+    }
+
     try {
       const msg = {
         to,

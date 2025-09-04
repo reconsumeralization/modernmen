@@ -4,7 +4,7 @@ import { sendWelcomeSMS, sendSystemAlertSMS } from './smsService'
 
 export interface NotificationData {
   userId: string
-  type: 'user_created' | 'user_updated' | 'employee_created' | 'appointment_booked' | 'system_alert' | 'security_alert'
+  type: 'user_created' | 'user_updated' | 'employee_created' | 'appointment_booked' | 'appointment_reminder' | 'system_alert' | 'security_alert'
   title: string
   message: string
   data?: any

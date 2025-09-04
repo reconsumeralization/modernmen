@@ -1,0 +1,93 @@
+---
+alwaysApply: true
+description: System Architecture Overview - Modern Men Hair Salon
+---
+
+# 🏗️ **MODERN MEN HAIR SALON SYSTEM ARCHITECTURE**
+
+## **Core System Components:**
+
+### **Frontend Layer (Next.js 15)**
+```
+┌─────────────────────────────────────────────────────────┐
+│                    NEXT.JS APPLICATION                  │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │   PUBLIC     │  │   CUSTOMER  │  │   STAFF     │      │
+│  │   WEBSITE    │  │   PORTAL    │  │   DASHBOARD  │      │
+│  └─────────────┘  └─────────────┘  └─────────────┘      │
+└─────────────────────────────────────────────────────────┘
+```
+
+### **Backend Layer (Dual Architecture)**
+```
+┌─────────────────────────────────────────────────────────┐
+│                 PAYLOAD CMS + SUPABASE                  │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │   CONTENT    │  │   AUTH      │  │   REAL-TIME │      │
+│  │ MANAGEMENT  │  │   SYSTEM    │  │   SYNC      │      │
+│  └─────────────┘  └─────────────┘  └─────────────┘      │
+└─────────────────────────────────────────────────────────┘
+```
+
+### **External Services**
+```
+┌─────────────────────────────────────────────────────────┐
+│                    EXTERNAL INTEGRATIONS                │
+├─────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │   STRIPE     │  │  SENDGRID   │  │   VERCEL    │      │
+│  │  PAYMENTS    │  │   EMAILS    │  │ DEPLOYMENT  │      │
+│  └─────────────┘  └─────────────┘  └─────────────┘      │
+└─────────────────────────────────────────────────────────┘
+```
+
+## **Key Architectural Patterns:**
+
+### **1. Component Hierarchy**
+- **Layout Components**: [src/components/layout/](mdc:src/components/layout/)
+- **UI Components**: [src/components/ui/](mdc:src/components/ui/)
+- **Feature Components**: [src/components/sections/](mdc:src/components/sections/)
+- **Page Components**: [src/app/](mdc:src/app/)
+
+### **2. Data Flow Pattern**
+```
+User Action → Component → API Route → Database → Response → UI Update
+```
+
+### **3. Authentication Flow**
+```
+Public Pages → Login Required → Portal/Dashboard → Role-Based Access
+```
+
+### **4. Database Architecture**
+```
+Payload CMS (Content) ↔ Supabase (Auth + Sync) ↔ External APIs
+```
+
+## **Development Guidelines:**
+
+### **File Organization:**
+- **Pages**: [src/app/](mdc:src/app/) - Next.js App Router
+- **Components**: [src/components/](mdc:src/components/) - Reusable UI
+- **Collections**: [src/collections/](mdc:src/collections/) - Payload CMS schemas
+- **API Routes**: [src/app/api/](mdc:src/app/api/) - Backend endpoints
+- **Types**: [src/types/](mdc:src/types/) - TypeScript definitions
+
+### **Component Naming Convention:**
+- **Pages**: `PascalCase` (e.g., `CustomerPortal.tsx`)
+- **Components**: `PascalCase` (e.g., `AppointmentCard.tsx`)
+- **Hooks**: `camelCase` with `use` prefix (e.g., `useAuth.ts`)
+- **Utils**: `camelCase` (e.g., `formatCurrency.ts`)
+
+### **State Management:**
+- **Local State**: React `useState` for component-level state
+- **Global State**: Zustand stores for cross-component state
+- **Server State**: React Query for API data management
+
+### **Styling Approach:**
+- **Framework**: Tailwind CSS with custom design system
+- **Animations**: Framer Motion for smooth transitions
+- **Responsive**: Mobile-first responsive design
+- **Theming**: CSS custom properties for consistent branding

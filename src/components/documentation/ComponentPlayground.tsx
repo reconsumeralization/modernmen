@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Play, RefreshCw } from '@/lib/icon-mapping';
+import { Copy, Play, RefreshCw, RotateCcw } from '@/lib/icon-mapping';
 import { toast } from 'sonner';
 
 // Client-side service for fetching documentation
@@ -19,7 +19,7 @@ class ClientStorybookService {
     const url = new URL('/api/storybook', window.location.origin)
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
-        url.rchParams.set(key, value)
+        url.searchParams.set(key, value)
       })
     }
 
@@ -207,7 +207,7 @@ export function ComponentPlayground({
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">{componentName} Playground</h3>
         <Button variant="outline" size="sm" onClick={resetProps}>
-          <RotateCcw className="h-4 w-4 mr-2" />
+          <RefreshCw className="h-4 w-4 mr-2" />
           Reset
         </Button>
       </div>

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Activity, Database, Users, Cog, CheckCircle, XCircle, AlertTriangle, RefreshCw, Zap, Calendar, User, Edit, BarChart } from '@/lib/icon-mapping'
+import { Activity, Database, Users, Cog, CheckCircle, XCircle, AlertTriangle, RefreshCw, Zap, Calendar, User, Edit, BarChart, AlertCircle, Settings } from '@/lib/icon-mapping'
 import { useMonitoring } from '@/hooks/useMonitoring'
 
 interface HealthStatus {
@@ -100,7 +100,7 @@ export function PayloadHealthCheck() {
       case 'unhealthy':
         return <XCircle className="h-5 w-5 text-red-500" />
       default:
-        return <AlertCircle className="h-5 w-5 text-yellow-500" />
+        return <AlertTriangle className="h-5 w-5 text-yellow-500" />
     }
   }
 
@@ -186,7 +186,7 @@ export function PayloadHealthCheck() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                    <Settings className="h-4 w-4 text-purple-600" />
+                    <Cog className="h-4 w-4 text-purple-600" />
                     <div>
                       <p className="text-sm font-medium">Collections</p>
                       <p className="text-xs text-muted-foreground">
@@ -228,7 +228,7 @@ export function PayloadHealthCheck() {
 
           <Card>
             <CardContent className="p-6 text-center">
-              <Settings className="h-8 w-8 mx-auto mb-2 text-green-600" />
+              <Cog className="h-8 w-8 mx-auto mb-2 text-green-600" />
               <div className="text-2xl font-bold">{analytics.services}</div>
               <div className="text-sm text-muted-foreground">Active Services</div>
             </CardContent>
@@ -264,7 +264,7 @@ export function PayloadHealthCheck() {
               className="justify-start"
               onClick={() => window.open('/admin', '_blank')}
             >
-              <Settings className="h-4 w-4 mr-2" />
+              <Cog className="h-4 w-4 mr-2" />
               Open Admin Panel
             </Button>
 

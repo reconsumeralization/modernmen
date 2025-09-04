@@ -1,0 +1,46 @@
+{
+  "name": "@modernmen/infra",
+  "version": "1.0.0",
+  "description": "Modern Men Hair Salon - Infrastructure & Deployment",
+  "private": true,
+  "scripts": {
+    "infra:setup": "tsx scripts/setup.ts",
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod",
+    "docker:build": "docker build -t modernmen-app .",
+    "docker:push": "docker push modernmen-app",
+    "docker:run": "docker run -p 3000:3000 modernmen-app",
+    "k8s:deploy": "kubectl apply -f k8s/",
+    "k8s:status": "kubectl get pods,services,ingress",
+    "terraform:init": "terraform init",
+    "terraform:plan": "terraform plan",
+    "terraform:apply": "terraform apply",
+    "terraform:destroy": "terraform destroy",
+    "monitoring:setup": "tsx scripts/monitoring-setup.ts",
+    "backup:setup": "tsx scripts/backup-setup.ts",
+    "security:audit": "tsx scripts/security-audit.ts",
+    "lint": "eslint scripts/**/*.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "vercel": "^32.0.0",
+    "netlify-cli": "^16.0.0",
+    "docker-compose": "^0.24.0",
+    "@pulumi/pulumi": "^3.0.0",
+    "@pulumi/aws": "^6.0.0",
+    "@pulumi/vercel": "^1.0.0",
+    "aws-sdk": "^2.1490.0",
+    "dotenv": "^16.3.1",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "tsx": "^4.0.0",
+    "eslint": "^8.50.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

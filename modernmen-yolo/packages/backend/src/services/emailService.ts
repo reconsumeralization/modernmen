@@ -1,10 +1,10 @@
-import sgMail from '@sendgrid/mail'
+import { Resend } from 'resend';
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error('SENDGRID_API_KEY environment variable is required')
+if (!process.env.RESEND_API_KEY) {
+  throw new Error('RESEND_API_KEY environment variable is required');
 }
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export interface EmailRecipient {
   email: string
@@ -35,8 +35,8 @@ export interface AppointmentData {
 }
 
 class EmailService {
-  private fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@modernmen.com'
-  private fromName = process.env.SENDGRID_FROM_NAME || 'Modern Men Hair Salon'
+  private fromEmail = process.env.FROM_EMAIL || 'noreply@modernmen.com'
+  private fromName = process.env.FROM_NAME || 'Modern Men Hair Salon'
 
   /**
    * Send appointment confirmation email
@@ -72,6 +72,20 @@ class EmailService {
   async sendAppointmentCancellation(appointment: AppointmentData): Promise<void> {
     const subject = 'Appointment Cancelled'
     const html = this.generateAppointmentCancellationHTML(appointment)
+
+    await this.sendEmail({
+      to: { email: appointment.customerEmail, name: appointment.customerName },
+      subject,
+      html,
+    })
+  }
+
+  /**
+   * Send appointment update email
+   */
+  async sendAppointmentUpdate(appointment: AppointmentData): Promise<void> {
+    const subject = 'Appointment Updated'
+    const html = this.generateAppointmentUpdateHTML(appointment)
 
     await this.sendEmail({
       to: { email: appointment.customerEmail, name: appointment.customerName },
@@ -142,14 +156,13 @@ class EmailService {
   ): Promise<void> {
     const html = this.generateNewsletterHTML(content)
 
-    const messages = recipients.map(recipient => ({
-      to: recipient,
-      from: { email: this.fromEmail, name: this.fromName },
-      subject,
-      html,
-    }))
-
-    await sgMail.send(messages)
+    for (const recipient of recipients) {
+      await this.sendEmail({
+        to: recipient,
+        subject,
+        html,
+      });
+    }
   }
 
   /**
@@ -167,16 +180,17 @@ class EmailService {
     text?: string
   }): Promise<void> {
     try {
-      const msg = {
-        to,
-        from: { email: this.fromEmail, name: this.fromName },
+      const recipients = Array.isArray(to) ? to.map(r => r.email) : to.email;
+
+      await resend.emails.send({
+        from: `${this.fromName} <${this.fromEmail}>`,
+        to: recipients,
         subject,
         html,
         text,
-      }
+      });
 
-      await sgMail.send(msg)
-      console.log(`Email sent successfully to ${Array.isArray(to) ? to.length : 1} recipient(s)`)
+      console.log(`Email sent successfully to ${Array.isArray(recipients) ? recipients.length : 1} recipient(s)`)
     } catch (error) {
       console.error('Failed to send email:', error)
       throw new Error('Email sending failed')
@@ -343,6 +357,60 @@ class EmailService {
               <p>The Modern Men Team</p>
             </div>
             <div class="footer">
+              <p>For questions, contact us at ${appointment.salonPhone}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `
+  }
+
+  /**
+   * Generate appointment update HTML
+   */
+  private generateAppointmentUpdateHTML(appointment: AppointmentData): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Appointment Updated</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #000; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px 20px; background: #f9f9f9; }
+            .appointment-details { background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #000; }
+            .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
+            .button { display: inline-block; background: #000; color: white; padding: 12px 24px; text-decoration: none; margin: 10px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Appointment Updated</h1>
+            </div>
+            <div class="content">
+              <p>Dear ${appointment.customerName},</p>
+              <p>Your appointment details have been updated.</p>
+
+              <div class="appointment-details">
+                <h3>Updated Appointment Details</h3>
+                <p><strong>Service:</strong> ${appointment.serviceName}</p>
+                <p><strong>Barber:</strong> ${appointment.barberName}</p>
+                <p><strong>Date:</strong> ${appointment.date}</p>
+                <p><strong>Time:</strong> ${appointment.time}</p>
+                <p><strong>Duration:</strong> ${appointment.duration} minutes</p>
+                <p><strong>Price:</strong> ${appointment.price}</p>
+              </div>
+
+              <p>If you have any questions, please contact us.</p>
+
+              <p>We look forward to seeing you!</p>
+              <p>The Modern Men Team</p>
+            </div>
+            <div class="footer">
+              <p>This is an automated message. Please do not reply to this email.</p>
               <p>For questions, contact us at ${appointment.salonPhone}</p>
             </div>
           </div>

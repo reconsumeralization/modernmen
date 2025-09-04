@@ -1,0 +1,516 @@
+---
+globs: src/collections/*.ts,src/types/*.ts
+description: Database Schema and Relationships
+---
+
+# 🗄️ **DATABASE SCHEMA & RELATIONSHIPS**
+
+## **Database Architecture Overview:**
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                       DUAL DATABASE ARCHITECTURE                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌─────────────────────┐          ┌─────────────────────┐           │
+│  │     PAYLOAD CMS     │          │      SUPABASE       │           │
+│  │   (Content & CMS)   │◄────────►│   (Auth & Sync)     │           │
+│  └─────────────────────┘          └─────────────────────┘           │
+│          │                              │                           │
+│          ▼                              ▼                           │
+│  ┌─────────────────────┐          ┌─────────────────────┐           │
+│  │   PostgreSQL        │          │   PostgreSQL        │           │
+│  │   (Primary DB)      │          │   (Auth DB)         │           │
+│  └─────────────────────┘          └─────────────────────┘           │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## **Core Collections ([src/collections/](mdc:src/collections/)):**
+
+### **1. Customers Collection**
+```typescript
+// src/collections/Customers.ts
+{
+  slug: 'customers',
+  fields: [
+    {
+      name: 'firstName',
+      type: 'text',
+      required: true
+    },
+    {
+      name: 'lastName',
+      type: 'text',
+      required: true
+    },
+    {
+      name: 'email',
+      type: 'email',
+      required: true,
+      unique: true
+    },
+    {
+      name: 'phone',
+      type: 'text'
+    },
+    {
+      name: 'loyaltyPoints',
+      type: 'number',
+      defaultValue: 0
+    },
+    {
+      name: 'preferredServices',
+      type: 'relationship',
+      relationTo: 'services',
+      hasMany: true
+    }
+  ]
+}
+```
+
+### **2. Appointments Collection**
+```typescript
+// src/collections/Appointments.ts
+{
+  slug: 'appointments',
+  fields: [
+    {
+      name: 'customer',
+      type: 'relationship',
+      relationTo: 'customers',
+      required: true
+    },
+    {
+      name: 'services',
+      type: 'relationship',
+      relationTo: 'services',
+      hasMany: true,
+      required: true
+    },
+    {
+      name: 'stylist',
+      type: 'relationship',
+      relationTo: 'stylists',
+      required: true
+    },
+    {
+      name: 'dateTime',
+      type: 'date',
+      required: true
+    },
+    {
+      name: 'duration',
+      type: 'number', // minutes
+      required: true
+    },
+    {
+      name: 'status',
+      type: 'select',
+      options: [
+        'scheduled',
+        'confirmed',
+        'in-progress',
+        'completed',
+        'cancelled',
+        'no-show'
+      ],
+      defaultValue: 'scheduled'
+    },
+    {
+      name: 'notes',
+      type: 'textarea'
+    },
+    {
+      name: 'price',
+      type: 'number' // cents
+    }
+  ]
+}
+```
+
+### **3. Services Collection**
+```typescript
+// src/collections/Services.ts
+{
+  slug: 'services',
+  fields: [
+    {
+      name: 'name',
+      type: 'text',
+      required: true
+    },
+    {
+      name: 'description',
+      type: 'textarea'
+    },
+    {
+      name: 'category',
+      type: 'select',
+      options: [
+        'haircut',
+        'styling',
+        'coloring',
+        'facial',
+        'beard',
+        'package'
+      ]
+    },
+    {
+      name: 'price',
+      type: 'number', // cents
+      required: true
+    },
+    {
+      name: 'duration',
+      type: 'number', // minutes
+      required: true
+    },
+    {
+      name: 'isActive',
+      type: 'checkbox',
+      defaultValue: true
+    },
+    {
+      name: 'popular',
+      type: 'checkbox',
+      defaultValue: false
+    }
+  ]
+}
+```
+
+### **4. Stylists Collection**
+```typescript
+// src/collections/Stylists.ts
+{
+  slug: 'stylists',
+  fields: [
+    {
+      name: 'firstName',
+      type: 'text',
+      required: true
+    },
+    {
+      name: 'lastName',
+      type: 'text',
+      required: true
+    },
+    {
+      name: 'email',
+      type: 'email',
+      required: true
+    },
+    {
+      name: 'specialties',
+      type: 'select',
+      options: [
+        'haircuts',
+        'styling',
+        'coloring',
+        'facial',
+        'beard'
+      ],
+      hasMany: true
+    },
+    {
+      name: 'availability',
+      type: 'array',
+      fields: [
+        {
+          name: 'day',
+          type: 'select',
+          options: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+        },
+        {
+          name: 'startTime',
+          type: 'text' // HH:mm format
+        },
+        {
+          name: 'endTime',
+          type: 'text' // HH:mm format
+        }
+      ]
+    },
+    {
+      name: 'rating',
+      type: 'number',
+      min: 0,
+      max: 5
+    }
+  ]
+}
+```
+
+## **Database Relationships:**
+
+### **Entity Relationship Diagram:**
+```
+┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+│  CUSTOMERS  │      │ APPOINTMENTS│      │  STYLISTS   │
+├─────────────┤      ├─────────────┤      ├─────────────┤
+│ id (PK)     │◄─────┤ customer_id │─────►│ id (PK)     │
+│ firstName   │      │ stylist_id  │      │ firstName   │
+│ lastName    │      │ service_id  │      │ lastName    │
+│ email       │      │ dateTime    │      │ specialties │
+│ phone       │      │ status      │      │ availability│
+│ loyaltyPts  │      │ notes       │      │ rating      │
+└─────────────┘      └─────────────┘      └─────────────┘
+       ▲                     │                     ▲
+       │                     ▼                     │
+       └─────────────────────┼─────────────────────┘
+                             ▼
+                    ┌─────────────┐
+                    │  SERVICES   │
+                    ├─────────────┤
+                    │ id (PK)     │
+                    │ name        │
+                    │ description │
+                    │ category    │
+                    │ price       │
+                    │ duration    │
+                    │ isActive    │
+                    │ popular     │
+                    └─────────────┘
+```
+
+### **Many-to-Many Relationships:**
+```
+Customers ↔ Services (through Appointments)
+Appointments can have multiple services
+Customers can have preferred services
+```
+
+## **Data Access Patterns:**
+
+### **1. Payload CMS Queries:**
+```typescript
+// Find customer with appointments
+const customer = await payload.findByID({
+  collection: 'customers',
+  id: customerId,
+  depth: 2, // Include related data
+  populate: {
+    appointments: true,
+    preferredServices: true
+  }
+})
+```
+
+### **2. Supabase Real-time:**
+```typescript
+// Subscribe to appointment updates
+const subscription = supabase
+  .channel('appointments')
+  .on('postgres_changes', {
+    event: '*',
+    schema: 'public',
+    table: 'appointments'
+  }, (payload) => {
+    console.log('Appointment changed:', payload)
+  })
+  .subscribe()
+```
+
+### **3. API Route Pattern:**
+```typescript
+// src/app/api/appointments/route.ts
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const status = searchParams.get('status')
+
+  const appointments = await payload.find({
+    collection: 'appointments',
+    where: status ? { status: { equals: status } } : {},
+    populate: {
+      customer: true,
+      stylist: true,
+      services: true
+    }
+  })
+
+  return Response.json(appointments)
+}
+```
+
+## **Database Migration Patterns:**
+
+### **1. Schema Changes:**
+```typescript
+// Add new field to existing collection
+export const migrateCustomers: Migration = {
+  up: async (migration) => {
+    await migration.addField({
+      collection: 'customers',
+      field: {
+        name: 'marketingConsent',
+        type: 'checkbox',
+        defaultValue: false
+      }
+    })
+  },
+  down: async (migration) => {
+    await migration.removeField({
+      collection: 'customers',
+      field: 'marketingConsent'
+    })
+  }
+}
+```
+
+### **2. Data Migration:**
+```typescript
+// Migrate existing data
+export const migrateAppointmentPrices: Migration = {
+  up: async () => {
+    const appointments = await payload.find({
+      collection: 'appointments',
+      where: { price: { exists: false } }
+    })
+
+    for (const appointment of appointments.docs) {
+      // Calculate price based on services
+      const totalPrice = await calculateAppointmentPrice(appointment)
+      await payload.update({
+        collection: 'appointments',
+        id: appointment.id,
+        data: { price: totalPrice }
+      })
+    }
+  }
+}
+```
+
+## **Performance Optimization:**
+
+### **1. Database Indexes:**
+```typescript
+// Add indexes for common queries
+export const addAppointmentIndexes: Migration = {
+  up: async (migration) => {
+    await migration.addIndex({
+      collection: 'appointments',
+      index: {
+        fields: ['dateTime', 'status'],
+        unique: false
+      }
+    })
+  }
+}
+```
+
+### **2. Query Optimization:**
+```typescript
+// Use select to limit fields
+const appointments = await payload.find({
+  collection: 'appointments',
+  select: {
+    id: true,
+    dateTime: true,
+    status: true,
+    customer: {
+      firstName: true,
+      lastName: true
+    }
+  },
+  limit: 50,
+  sort: '-dateTime'
+})
+```
+
+### **3. Caching Strategy:**
+```typescript
+// Cache frequently accessed data
+const cachedServices = await redis.get('services')
+if (!cachedServices) {
+  const services = await payload.find({
+    collection: 'services',
+    where: { isActive: { equals: true } }
+  })
+  await redis.set('services', JSON.stringify(services), 'EX', 3600)
+}
+```
+
+## **Data Validation:**
+
+### **1. Field Validation:**
+```typescript
+{
+  name: 'email',
+  type: 'email',
+  required: true,
+  unique: true,
+  validate: (value: string) => {
+    if (!value.includes('@modernmen.com')) {
+      return 'Email must be from Modern Men domain'
+    }
+    return true
+  }
+}
+```
+
+### **2. Relationship Validation:**
+```typescript
+{
+  name: 'stylist',
+  type: 'relationship',
+  relationTo: 'stylists',
+  required: true,
+  validate: async (value: string, { payload }) => {
+    const stylist = await payload.findByID({
+      collection: 'stylists',
+      id: value
+    })
+
+    if (!stylist) {
+      return 'Stylist not found'
+    }
+
+    const hasRequiredSkills = await checkStylistSkills(stylist, service)
+    if (!hasRequiredSkills) {
+      return 'Stylist does not have required skills for this service'
+    }
+
+    return true
+  }
+}
+```
+
+## **Backup & Recovery:**
+
+### **1. Automated Backups:**
+```typescript
+// Daily backup job
+export const createBackup = async () => {
+  const timestamp = new Date().toISOString()
+  const backupPath = `backups/${timestamp}`
+
+  // Backup Payload collections
+  const collections = ['customers', 'appointments', 'services', 'stylists']
+  for (const collection of collections) {
+    const data = await payload.find({
+      collection,
+      limit: 0 // Get all records
+    })
+    await saveToFile(`${backupPath}/${collection}.json`, data)
+  }
+}
+```
+
+### **2. Point-in-Time Recovery:**
+```typescript
+// Restore from backup
+export const restoreBackup = async (backupPath: string) => {
+  const collections = ['customers', 'appointments', 'services', 'stylists']
+
+  for (const collection of collections) {
+    const data = await loadFromFile(`${backupPath}/${collection}.json`)
+
+    for (const record of data.docs) {
+      await payload.create({
+        collection,
+        data: record
+      })
+    }
+  }
+}
+```

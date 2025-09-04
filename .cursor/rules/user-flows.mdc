@@ -1,0 +1,580 @@
+---
+globs: src/app/**/*.tsx,src/components/**/*.tsx
+description: Customer Journey and User Flow Patterns
+---
+
+# 👥 **CUSTOMER JOURNEY & USER FLOW PATTERNS**
+
+## **Complete Customer Journey Overview:**
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                       CUSTOMER JOURNEY FLOW                         │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │ DISCOVERY   │  │ INTEREST    │  │ BOOKING     │  │ SERVICE      │ │
+│  │ (Homepage)  │  │ (Services)  │  │ (Portal)    │  │ (In-Store)   │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │
+│          │             │               │               │             │
+│          ▼             ▼               ▼               ▼             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │ CONFIRMATION│  │ PREPARATION │  │ FOLLOW-UP   │  │ RETENTION    │ │
+│  │ (Email/SMS) │  │ (Reminders) │  │ (Feedback)  │  │ (Loyalty)    │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## **Detailed User Flow Patterns:**
+
+### **1. Public Website Flow ([src/app/page.tsx](mdc:src/app/page.tsx))**
+
+#### **Homepage → Services → Booking**
+```typescript
+// User journey starts here
+export default function HomePage() {
+  return (
+    <>
+      <Navbar />
+      <HeroSection />        // ← Discovery phase
+      <ServicesSection />    // ← Interest phase
+      <AboutSection />
+      <TeamSection />
+      <ContactSection />     // ← Consideration phase
+      <Footer />
+    </>
+  )
+}
+```
+
+#### **Key Conversion Points:**
+```typescript
+// Hero section CTA
+<Button onClick={() => router.push('/portal/book')}>
+  Book Appointment
+</Button>
+
+// Services section CTA
+<Button onClick={() => router.push('/portal/services')}>
+  View All Services
+</Button>
+
+// Contact section CTA
+<Button onClick={() => router.push('/contact')}>
+  Get In Touch
+</Button>
+```
+
+### **2. Customer Portal Flow ([src/app/portal/](mdc:src/app/portal/))**
+
+#### **Authentication → Dashboard → Booking**
+```typescript
+// Portal entry point
+export default function PortalPage() {
+  const { data: session, status } = useSession()
+
+  useEffect(() => {
+    if (status === 'loading') return
+    if (!session) router.push('/portal/login')
+  }, [session, status])
+
+  return (
+    <div>
+      {/* User authenticated - show dashboard */}
+      <PortalDashboard />
+    </div>
+  )
+}
+```
+
+#### **Portal Dashboard Components:**
+```typescript
+// Dashboard layout
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <AppointmentsCard />    // ← Recent appointments
+  <ServicesCard />        // ← Service selection
+  <ProfileCard />         // ← Account management
+</div>
+
+// Quick actions
+<div className="grid grid-cols-4 gap-4">
+  <BookAppointmentBtn />
+  <ViewServicesBtn />
+  <UpdateProfileBtn />
+  <ContactUsBtn />
+</div>
+```
+
+### **3. Booking Flow ([src/app/portal/book/page.tsx](mdc:src/app/portal/book/page.tsx))**
+
+#### **Multi-Step Booking Process:**
+```typescript
+// Booking wizard state
+const [formData, setFormData] = useState({
+  service: '',
+  date: '',
+  time: '',
+  notes: ''
+})
+
+// Step progression
+const handleNext = async () => {
+  if (currentStep === 0) {
+    // Service selection step
+    setFormData(prev => ({ ...prev, service: selectedService }))
+  } else if (currentStep === 1) {
+    // Date/time selection step
+    setFormData(prev => ({ ...prev, date: selectedDate, time: selectedTime }))
+  } else if (currentStep === 2) {
+    // Confirmation step
+    await submitAppointment(formData)
+  }
+}
+```
+
+#### **Booking Form Structure:**
+```typescript
+// Service Selection
+<select value={formData.service} onChange={handleServiceChange}>
+  {services.map(service => (
+    <option key={service.id} value={service.name}>
+      {service.name} - ${service.price}
+    </option>
+  ))}
+</select>
+
+// Date Selection
+<Input
+  type="date"
+  value={formData.date}
+  onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+  min={new Date().toISOString().split('T')[0]}
+/>
+
+// Time Selection
+<select value={formData.time} onChange={handleTimeChange}>
+  {timeSlots.map(time => (
+    <option key={time} value={time}>{time}</option>
+  ))}
+</select>
+```
+
+### **4. Admin Dashboard Flow ([src/app/admin/](mdc:src/app/admin/))**
+
+#### **Admin Workflow Pattern:**
+```typescript
+// Admin dashboard overview
+export default function AdminPage() {
+  const [activeTab, setActiveTab] = useState('overview')
+
+  return (
+    <AdminLayout>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="appointments">Appointments</TabsTrigger>
+          <TabsTrigger value="customers">Customers</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview">
+          <DashboardOverview />
+        </TabsContent>
+
+        <TabsContent value="appointments">
+          <AppointmentsManagement />
+        </TabsContent>
+
+        <TabsContent value="customers">
+          <CustomerManagement />
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <AnalyticsDashboard />
+        </TabsContent>
+      </Tabs>
+    </AdminLayout>
+  )
+}
+```
+
+## **State Management Patterns:**
+
+### **1. Local Component State:**
+```typescript
+// Booking form state
+const [bookingState, setBookingState] = useState({
+  currentStep: 0,
+  selectedService: null,
+  selectedDate: null,
+  selectedTime: null,
+  customerInfo: {},
+  isSubmitting: false,
+  errors: {}
+})
+
+// Step navigation
+const nextStep = () => {
+  setBookingState(prev => ({
+    ...prev,
+    currentStep: prev.currentStep + 1
+  }))
+}
+
+const prevStep = () => {
+  setBookingState(prev => ({
+    ...prev,
+    currentStep: Math.max(0, prev.currentStep - 1)
+  }))
+}
+```
+
+### **2. Global Application State:**
+```typescript
+// User authentication state
+const useAuthStore = create((set) => ({
+  user: null,
+  isAuthenticated: false,
+  login: (userData) => set({
+    user: userData,
+    isAuthenticated: true
+  }),
+  logout: () => set({
+    user: null,
+    isAuthenticated: false
+  })
+}))
+
+// Appointment state
+const useAppointmentStore = create((set) => ({
+  appointments: [],
+  selectedAppointment: null,
+  setAppointments: (appointments) => set({ appointments }),
+  selectAppointment: (appointment) => set({ selectedAppointment: appointment })
+}))
+```
+
+### **3. Server State Management:**
+```typescript
+// React Query for server state
+const useAppointments = (userId) => {
+  return useQuery({
+    queryKey: ['appointments', userId],
+    queryFn: () => fetchUserAppointments(userId),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000 // 10 minutes
+  })
+}
+
+// Mutation for creating appointments
+const useCreateAppointment = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: createAppointment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments'] })
+      toast.success('Appointment created successfully!')
+    },
+    onError: (error) => {
+      toast.error('Failed to create appointment')
+      console.error('Appointment creation error:', error)
+    }
+  })
+}
+```
+
+## **Error Handling Patterns:**
+
+### **1. Form Validation:**
+```typescript
+// Form validation schema
+const bookingSchema = z.object({
+  service: z.string().min(1, 'Please select a service'),
+  date: z.string().min(1, 'Please select a date'),
+  time: z.string().min(1, 'Please select a time'),
+  customerName: z.string().min(2, 'Name must be at least 2 characters'),
+  customerEmail: z.string().email('Please enter a valid email'),
+  customerPhone: z.string().min(10, 'Please enter a valid phone number')
+})
+
+// Form submission with validation
+const handleSubmit = async (data) => {
+  try {
+    const validatedData = bookingSchema.parse(data)
+    await createAppointment(validatedData)
+    router.push('/portal')
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      setErrors(error.errors.reduce((acc, err) => ({
+        ...acc,
+        [err.path[0]]: err.message
+      }), {}))
+    }
+  }
+}
+```
+
+### **2. API Error Handling:**
+```typescript
+// API call with error handling
+const createAppointment = async (appointmentData) => {
+  try {
+    const response = await fetch('/api/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(appointmentData)
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || 'Failed to create appointment')
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Appointment creation failed:', error)
+    throw error
+  }
+}
+```
+
+## **Loading States & UX Patterns:**
+
+### **1. Progressive Loading:**
+```typescript
+// Loading states for different UI sections
+const [loadingStates, setLoadingStates] = useState({
+  services: false,
+  availability: false,
+  booking: false
+})
+
+// Service loading
+const loadServices = async () => {
+  setLoadingStates(prev => ({ ...prev, services: true }))
+  try {
+    const services = await fetchServices()
+    setServices(services)
+  } finally {
+    setLoadingStates(prev => ({ ...prev, services: false }))
+  }
+}
+
+// Availability loading
+const loadAvailability = async (date) => {
+  setLoadingStates(prev => ({ ...prev, availability: true }))
+  try {
+    const slots = await fetchAvailableSlots(date)
+    setAvailableSlots(slots)
+  } finally {
+    setLoadingStates(prev => ({ ...prev, availability: false }))
+  }
+}
+```
+
+### **2. Skeleton Loading:**
+```typescript
+// Skeleton components for better UX
+const AppointmentSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+  </div>
+)
+
+// Conditional rendering
+{loadingStates.services ? (
+  <div className="space-y-4">
+    <AppointmentSkeleton />
+    <AppointmentSkeleton />
+    <AppointmentSkeleton />
+  </div>
+) : (
+  appointments.map(appointment => (
+    <AppointmentCard key={appointment.id} appointment={appointment} />
+  ))
+)}
+```
+
+### **3. Progressive Enhancement:**
+```typescript
+// Client-side enhancements
+'use client'
+
+const EnhancedComponent = ({ children }) => {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Server-side rendering fallback
+  if (!isClient) {
+    return <div>{children}</div>
+  }
+
+  // Client-side enhanced version
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+```
+
+## **Accessibility Patterns:**
+
+### **1. Keyboard Navigation:**
+```typescript
+// Keyboard event handling
+const handleKeyDown = (event) => {
+  switch (event.key) {
+    case 'Enter':
+    case ' ':
+      handleSelect()
+      break
+    case 'ArrowDown':
+      event.preventDefault()
+      moveFocus('down')
+      break
+    case 'ArrowUp':
+      event.preventDefault()
+      moveFocus('up')
+      break
+    case 'Escape':
+      closeModal()
+      break
+  }
+}
+
+// Focus management
+useEffect(() => {
+  if (isOpen) {
+    firstFocusableElement?.focus()
+  }
+}, [isOpen])
+```
+
+### **2. Screen Reader Support:**
+```typescript
+// ARIA labels and descriptions
+<button
+  aria-label={`Book appointment for ${service.name}`}
+  aria-describedby="service-description"
+>
+  Book Now
+</button>
+
+<div id="service-description" className="sr-only">
+  {service.description}. Duration: {service.duration} minutes.
+  Price: ${service.price}.
+</div>
+
+// Live regions for dynamic content
+<div aria-live="polite" aria-atomic="true">
+  {bookingStatus === 'confirmed' && 'Appointment confirmed successfully!'}
+</div>
+```
+
+### **3. Focus Management:**
+```typescript
+// Focus trapping in modals
+const focusTrap = useRef(null)
+
+useEffect(() => {
+  const handleTab = (e) => {
+    if (e.key !== 'Tab') return
+
+    const focusableElements = focusTrap.current?.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+
+    const firstElement = focusableElements[0]
+    const lastElement = focusableElements[focusableElements.length - 1]
+
+    if (e.shiftKey) {
+      if (document.activeElement === firstElement) {
+        lastElement.focus()
+        e.preventDefault()
+      }
+    } else {
+      if (document.activeElement === lastElement) {
+        firstElement.focus()
+        e.preventDefault()
+      }
+    }
+  }
+
+  document.addEventListener('keydown', handleTab)
+  return () => document.removeEventListener('keydown', handleTab)
+}, [])
+```
+
+## **Performance Optimization Patterns:**
+
+### **1. Code Splitting:**
+```typescript
+// Route-based code splitting
+const BookingPage = dynamic(() => import('../pages/BookingPage'), {
+  loading: () => <PageSkeleton />
+})
+
+const AdminDashboard = dynamic(() => import('../pages/AdminDashboard'), {
+  loading: () => <DashboardSkeleton />
+})
+```
+
+### **2. Image Optimization:**
+```typescript
+// Next.js Image optimization
+import Image from 'next/image'
+
+<Image
+  src={service.image}
+  alt={service.name}
+  width={400}
+  height={300}
+  placeholder="blur"
+  blurDataURL="data:image/jpeg;base64,/9j/4AAQ..."
+  priority={index === 0} // Only prioritize first image
+/>
+```
+
+### **3. Virtual Scrolling:**
+```typescript
+// For large lists
+const VirtualizedList = ({ items, itemHeight }) => {
+  const [scrollTop, setScrollTop] = useState(0)
+  const containerHeight = 400
+
+  const startIndex = Math.floor(scrollTop / itemHeight)
+  const endIndex = Math.min(
+    startIndex + Math.ceil(containerHeight / itemHeight),
+    items.length - 1
+  )
+
+  const visibleItems = items.slice(startIndex, endIndex + 1)
+
+  return (
+    <div
+      style={{ height: containerHeight, overflow: 'auto' }}
+      onScroll={(e) => setScrollTop(e.target.scrollTop)}
+    >
+      <div style={{ height: items.length * itemHeight }}>
+        <div style={{ transform: `translateY(${startIndex * itemHeight}px)` }}>
+          {visibleItems.map((item, index) => (
+            <div key={item.id} style={{ height: itemHeight }}>
+              <ListItem item={item} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+```

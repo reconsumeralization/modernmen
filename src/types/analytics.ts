@@ -1,3 +1,5 @@
+import { UserRole } from '@/lib/permissions'
+
 export interface UserFeedback {
   id: string;
   contentId: string;
@@ -158,9 +160,9 @@ export interface FeedbackSummary {
   actionableInsights: string[];
 }
 
-export type UserRole = 
+export type AnalyticsUserRole =
   | 'developer'
-  | 'salon_owner' 
+  | 'salon_owner'
   | 'salon_employee'
   | 'salon_customer'
   | 'system_admin'

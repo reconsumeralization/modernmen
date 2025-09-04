@@ -1,0 +1,4857 @@
+{
+  "api": {
+    "version": "v1.0.0",
+    "baseUrl": "/api",
+    "documentation": "Complete API Reference for Modern Men Hair Salon System",
+    "timestamp": "2025-09-01T23:00:06.822Z"
+  },
+  "authentication": {
+    "nextauth": {
+      "signin": {
+        "method": "POST",
+        "endpoint": "/api/auth/signin",
+        "description": "Sign in with credentials or OAuth providers",
+        "body": {
+          "email": "string",
+          "password": "string",
+          "provider": "string"
+        },
+        "response": {
+          "user": {
+            "id": "string",
+            "email": "string",
+            "name": "string",
+            "role": "string"
+          },
+          "token": "string",
+          "expires": "date"
+        }
+      },
+      "signout": {
+        "method": "POST",
+        "endpoint": "/api/auth/signout",
+        "description": "Sign out current user",
+        "response": {
+          "success": true,
+          "message": "Signed out successfully"
+        }
+      },
+      "session": {
+        "method": "GET",
+        "endpoint": "/api/auth/session",
+        "description": "Get current user session",
+        "response": {
+          "user": {
+            "id": "string",
+            "email": "string",
+            "name": "string",
+            "role": "string",
+            "image": "string"
+          },
+          "expires": "date"
+        }
+      },
+      "providers": {
+        "method": "GET",
+        "endpoint": "/api/auth/providers",
+        "description": "Get available OAuth providers",
+        "response": {
+          "google": {
+            "id": "google",
+            "name": "Google",
+            "type": "oauth"
+          },
+          "facebook": {
+            "id": "facebook",
+            "name": "Facebook",
+            "type": "oauth"
+          }
+        }
+      }
+    },
+    "custom": {
+      "register": {
+        "method": "POST",
+        "endpoint": "/api/auth/register",
+        "description": "User registration",
+        "body": {
+          "email": "string",
+          "password": "string",
+          "name": "string",
+          "phone": "string",
+          "role": "customer"
+        },
+        "response": {
+          "user": {
+            "id": "string",
+            "email": "string",
+            "name": "string",
+            "role": "string"
+          },
+          "message": "Registration successful"
+        }
+      },
+      "forgotPassword": {
+        "method": "POST",
+        "endpoint": "/api/auth/forgot-password",
+        "description": "Request password reset",
+        "body": {
+          "email": "string"
+        },
+        "response": {
+          "message": "Password reset email sent"
+        }
+      },
+      "resetPassword": {
+        "method": "POST",
+        "endpoint": "/api/auth/reset-password",
+        "description": "Confirm password reset",
+        "body": {
+          "token": "string",
+          "password": "string"
+        },
+        "response": {
+          "message": "Password reset successful"
+        }
+      },
+      "verifyEmail": {
+        "method": "POST",
+        "endpoint": "/api/auth/verify-email",
+        "description": "Email verification",
+        "body": {
+          "token": "string"
+        },
+        "response": {
+          "message": "Email verified successfully"
+        }
+      },
+      "refreshToken": {
+        "method": "POST",
+        "endpoint": "/api/auth/refresh-token",
+        "description": "Refresh JWT token",
+        "body": {
+          "refreshToken": "string"
+        },
+        "response": {
+          "token": "string",
+          "refreshToken": "string",
+          "expires": "date"
+        }
+      }
+    }
+  },
+  "collections": {
+    "users": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/users",
+        "permissions": "admin, manager",
+        "description": "List all users",
+        "query": {
+          "page": "number",
+          "limit": "number",
+          "sort": "string",
+          "where": "object"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "email": "string",
+              "name": "string",
+              "role": "string",
+              "createdAt": "date",
+              "updatedAt": "date"
+            }
+          ],
+          "totalDocs": "number",
+          "page": "number",
+          "totalPages": "number"
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/users/:id",
+        "description": "Get user by ID",
+        "response": {
+          "id": "string",
+          "email": "string",
+          "name": "string",
+          "role": "string",
+          "profile": {
+            "phone": "string",
+            "address": "string",
+            "preferences": "object"
+          },
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/users",
+        "permissions": "admin",
+        "description": "Create new user",
+        "body": {
+          "email": "string",
+          "password": "string",
+          "name": "string",
+          "role": "string",
+          "profile": "object"
+        },
+        "response": {
+          "id": "string",
+          "email": "string",
+          "name": "string",
+          "role": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/users/:id",
+        "description": "Update user",
+        "body": {
+          "name": "string",
+          "email": "string",
+          "role": "string",
+          "profile": "object"
+        },
+        "response": {
+          "id": "string",
+          "email": "string",
+          "name": "string",
+          "role": "string"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/users/:id",
+        "permissions": "admin",
+        "description": "Delete user",
+        "response": {
+          "message": "User deleted successfully"
+        }
+      },
+      "me": {
+        "method": "GET",
+        "endpoint": "/api/users/me",
+        "description": "Get current user profile",
+        "response": {
+          "id": "string",
+          "email": "string",
+          "name": "string",
+          "role": "string",
+          "profile": "object",
+          "preferences": "object"
+        }
+      },
+      "updateMe": {
+        "method": "PUT",
+        "endpoint": "/api/users/me",
+        "description": "Update current user profile",
+        "body": {
+          "name": "string",
+          "profile": "object"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "profile": "object"
+        }
+      },
+      "preferences": {
+        "method": "PUT",
+        "endpoint": "/api/users/me/preferences",
+        "description": "Update user preferences",
+        "body": {
+          "theme": "string",
+          "notifications": "object",
+          "language": "string"
+        },
+        "response": {
+          "preferences": "object"
+        }
+      }
+    },
+    "tenants": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/tenants",
+        "permissions": "admin",
+        "description": "List all tenants",
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "domain": "string",
+              "status": "string",
+              "createdAt": "date"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/tenants/:id",
+        "description": "Get tenant by ID",
+        "response": {
+          "id": "string",
+          "name": "string",
+          "domain": "string",
+          "settings": "object",
+          "status": "string"
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/tenants",
+        "permissions": "admin",
+        "description": "Create new tenant",
+        "body": {
+          "name": "string",
+          "domain": "string",
+          "settings": "object"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "domain": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/tenants/:id",
+        "description": "Update tenant",
+        "body": {
+          "name": "string",
+          "settings": "object"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "settings": "object"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/tenants/:id",
+        "permissions": "admin",
+        "description": "Delete tenant",
+        "response": {
+          "message": "Tenant deleted successfully"
+        }
+      },
+      "settings": {
+        "get": {
+          "method": "GET",
+          "endpoint": "/api/tenants/:id/settings",
+          "description": "Get tenant settings",
+          "response": {
+            "branding": "object",
+            "features": "object",
+            "integrations": "object"
+          }
+        },
+        "update": {
+          "method": "PUT",
+          "endpoint": "/api/tenants/:id/settings",
+          "description": "Update tenant settings",
+          "body": {
+            "branding": "object",
+            "features": "object",
+            "integrations": "object"
+          },
+          "response": {
+            "settings": "object"
+          }
+        }
+      }
+    },
+    "customers": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/customers",
+        "permissions": "staff+",
+        "description": "List all customers",
+        "query": {
+          "page": "number",
+          "limit": "number",
+          "search": "string",
+          "sort": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "email": "string",
+              "phone": "string",
+              "loyaltyPoints": "number",
+              "totalVisits": "number",
+              "lastVisit": "date"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/customers/:id",
+        "description": "Get customer by ID",
+        "response": {
+          "id": "string",
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "address": "object",
+          "preferences": "object",
+          "loyaltyPoints": "number",
+          "totalSpent": "number",
+          "totalVisits": "number",
+          "lastVisit": "date",
+          "notes": "string"
+        }
+      },
+      "search": {
+        "method": "GET",
+        "endpoint": "/api/customers?email=:email",
+        "description": "Search customers by email",
+        "query": {
+          "email": "string",
+          "phone": "string",
+          "name": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "email": "string",
+              "phone": "string"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/customers",
+        "description": "Create new customer",
+        "body": {
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "address": "object",
+          "preferences": "object",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "email": "string",
+          "phone": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/customers/:id",
+        "description": "Update customer",
+        "body": {
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "address": "object",
+          "preferences": "object",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "email": "string",
+          "phone": "string"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/customers/:id",
+        "permissions": "admin",
+        "description": "Delete customer",
+        "response": {
+          "message": "Customer deleted successfully"
+        }
+      },
+      "history": {
+        "method": "GET",
+        "endpoint": "/api/customers/:id/history",
+        "description": "Get customer history",
+        "response": {
+          "appointments": [
+            {
+              "id": "string",
+              "date": "date",
+              "services": "array",
+              "stylist": "string",
+              "total": "number",
+              "status": "string"
+            }
+          ],
+          "totalSpent": "number",
+          "totalVisits": "number"
+        }
+      },
+      "loyalty": {
+        "get": {
+          "method": "GET",
+          "endpoint": "/api/customers/:id/loyalty",
+          "description": "Get customer loyalty points",
+          "response": {
+            "points": "number",
+            "tier": "string",
+            "history": [
+              {
+                "date": "date",
+                "points": "number",
+                "reason": "string",
+                "type": "earned|redeemed"
+              }
+            ]
+          }
+        },
+        "update": {
+          "method": "PUT",
+          "endpoint": "/api/customers/:id/loyalty",
+          "description": "Update loyalty points",
+          "body": {
+            "points": "number",
+            "reason": "string",
+            "type": "earned|redeemed"
+          },
+          "response": {
+            "points": "number",
+            "tier": "string"
+          }
+        }
+      }
+    },
+    "appointments": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/appointments",
+        "description": "List all appointments",
+        "query": {
+          "page": "number",
+          "limit": "number",
+          "date": "date",
+          "stylist": "string",
+          "status": "string",
+          "customer": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "customer": "object",
+              "stylist": "object",
+              "services": "array",
+              "date": "date",
+              "time": "string",
+              "duration": "number",
+              "status": "string",
+              "total": "number"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/appointments/:id",
+        "description": "Get appointment by ID",
+        "response": {
+          "id": "string",
+          "customer": "object",
+          "stylist": "object",
+          "services": "array",
+          "date": "date",
+          "time": "string",
+          "duration": "number",
+          "status": "string",
+          "total": "number",
+          "notes": "string",
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      },
+      "byDate": {
+        "method": "GET",
+        "endpoint": "/api/appointments?date=:date",
+        "description": "Get appointments by date",
+        "query": {
+          "date": "date",
+          "stylist": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "customer": "object",
+              "stylist": "object",
+              "time": "string",
+              "services": "array",
+              "status": "string"
+            }
+          ]
+        }
+      },
+      "byStylist": {
+        "method": "GET",
+        "endpoint": "/api/appointments?stylist=:id",
+        "description": "Get appointments by stylist",
+        "query": {
+          "stylist": "string",
+          "date": "date",
+          "status": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "customer": "object",
+              "date": "date",
+              "time": "string",
+              "services": "array",
+              "status": "string"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/appointments",
+        "description": "Create new appointment",
+        "body": {
+          "customer": "string",
+          "stylist": "string",
+          "services": "array",
+          "date": "date",
+          "time": "string",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "customer": "object",
+          "stylist": "object",
+          "services": "array",
+          "date": "date",
+          "time": "string",
+          "total": "number",
+          "status": "scheduled"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/appointments/:id",
+        "description": "Update appointment",
+        "body": {
+          "services": "array",
+          "date": "date",
+          "time": "string",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "services": "array",
+          "date": "date",
+          "time": "string",
+          "total": "number"
+        }
+      },
+      "cancel": {
+        "method": "PUT",
+        "endpoint": "/api/appointments/:id/cancel",
+        "description": "Cancel appointment",
+        "body": {
+          "reason": "string"
+        },
+        "response": {
+          "id": "string",
+          "status": "cancelled",
+          "cancelledAt": "date",
+          "cancelReason": "string"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/appointments/:id",
+        "permissions": "admin",
+        "description": "Delete appointment",
+        "response": {
+          "message": "Appointment deleted successfully"
+        }
+      },
+      "checkin": {
+        "method": "PUT",
+        "endpoint": "/api/appointments/:id/checkin",
+        "description": "Check-in appointment",
+        "response": {
+          "id": "string",
+          "status": "checked-in",
+          "checkedInAt": "date"
+        }
+      },
+      "complete": {
+        "method": "PUT",
+        "endpoint": "/api/appointments/:id/complete",
+        "description": "Complete appointment",
+        "body": {
+          "services": "array",
+          "total": "number",
+          "payment": "object",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "status": "completed",
+          "completedAt": "date",
+          "total": "number"
+        }
+      },
+      "reschedule": {
+        "method": "PUT",
+        "endpoint": "/api/appointments/:id/reschedule",
+        "description": "Reschedule appointment",
+        "body": {
+          "date": "date",
+          "time": "string",
+          "stylist": "string"
+        },
+        "response": {
+          "id": "string",
+          "date": "date",
+          "time": "string",
+          "stylist": "object"
+        }
+      }
+    },
+    "services": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/services",
+        "description": "List all services",
+        "query": {
+          "category": "string",
+          "active": "boolean",
+          "sort": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "description": "string",
+              "category": "string",
+              "price": "number",
+              "duration": "number",
+              "active": "boolean"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/services/:id",
+        "description": "Get service by ID",
+        "response": {
+          "id": "string",
+          "name": "string",
+          "description": "string",
+          "category": "string",
+          "price": "number",
+          "duration": "number",
+          "requirements": "array",
+          "addOns": "array",
+          "active": "boolean",
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      },
+      "byCategory": {
+        "method": "GET",
+        "endpoint": "/api/services?category=:cat",
+        "description": "Get services by category",
+        "query": {
+          "category": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "price": "number",
+              "duration": "number",
+              "description": "string"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/services",
+        "permissions": "manager+",
+        "description": "Create new service",
+        "body": {
+          "name": "string",
+          "description": "string",
+          "category": "string",
+          "price": "number",
+          "duration": "number",
+          "requirements": "array",
+          "addOns": "array"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "category": "string",
+          "price": "number",
+          "duration": "number"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/services/:id",
+        "description": "Update service",
+        "body": {
+          "name": "string",
+          "description": "string",
+          "price": "number",
+          "duration": "number",
+          "active": "boolean"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "price": "number",
+          "duration": "number"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/services/:id",
+        "permissions": "manager+",
+        "description": "Delete service",
+        "response": {
+          "message": "Service deleted successfully"
+        }
+      },
+      "analytics": {
+        "method": "GET",
+        "endpoint": "/api/services/:id/analytics",
+        "description": "Get service analytics",
+        "response": {
+          "bookings": "number",
+          "revenue": "number",
+          "averageRating": "number",
+          "popularTimes": "array",
+          "trends": "object"
+        }
+      },
+      "popular": {
+        "method": "GET",
+        "endpoint": "/api/services/popular",
+        "description": "Get popular services",
+        "query": {
+          "limit": "number",
+          "period": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "bookings": "number",
+              "revenue": "number",
+              "growth": "number"
+            }
+          ]
+        }
+      }
+    },
+    "stylists": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/stylists",
+        "description": "List all stylists",
+        "query": {
+          "active": "boolean",
+          "specialty": "string",
+          "available": "boolean"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "specialties": "array",
+              "rating": "number",
+              "experience": "number",
+              "active": "boolean"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/stylists/:id",
+        "description": "Get stylist by ID",
+        "response": {
+          "id": "string",
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "specialties": "array",
+          "bio": "string",
+          "experience": "number",
+          "rating": "number",
+          "portfolio": "array",
+          "schedule": "object",
+          "active": "boolean"
+        }
+      },
+      "bySpecialty": {
+        "method": "GET",
+        "endpoint": "/api/stylists?specialty=:spec",
+        "description": "Get stylists by specialty",
+        "query": {
+          "specialty": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "specialties": "array",
+              "rating": "number",
+              "experience": "number"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/stylists",
+        "permissions": "manager+",
+        "description": "Create new stylist",
+        "body": {
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "specialties": "array",
+          "bio": "string",
+          "experience": "number",
+          "schedule": "object"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "email": "string",
+          "specialties": "array"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/stylists/:id",
+        "description": "Update stylist",
+        "body": {
+          "name": "string",
+          "phone": "string",
+          "specialties": "array",
+          "bio": "string",
+          "active": "boolean"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "specialties": "array",
+          "active": "boolean"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/stylists/:id",
+        "permissions": "manager+",
+        "description": "Delete stylist",
+        "response": {
+          "message": "Stylist deleted successfully"
+        }
+      },
+      "schedule": {
+        "get": {
+          "method": "GET",
+          "endpoint": "/api/stylists/:id/schedule",
+          "description": "Get stylist schedule",
+          "query": {
+            "date": "date",
+            "week": "string"
+          },
+          "response": {
+            "schedule": {
+              "monday": {
+                "start": "string",
+                "end": "string",
+                "breaks": "array"
+              },
+              "tuesday": {
+                "start": "string",
+                "end": "string",
+                "breaks": "array"
+              }
+            },
+            "appointments": "array",
+            "availability": "array"
+          }
+        },
+        "update": {
+          "method": "PUT",
+          "endpoint": "/api/stylists/:id/schedule",
+          "description": "Update stylist schedule",
+          "body": {
+            "schedule": "object",
+            "timeOff": "array"
+          },
+          "response": {
+            "schedule": "object",
+            "timeOff": "array"
+          }
+        }
+      },
+      "availability": {
+        "method": "GET",
+        "endpoint": "/api/stylists/:id/availability",
+        "description": "Get stylist availability",
+        "query": {
+          "date": "date",
+          "service": "string",
+          "duration": "number"
+        },
+        "response": {
+          "date": "date",
+          "slots": [
+            {
+              "time": "string",
+              "available": "boolean",
+              "duration": "number"
+            }
+          ]
+        }
+      }
+    },
+    "employees": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/employees",
+        "permissions": "manager+",
+        "description": "List all employees",
+        "query": {
+          "department": "string",
+          "active": "boolean",
+          "role": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "email": "string",
+              "role": "string",
+              "department": "string",
+              "hireDate": "date",
+              "active": "boolean"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/employees/:id",
+        "description": "Get employee by ID",
+        "response": {
+          "id": "string",
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "role": "string",
+          "department": "string",
+          "hireDate": "date",
+          "salary": "number",
+          "benefits": "object",
+          "performance": "object",
+          "active": "boolean"
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/employees",
+        "permissions": "manager+",
+        "description": "Create new employee",
+        "body": {
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "role": "string",
+          "department": "string",
+          "hireDate": "date",
+          "salary": "number",
+          "benefits": "object"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "email": "string",
+          "role": "string",
+          "department": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/employees/:id",
+        "description": "Update employee",
+        "body": {
+          "name": "string",
+          "phone": "string",
+          "role": "string",
+          "department": "string",
+          "salary": "number",
+          "active": "boolean"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "role": "string",
+          "department": "string"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/employees/:id",
+        "permissions": "manager+",
+        "description": "Delete employee",
+        "response": {
+          "message": "Employee deleted successfully"
+        }
+      },
+      "schedule": {
+        "get": {
+          "method": "GET",
+          "endpoint": "/api/employees/:id/schedule",
+          "description": "Get employee schedule",
+          "query": {
+            "week": "string",
+            "month": "string"
+          },
+          "response": {
+            "schedule": "object",
+            "totalHours": "number",
+            "overtime": "number"
+          }
+        },
+        "update": {
+          "method": "PUT",
+          "endpoint": "/api/employees/:id/schedule",
+          "description": "Update employee schedule",
+          "body": {
+            "schedule": "object"
+          },
+          "response": {
+            "schedule": "object"
+          }
+        }
+      },
+      "performance": {
+        "method": "GET",
+        "endpoint": "/api/employees/:id/performance",
+        "description": "Get employee performance",
+        "query": {
+          "period": "string"
+        },
+        "response": {
+          "metrics": {
+            "productivity": "number",
+            "quality": "number",
+            "customerSatisfaction": "number",
+            "attendance": "number"
+          },
+          "goals": "array",
+          "reviews": "array"
+        }
+      }
+    },
+    "timeClock": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/time-clock",
+        "description": "List time entries",
+        "query": {
+          "employee": "string",
+          "date": "date",
+          "week": "string",
+          "status": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "employee": "object",
+              "clockIn": "date",
+              "clockOut": "date",
+              "totalHours": "number",
+              "status": "string"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/time-clock/:id",
+        "description": "Get time entry by ID",
+        "response": {
+          "id": "string",
+          "employee": "object",
+          "clockIn": "date",
+          "clockOut": "date",
+          "breaks": "array",
+          "totalHours": "number",
+          "overtime": "number",
+          "status": "string"
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/time-clock",
+        "description": "Clock in/out",
+        "body": {
+          "employee": "string",
+          "action": "clock-in|clock-out|break-start|break-end",
+          "timestamp": "date",
+          "location": "object"
+        },
+        "response": {
+          "id": "string",
+          "employee": "object",
+          "action": "string",
+          "timestamp": "date",
+          "status": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/time-clock/:id",
+        "permissions": "manager+",
+        "description": "Update time entry",
+        "body": {
+          "clockIn": "date",
+          "clockOut": "date",
+          "breaks": "array",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "clockIn": "date",
+          "clockOut": "date",
+          "totalHours": "number"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/time-clock/:id",
+        "permissions": "manager+",
+        "description": "Delete time entry",
+        "response": {
+          "message": "Time entry deleted successfully"
+        }
+      },
+      "report": {
+        "method": "GET",
+        "endpoint": "/api/time-clock/report",
+        "description": "Get time reports",
+        "query": {
+          "employee": "string",
+          "startDate": "date",
+          "endDate": "date",
+          "format": "json|csv|pdf"
+        },
+        "response": {
+          "summary": {
+            "totalHours": "number",
+            "regularHours": "number",
+            "overtimeHours": "number",
+            "totalPay": "number"
+          },
+          "entries": "array"
+        }
+      },
+      "today": {
+        "method": "GET",
+        "endpoint": "/api/time-clock/today",
+        "description": "Get today's entries",
+        "response": {
+          "entries": [
+            {
+              "employee": "object",
+              "clockIn": "date",
+              "clockOut": "date",
+              "status": "string",
+              "totalHours": "number"
+            }
+          ],
+          "summary": {
+            "totalEmployees": "number",
+            "clockedIn": "number",
+            "totalHours": "number"
+          }
+        }
+      },
+      "week": {
+        "method": "GET",
+        "endpoint": "/api/time-clock/week",
+        "description": "Get weekly entries",
+        "query": {
+          "week": "string",
+          "employee": "string"
+        },
+        "response": {
+          "entries": "array",
+          "summary": {
+            "totalHours": "number",
+            "regularHours": "number",
+            "overtimeHours": "number"
+          }
+        }
+      }
+    },
+    "payroll": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/payroll",
+        "permissions": "manager+",
+        "description": "List payroll entries",
+        "query": {
+          "employee": "string",
+          "payPeriod": "string",
+          "status": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "employee": "object",
+              "payPeriod": "object",
+              "grossPay": "number",
+              "netPay": "number",
+              "status": "string"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/payroll/:id",
+        "description": "Get payroll entry by ID",
+        "response": {
+          "id": "string",
+          "employee": "object",
+          "payPeriod": "object",
+          "hours": {
+            "regular": "number",
+            "overtime": "number",
+            "total": "number"
+          },
+          "earnings": {
+            "base": "number",
+            "overtime": "number",
+            "bonus": "number",
+            "commission": "number",
+            "total": "number"
+          },
+          "deductions": {
+            "taxes": "number",
+            "benefits": "number",
+            "other": "number",
+            "total": "number"
+          },
+          "netPay": "number",
+          "status": "string"
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/payroll",
+        "permissions": "manager+",
+        "description": "Create payroll entry",
+        "body": {
+          "employee": "string",
+          "payPeriod": "object",
+          "hours": "object",
+          "earnings": "object",
+          "deductions": "object"
+        },
+        "response": {
+          "id": "string",
+          "employee": "object",
+          "grossPay": "number",
+          "netPay": "number"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/payroll/:id",
+        "description": "Update payroll entry",
+        "body": {
+          "hours": "object",
+          "earnings": "object",
+          "deductions": "object"
+        },
+        "response": {
+          "id": "string",
+          "grossPay": "number",
+          "netPay": "number"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/payroll/:id",
+        "permissions": "manager+",
+        "description": "Delete payroll entry",
+        "response": {
+          "message": "Payroll entry deleted successfully"
+        }
+      },
+      "process": {
+        "method": "POST",
+        "endpoint": "/api/payroll/process",
+        "description": "Process payroll",
+        "body": {
+          "payPeriod": "object",
+          "employees": "array"
+        },
+        "response": {
+          "processed": "number",
+          "totalAmount": "number",
+          "entries": "array"
+        }
+      },
+      "pending": {
+        "method": "GET",
+        "endpoint": "/api/payroll/pending",
+        "description": "Get pending payroll",
+        "response": {
+          "entries": [
+            {
+              "id": "string",
+              "employee": "object",
+              "grossPay": "number",
+              "netPay": "number",
+              "dueDate": "date"
+            }
+          ],
+          "totalAmount": "number"
+        }
+      },
+      "approve": {
+        "method": "PUT",
+        "endpoint": "/api/payroll/:id/approve",
+        "description": "Approve payroll entry",
+        "response": {
+          "id": "string",
+          "status": "approved",
+          "approvedAt": "date",
+          "approvedBy": "string"
+        }
+      }
+    },
+    "products": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/products",
+        "description": "List all products",
+        "query": {
+          "category": "string",
+          "brand": "string",
+          "inStock": "boolean",
+          "sort": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "brand": "string",
+              "category": "string",
+              "price": "number",
+              "stock": "number",
+              "active": "boolean"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/products/:id",
+        "description": "Get product by ID",
+        "response": {
+          "id": "string",
+          "name": "string",
+          "description": "string",
+          "brand": "string",
+          "category": "string",
+          "price": "number",
+          "cost": "number",
+          "sku": "string",
+          "barcode": "string",
+          "stock": "number",
+          "minStock": "number",
+          "images": "array",
+          "specifications": "object",
+          "active": "boolean"
+        }
+      },
+      "byCategory": {
+        "method": "GET",
+        "endpoint": "/api/products?category=:cat",
+        "description": "Get products by category",
+        "query": {
+          "category": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "price": "number",
+              "stock": "number",
+              "brand": "string"
+            }
+          ]
+        }
+      },
+      "byBrand": {
+        "method": "GET",
+        "endpoint": "/api/products?brand=:brand",
+        "description": "Get products by brand",
+        "query": {
+          "brand": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "price": "number",
+              "stock": "number",
+              "category": "string"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/products",
+        "permissions": "manager+",
+        "description": "Create new product",
+        "body": {
+          "name": "string",
+          "description": "string",
+          "brand": "string",
+          "category": "string",
+          "price": "number",
+          "cost": "number",
+          "sku": "string",
+          "stock": "number",
+          "minStock": "number"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "brand": "string",
+          "price": "number",
+          "sku": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/products/:id",
+        "description": "Update product",
+        "body": {
+          "name": "string",
+          "description": "string",
+          "price": "number",
+          "stock": "number",
+          "active": "boolean"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "price": "number",
+          "stock": "number"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/products/:id",
+        "permissions": "manager+",
+        "description": "Delete product",
+        "response": {
+          "message": "Product deleted successfully"
+        }
+      },
+      "inventory": {
+        "get": {
+          "method": "GET",
+          "endpoint": "/api/products/:id/inventory",
+          "description": "Get product inventory",
+          "response": {
+            "product": "object",
+            "currentStock": "number",
+            "reservedStock": "number",
+            "availableStock": "number",
+            "reorderPoint": "number",
+            "lastRestocked": "date",
+            "movements": "array"
+          }
+        },
+        "update": {
+          "method": "PUT",
+          "endpoint": "/api/products/:id/inventory",
+          "description": "Update product inventory",
+          "body": {
+            "quantity": "number",
+            "type": "adjustment|restock|sale|return",
+            "reason": "string",
+            "cost": "number"
+          },
+          "response": {
+            "currentStock": "number",
+            "movement": "object"
+          }
+        }
+      },
+      "lowStock": {
+        "method": "GET",
+        "endpoint": "/api/products/low-stock",
+        "description": "Get low stock products",
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "currentStock": "number",
+              "minStock": "number",
+              "reorderQuantity": "number"
+            }
+          ]
+        }
+      }
+    },
+    "inventory": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/inventory",
+        "description": "List inventory items",
+        "query": {
+          "location": "string",
+          "category": "string",
+          "lowStock": "boolean"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "product": "object",
+              "location": "string",
+              "quantity": "number",
+              "reserved": "number",
+              "available": "number"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/inventory/:id",
+        "description": "Get inventory item by ID",
+        "response": {
+          "id": "string",
+          "product": "object",
+          "location": "string",
+          "quantity": "number",
+          "reserved": "number",
+          "available": "number",
+          "reorderPoint": "number",
+          "maxStock": "number",
+          "lastUpdated": "date"
+        }
+      },
+      "add": {
+        "method": "POST",
+        "endpoint": "/api/inventory",
+        "description": "Add inventory item",
+        "body": {
+          "product": "string",
+          "location": "string",
+          "quantity": "number",
+          "cost": "number",
+          "supplier": "string",
+          "expiryDate": "date"
+        },
+        "response": {
+          "id": "string",
+          "product": "object",
+          "quantity": "number",
+          "location": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/inventory/:id",
+        "description": "Update inventory item",
+        "body": {
+          "quantity": "number",
+          "reorderPoint": "number",
+          "maxStock": "number"
+        },
+        "response": {
+          "id": "string",
+          "quantity": "number",
+          "reorderPoint": "number"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/inventory/:id",
+        "description": "Remove inventory item",
+        "response": {
+          "message": "Inventory item removed successfully"
+        }
+      },
+      "lowStock": {
+        "method": "GET",
+        "endpoint": "/api/inventory/low-stock",
+        "description": "Get low stock items",
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "product": "object",
+              "location": "string",
+              "quantity": "number",
+              "reorderPoint": "number",
+              "suggested": "number"
+            }
+          ]
+        }
+      },
+      "expiring": {
+        "method": "GET",
+        "endpoint": "/api/inventory/expiring",
+        "description": "Get expiring items",
+        "query": {
+          "days": "number"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "product": "object",
+              "quantity": "number",
+              "expiryDate": "date",
+              "daysToExpiry": "number"
+            }
+          ]
+        }
+      },
+      "adjust": {
+        "method": "PUT",
+        "endpoint": "/api/inventory/:id/adjust",
+        "description": "Adjust inventory quantity",
+        "body": {
+          "adjustment": "number",
+          "reason": "string",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "oldQuantity": "number",
+          "newQuantity": "number",
+          "adjustment": "number"
+        }
+      }
+    },
+    "suppliers": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/suppliers",
+        "description": "List all suppliers",
+        "query": {
+          "active": "boolean",
+          "category": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "contact": "object",
+              "category": "string",
+              "rating": "number",
+              "active": "boolean"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/suppliers/:id",
+        "description": "Get supplier by ID",
+        "response": {
+          "id": "string",
+          "name": "string",
+          "contact": {
+            "email": "string",
+            "phone": "string",
+            "address": "object",
+            "website": "string"
+          },
+          "category": "string",
+          "paymentTerms": "string",
+          "deliveryTime": "number",
+          "minimumOrder": "number",
+          "rating": "number",
+          "notes": "string",
+          "active": "boolean"
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/suppliers",
+        "description": "Create new supplier",
+        "body": {
+          "name": "string",
+          "contact": "object",
+          "category": "string",
+          "paymentTerms": "string",
+          "deliveryTime": "number",
+          "minimumOrder": "number"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "contact": "object",
+          "category": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/suppliers/:id",
+        "description": "Update supplier",
+        "body": {
+          "name": "string",
+          "contact": "object",
+          "paymentTerms": "string",
+          "active": "boolean"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "contact": "object"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/suppliers/:id",
+        "description": "Delete supplier",
+        "response": {
+          "message": "Supplier deleted successfully"
+        }
+      },
+      "orders": {
+        "method": "GET",
+        "endpoint": "/api/suppliers/:id/orders",
+        "description": "Get supplier orders",
+        "query": {
+          "status": "string",
+          "startDate": "date",
+          "endDate": "date"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "orderNumber": "string",
+              "date": "date",
+              "total": "number",
+              "status": "string"
+            }
+          ]
+        }
+      },
+      "order": {
+        "method": "POST",
+        "endpoint": "/api/suppliers/:id/order",
+        "description": "Create supplier order",
+        "body": {
+          "items": [
+            {
+              "product": "string",
+              "quantity": "number",
+              "unitCost": "number"
+            }
+          ],
+          "deliveryDate": "date",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "orderNumber": "string",
+          "total": "number",
+          "status": "pending"
+        }
+      },
+      "products": {
+        "method": "GET",
+        "endpoint": "/api/suppliers/:id/products",
+        "description": "Get supplier products",
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "sku": "string",
+              "cost": "number",
+              "minimumOrder": "number",
+              "leadTime": "number"
+            }
+          ]
+        }
+      }
+    },
+    "orders": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/orders",
+        "description": "List all orders",
+        "query": {
+          "status": "string",
+          "customer": "string",
+          "startDate": "date",
+          "endDate": "date"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "orderNumber": "string",
+              "customer": "object",
+              "total": "number",
+              "status": "string",
+              "createdAt": "date"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/orders/:id",
+        "description": "Get order by ID",
+        "response": {
+          "id": "string",
+          "orderNumber": "string",
+          "customer": "object",
+          "items": [
+            {
+              "product": "object",
+              "quantity": "number",
+              "price": "number",
+              "total": "number"
+            }
+          ],
+          "subtotal": "number",
+          "tax": "number",
+          "shipping": "number",
+          "total": "number",
+          "status": "string",
+          "shippingAddress": "object",
+          "billingAddress": "object",
+          "paymentMethod": "object",
+          "tracking": "string",
+          "notes": "string",
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      },
+      "byStatus": {
+        "method": "GET",
+        "endpoint": "/api/orders?status=:status",
+        "description": "Get orders by status",
+        "query": {
+          "status": "pending|processing|shipped|delivered|cancelled"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "orderNumber": "string",
+              "customer": "object",
+              "total": "number",
+              "createdAt": "date"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/orders",
+        "description": "Create new order",
+        "body": {
+          "customer": "string",
+          "items": "array",
+          "shippingAddress": "object",
+          "billingAddress": "object",
+          "paymentMethod": "object",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "orderNumber": "string",
+          "total": "number",
+          "status": "pending"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/orders/:id",
+        "description": "Update order",
+        "body": {
+          "items": "array",
+          "shippingAddress": "object",
+          "notes": "string"
+        },
+        "response": {
+          "id": "string",
+          "total": "number",
+          "updatedAt": "date"
+        }
+      },
+      "cancel": {
+        "method": "DELETE",
+        "endpoint": "/api/orders/:id",
+        "description": "Cancel order",
+        "body": {
+          "reason": "string"
+        },
+        "response": {
+          "id": "string",
+          "status": "cancelled",
+          "cancelledAt": "date",
+          "cancelReason": "string"
+        }
+      },
+      "process": {
+        "method": "PUT",
+        "endpoint": "/api/orders/:id/process",
+        "description": "Process order",
+        "response": {
+          "id": "string",
+          "status": "processing",
+          "processedAt": "date"
+        }
+      },
+      "ship": {
+        "method": "PUT",
+        "endpoint": "/api/orders/:id/ship",
+        "description": "Ship order",
+        "body": {
+          "carrier": "string",
+          "trackingNumber": "string",
+          "shippedDate": "date"
+        },
+        "response": {
+          "id": "string",
+          "status": "shipped",
+          "tracking": "string",
+          "shippedAt": "date"
+        }
+      },
+      "deliver": {
+        "method": "PUT",
+        "endpoint": "/api/orders/:id/deliver",
+        "description": "Mark as delivered",
+        "body": {
+          "deliveredDate": "date",
+          "signature": "string"
+        },
+        "response": {
+          "id": "string",
+          "status": "delivered",
+          "deliveredAt": "date"
+        }
+      },
+      "refund": {
+        "method": "PUT",
+        "endpoint": "/api/orders/:id/refund",
+        "description": "Process refund",
+        "body": {
+          "amount": "number",
+          "reason": "string",
+          "items": "array"
+        },
+        "response": {
+          "id": "string",
+          "refundAmount": "number",
+          "refundedAt": "date",
+          "refundReason": "string"
+        }
+      }
+    },
+    "pages": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/pages",
+        "description": "List all pages",
+        "query": {
+          "status": "draft|published",
+          "parent": "string",
+          "sort": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "title": "string",
+              "slug": "string",
+              "_status": "string",
+              "parent": "string",
+              "createdAt": "date",
+              "updatedAt": "date"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/pages/:id",
+        "description": "Get page by ID",
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "content": "array",
+          "layout": "array",
+          "meta": {
+            "title": "string",
+            "description": "string",
+            "image": "string",
+            "keywords": "array"
+          },
+          "parent": "string",
+          "breadcrumbs": "array",
+          "_status": "string",
+          "publishedDate": "date",
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      },
+      "bySlug": {
+        "method": "GET",
+        "endpoint": "/api/pages?slug=:slug",
+        "description": "Get page by slug",
+        "query": {
+          "slug": "string"
+        },
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "content": "array",
+          "layout": "array",
+          "meta": "object"
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/pages",
+        "permissions": "editor+",
+        "description": "Create new page",
+        "body": {
+          "title": "string",
+          "slug": "string",
+          "content": "array",
+          "layout": "array",
+          "meta": "object",
+          "parent": "string",
+          "_status": "draft"
+        },
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "_status": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/pages/:id",
+        "description": "Update page",
+        "body": {
+          "title": "string",
+          "content": "array",
+          "layout": "array",
+          "meta": "object",
+          "_status": "string"
+        },
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "updatedAt": "date"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/pages/:id",
+        "permissions": "editor+",
+        "description": "Delete page",
+        "response": {
+          "message": "Page deleted successfully"
+        }
+      },
+      "revisions": {
+        "get": {
+          "method": "GET",
+          "endpoint": "/api/pages/:id/revisions",
+          "description": "Get page revisions",
+          "response": {
+            "docs": [
+              {
+                "id": "string",
+                "version": "number",
+                "title": "string",
+                "createdAt": "date",
+                "author": "object"
+              }
+            ]
+          }
+        },
+        "create": {
+          "method": "POST",
+          "endpoint": "/api/pages/:id/revisions",
+          "description": "Create page revision",
+          "body": {
+            "title": "string",
+            "content": "array",
+            "layout": "array"
+          },
+          "response": {
+            "id": "string",
+            "version": "number",
+            "createdAt": "date"
+          }
+        }
+      },
+      "publish": {
+        "method": "PUT",
+        "endpoint": "/api/pages/:id/publish",
+        "description": "Publish page",
+        "response": {
+          "id": "string",
+          "_status": "published",
+          "publishedDate": "date"
+        }
+      }
+    },
+    "posts": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/posts",
+        "description": "List all posts",
+        "query": {
+          "status": "draft|published",
+          "category": "string",
+          "author": "string",
+          "featured": "boolean"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "title": "string",
+              "slug": "string",
+              "excerpt": "string",
+              "featuredImage": "object",
+              "category": "object",
+              "author": "object",
+              "_status": "string",
+              "publishedDate": "date"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/posts/:id",
+        "description": "Get post by ID",
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "content": "array",
+          "excerpt": "string",
+          "featuredImage": "object",
+          "gallery": "array",
+          "category": "object",
+          "tags": "array",
+          "author": "object",
+          "meta": {
+            "title": "string",
+            "description": "string",
+            "image": "string"
+          },
+          "relatedPosts": "array",
+          "_status": "string",
+          "publishedDate": "date",
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      },
+      "byCategory": {
+        "method": "GET",
+        "endpoint": "/api/posts?category=:cat",
+        "description": "Get posts by category",
+        "query": {
+          "category": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "title": "string",
+              "slug": "string",
+              "excerpt": "string",
+              "featuredImage": "object",
+              "publishedDate": "date"
+            }
+          ]
+        }
+      },
+      "byAuthor": {
+        "method": "GET",
+        "endpoint": "/api/posts?author=:id",
+        "description": "Get posts by author",
+        "query": {
+          "author": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "title": "string",
+              "slug": "string",
+              "excerpt": "string",
+              "publishedDate": "date"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/posts",
+        "permissions": "editor+",
+        "description": "Create new post",
+        "body": {
+          "title": "string",
+          "slug": "string",
+          "content": "array",
+          "excerpt": "string",
+          "featuredImage": "string",
+          "category": "string",
+          "tags": "array",
+          "author": "string",
+          "_status": "draft"
+        },
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "_status": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/posts/:id",
+        "description": "Update post",
+        "body": {
+          "title": "string",
+          "content": "array",
+          "excerpt": "string",
+          "category": "string",
+          "tags": "array",
+          "_status": "string"
+        },
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "updatedAt": "date"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/posts/:id",
+        "permissions": "editor+",
+        "description": "Delete post",
+        "response": {
+          "message": "Post deleted successfully"
+        }
+      },
+      "meta": {
+        "get": {
+          "method": "GET",
+          "endpoint": "/api/posts/:id/meta",
+          "description": "Get post metadata",
+          "response": {
+            "meta": {
+              "title": "string",
+              "description": "string",
+              "image": "string",
+              "keywords": "array"
+            },
+            "social": {
+              "facebook": "object",
+              "twitter": "object"
+            }
+          }
+        },
+        "update": {
+          "method": "PUT",
+          "endpoint": "/api/posts/:id/meta",
+          "description": "Update post metadata",
+          "body": {
+            "meta": "object",
+            "social": "object"
+          },
+          "response": {
+            "meta": "object",
+            "social": "object"
+          }
+        }
+      }
+    },
+    "projects": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/projects",
+        "description": "List all projects",
+        "query": {
+          "status": "draft|published",
+          "category": "string",
+          "featured": "boolean"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "title": "string",
+              "slug": "string",
+              "description": "string",
+              "featuredImage": "object",
+              "category": "object",
+              "_status": "string",
+              "completedDate": "date"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/projects/:id",
+        "description": "Get project by ID",
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "description": "string",
+          "content": "array",
+          "featuredImage": "object",
+          "gallery": "array",
+          "category": "object",
+          "tags": "array",
+          "client": "string",
+          "duration": "string",
+          "technologies": "array",
+          "url": "string",
+          "meta": {
+            "title": "string",
+            "description": "string",
+            "image": "string"
+          },
+          "_status": "string",
+          "completedDate": "date",
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      },
+      "byCategory": {
+        "method": "GET",
+        "endpoint": "/api/projects?category=:cat",
+        "description": "Get projects by category",
+        "query": {
+          "category": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "title": "string",
+              "slug": "string",
+              "description": "string",
+              "featuredImage": "object",
+              "completedDate": "date"
+            }
+          ]
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/projects",
+        "permissions": "editor+",
+        "description": "Create new project",
+        "body": {
+          "title": "string",
+          "slug": "string",
+          "description": "string",
+          "content": "array",
+          "featuredImage": "string",
+          "category": "string",
+          "client": "string",
+          "technologies": "array",
+          "_status": "draft"
+        },
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "_status": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/projects/:id",
+        "description": "Update project",
+        "body": {
+          "title": "string",
+          "description": "string",
+          "content": "array",
+          "category": "string",
+          "technologies": "array",
+          "_status": "string"
+        },
+        "response": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "updatedAt": "date"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/projects/:id",
+        "permissions": "editor+",
+        "description": "Delete project",
+        "response": {
+          "message": "Project deleted successfully"
+        }
+      }
+    },
+    "media": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/media",
+        "description": "List all media files",
+        "query": {
+          "mimeType": "string",
+          "folder": "string",
+          "sort": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "filename": "string",
+              "alt": "string",
+              "mimeType": "string",
+              "filesize": "number",
+              "width": "number",
+              "height": "number",
+              "url": "string",
+              "createdAt": "date"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/media/:id",
+        "description": "Get media file by ID",
+        "response": {
+          "id": "string",
+          "filename": "string",
+          "alt": "string",
+          "caption": "string",
+          "mimeType": "string",
+          "filesize": "number",
+          "width": "number",
+          "height": "number",
+          "focalX": "number",
+          "focalY": "number",
+          "url": "string",
+          "thumbnailURL": "string",
+          "sizes": "object",
+          "tags": "array",
+          "folder": "string",
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      },
+      "upload": {
+        "method": "POST",
+        "endpoint": "/api/media",
+        "description": "Upload media file",
+        "body": {
+          "file": "file",
+          "alt": "string",
+          "caption": "string",
+          "folder": "string",
+          "tags": "array"
+        },
+        "response": {
+          "id": "string",
+          "filename": "string",
+          "url": "string",
+          "mimeType": "string",
+          "filesize": "number"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/media/:id",
+        "description": "Update media file",
+        "body": {
+          "alt": "string",
+          "caption": "string",
+          "focalX": "number",
+          "focalY": "number",
+          "tags": "array",
+          "folder": "string"
+        },
+        "response": {
+          "id": "string",
+          "alt": "string",
+          "caption": "string",
+          "tags": "array"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/media/:id",
+        "description": "Delete media file",
+        "response": {
+          "message": "Media file deleted successfully"
+        }
+      },
+      "search": {
+        "method": "GET",
+        "endpoint": "/api/media/search?q=:query",
+        "description": "Search media files",
+        "query": {
+          "q": "string",
+          "mimeType": "string",
+          "tags": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "filename": "string",
+              "alt": "string",
+              "url": "string",
+              "mimeType": "string"
+            }
+          ]
+        }
+      },
+      "download": {
+        "method": "GET",
+        "endpoint": "/api/media/:id/download",
+        "description": "Download media file",
+        "response": "file"
+      },
+      "tags": {
+        "method": "PUT",
+        "endpoint": "/api/media/:id/tags",
+        "description": "Update media tags",
+        "body": {
+          "tags": "array"
+        },
+        "response": {
+          "id": "string",
+          "tags": "array"
+        }
+      }
+    },
+    "notifications": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/notifications",
+        "description": "List all notifications",
+        "query": {
+          "user": "string",
+          "read": "boolean",
+          "type": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "title": "string",
+              "message": "string",
+              "type": "string",
+              "user": "object",
+              "read": "boolean",
+              "createdAt": "date"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/notifications/:id",
+        "description": "Get notification by ID",
+        "response": {
+          "id": "string",
+          "title": "string",
+          "message": "string",
+          "type": "string",
+          "user": "object",
+          "data": "object",
+          "read": "boolean",
+          "readAt": "date",
+          "createdAt": "date"
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/notifications",
+        "description": "Create notification",
+        "body": {
+          "title": "string",
+          "message": "string",
+          "type": "string",
+          "user": "string",
+          "data": "object"
+        },
+        "response": {
+          "id": "string",
+          "title": "string",
+          "message": "string",
+          "type": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/notifications/:id",
+        "description": "Update notification",
+        "body": {
+          "title": "string",
+          "message": "string",
+          "read": "boolean"
+        },
+        "response": {
+          "id": "string",
+          "title": "string",
+          "read": "boolean"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/notifications/:id",
+        "description": "Delete notification",
+        "response": {
+          "message": "Notification deleted successfully"
+        }
+      },
+      "me": {
+        "method": "GET",
+        "endpoint": "/api/notifications/me",
+        "description": "Get my notifications",
+        "query": {
+          "read": "boolean",
+          "limit": "number"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "title": "string",
+              "message": "string",
+              "type": "string",
+              "read": "boolean",
+              "createdAt": "date"
+            }
+          ],
+          "unreadCount": "number"
+        }
+      },
+      "read": {
+        "method": "PUT",
+        "endpoint": "/api/notifications/:id/read",
+        "description": "Mark as read",
+        "response": {
+          "id": "string",
+          "read": true,
+          "readAt": "date"
+        }
+      },
+      "readAll": {
+        "method": "PUT",
+        "endpoint": "/api/notifications/read-all",
+        "description": "Mark all as read",
+        "response": {
+          "updated": "number",
+          "message": "All notifications marked as read"
+        }
+      }
+    },
+    "locations": {
+      "list": {
+        "method": "GET",
+        "endpoint": "/api/locations",
+        "description": "List locations",
+        "query": {
+          "active": "boolean",
+          "city": "string"
+        },
+        "response": {
+          "docs": [
+            {
+              "id": "string",
+              "name": "string",
+              "address": "object",
+              "phone": "string",
+              "hours": "object",
+              "active": "boolean"
+            }
+          ]
+        }
+      },
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/locations/:id",
+        "description": "Get location by ID",
+        "response": {
+          "id": "string",
+          "name": "string",
+          "address": {
+            "street": "string",
+            "city": "string",
+            "state": "string",
+            "zip": "string",
+            "country": "string"
+          },
+          "phone": "string",
+          "email": "string",
+          "hours": "object",
+          "services": "array",
+          "staff": "array",
+          "amenities": "array",
+          "images": "array",
+          "active": "boolean",
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      },
+      "create": {
+        "method": "POST",
+        "endpoint": "/api/locations",
+        "permissions": "admin",
+        "description": "Create location",
+        "body": {
+          "name": "string",
+          "address": "object",
+          "phone": "string",
+          "email": "string",
+          "hours": "object",
+          "services": "array",
+          "amenities": "array"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "address": "object",
+          "phone": "string"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/locations/:id",
+        "description": "Update location",
+        "body": {
+          "name": "string",
+          "address": "object",
+          "phone": "string",
+          "hours": "object",
+          "active": "boolean"
+        },
+        "response": {
+          "id": "string",
+          "name": "string",
+          "address": "object",
+          "active": "boolean"
+        }
+      },
+      "delete": {
+        "method": "DELETE",
+        "endpoint": "/api/locations/:id",
+        "permissions": "admin",
+        "description": "Delete location",
+        "response": {
+          "message": "Location deleted successfully"
+        }
+      },
+      "staff": {
+        "get": {
+          "method": "GET",
+          "endpoint": "/api/locations/:id/staff",
+          "description": "Get location staff",
+          "response": {
+            "staff": [
+              {
+                "id": "string",
+                "name": "string",
+                "role": "string",
+                "specialties": "array",
+                "schedule": "object"
+              }
+            ]
+          }
+        },
+        "update": {
+          "method": "PUT",
+          "endpoint": "/api/locations/:id/staff",
+          "description": "Update location staff",
+          "body": {
+            "staff": "array"
+          },
+          "response": {
+            "staff": "array"
+          }
+        }
+      },
+      "services": {
+        "method": "GET",
+        "endpoint": "/api/locations/:id/services",
+        "description": "Get location services",
+        "response": {
+          "services": [
+            {
+              "id": "string",
+              "name": "string",
+              "price": "number",
+              "duration": "number",
+              "available": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    "settings": {
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/settings",
+        "description": "Get system settings",
+        "response": {
+          "general": {
+            "siteName": "string",
+            "siteUrl": "string",
+            "timezone": "string",
+            "currency": "string",
+            "language": "string"
+          },
+          "business": {
+            "name": "string",
+            "address": "object",
+            "phone": "string",
+            "email": "string",
+            "hours": "object"
+          },
+          "booking": {
+            "advanceBooking": "number",
+            "cancellationPolicy": "string",
+            "reminderSettings": "object"
+          },
+          "notifications": {
+            "email": "object",
+            "sms": "object",
+            "push": "object"
+          },
+          "integrations": {
+            "stripe": "object",
+            "google": "object",
+            "facebook": "object"
+          }
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/settings",
+        "description": "Update system settings",
+        "body": {
+          "general": "object",
+          "business": "object",
+          "booking": "object",
+          "notifications": "object",
+          "integrations": "object"
+        },
+        "response": {
+          "message": "Settings updated successfully",
+          "settings": "object"
+        }
+      },
+      "getKey": {
+        "method": "GET",
+        "endpoint": "/api/settings/:key",
+        "description": "Get specific setting",
+        "response": {
+          "key": "string",
+          "value": "any"
+        }
+      },
+      "updateKey": {
+        "method": "PUT",
+        "endpoint": "/api/settings/:key",
+        "description": "Update specific setting",
+        "body": {
+          "value": "any"
+        },
+        "response": {
+          "key": "string",
+          "value": "any"
+        }
+      }
+    }
+  },
+  "globals": {
+    "header": {
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/globals/header",
+        "description": "Get header configuration",
+        "response": {
+          "logo": "object",
+          "navItems": [
+            {
+              "link": {
+                "type": "reference",
+                "reference": {
+                  "relationTo": "pages",
+                  "value": "page_id"
+                }
+              },
+              "label": "string"
+            }
+          ],
+          "cta": {
+            "text": "string",
+            "url": "string",
+            "style": "string"
+          }
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/globals/header",
+        "description": "Update header configuration",
+        "body": {
+          "logo": "string",
+          "navItems": "array",
+          "cta": "object"
+        },
+        "response": {
+          "logo": "object",
+          "navItems": "array",
+          "cta": "object"
+        }
+      },
+      "structure": {
+        "navItems": [
+          {
+            "link": {
+              "type": "reference",
+              "reference": {
+                "relationTo": "pages",
+                "value": "page_id"
+              }
+            },
+            "label": "string"
+          }
+        ]
+      }
+    },
+    "settings": {
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/globals/settings",
+        "description": "Get site settings",
+        "response": {
+          "postsPage": {
+            "id": "string",
+            "title": "string",
+            "slug": "string",
+            "layout": "array",
+            "meta": {
+              "title": "string",
+              "description": "string",
+              "image": "string"
+            },
+            "_status": "published",
+            "createdAt": "date",
+            "updatedAt": "date"
+          },
+          "projectsPage": {
+            "id": "string",
+            "title": "string",
+            "slug": "string",
+            "layout": "array",
+            "meta": {
+              "title": "string",
+              "description": "string",
+              "image": "string"
+            },
+            "_status": "published",
+            "createdAt": "date",
+            "updatedAt": "date"
+          }
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/globals/settings",
+        "description": "Update site settings",
+        "body": {
+          "postsPage": "string",
+          "projectsPage": "string"
+        },
+        "response": {
+          "postsPage": "object",
+          "projectsPage": "object"
+        }
+      },
+      "structure": {
+        "postsPage": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "layout": "array",
+          "meta": {
+            "title": "string",
+            "description": "string",
+            "image": "string"
+          },
+          "_status": "published",
+          "createdAt": "date",
+          "updatedAt": "date"
+        },
+        "projectsPage": {
+          "id": "string",
+          "title": "string",
+          "slug": "string",
+          "layout": "array",
+          "meta": {
+            "title": "string",
+            "description": "string",
+            "image": "string"
+          },
+          "_status": "published",
+          "createdAt": "date",
+          "updatedAt": "date"
+        }
+      }
+    },
+    "footer": {
+      "get": {
+        "method": "GET",
+        "endpoint": "/api/globals/footer",
+        "description": "Get footer configuration",
+        "response": {
+          "logo": "object",
+          "columns": [
+            {
+              "title": "string",
+              "links": [
+                {
+                  "label": "string",
+                  "url": "string"
+                }
+              ]
+            }
+          ],
+          "social": [
+            {
+              "platform": "string",
+              "url": "string",
+              "icon": "string"
+            }
+          ],
+          "copyright": "string",
+          "legal": "array"
+        }
+      },
+      "update": {
+        "method": "PUT",
+        "endpoint": "/api/globals/footer",
+        "description": "Update footer configuration",
+        "body": {
+          "logo": "string",
+          "columns": "array",
+          "social": "array",
+          "copyright": "string",
+          "legal": "array"
+        },
+        "response": {
+          "logo": "object",
+          "columns": "array",
+          "social": "array",
+          "copyright": "string"
+        }
+      }
+    }
+  },
+  "analytics": {
+    "overview": {
+      "method": "GET",
+      "endpoint": "/api/analytics/overview",
+      "description": "Get overview metrics",
+      "query": {
+        "period": "today|week|month|year",
+        "startDate": "date",
+        "endDate": "date"
+      },
+      "response": {
+        "revenue": {
+          "total": "number",
+          "change": "number",
+          "trend": "up|down|stable"
+        },
+        "appointments": {
+          "total": "number",
+          "completed": "number",
+          "cancelled": "number",
+          "noShow": "number"
+        },
+        "customers": {
+          "total": "number",
+          "new": "number",
+          "returning": "number",
+          "retention": "number"
+        },
+        "staff": {
+          "utilization": "number",
+          "performance": "number"
+        }
+      }
+    },
+    "revenue": {
+      "method": "GET",
+      "endpoint": "/api/analytics/revenue",
+      "description": "Get revenue analytics",
+      "query": {
+        "period": "string",
+        "breakdown": "daily|weekly|monthly"
+      },
+      "response": {
+        "total": "number",
+        "breakdown": [
+          {
+            "period": "string",
+            "api": {
+              "version": "v1.0.0",
+              "baseUrl": "/api",
+              "documentation": "Complete API Reference for Modern Men Hair Salon System",
+              "timestamp": "2025-09-01T23:00:06.822Z"
+            },
+            "authentication": {
+              "nextauth": {
+                "signin": {
+                  "method": "POST",
+                  "endpoint": "/api/auth/signin",
+                  "description": "Sign in with credentials or OAuth providers"
+                },
+                "signout": {
+                  "method": "POST",
+                  "endpoint": "/api/auth/signout",
+                  "description": "Sign out current user"
+                },
+                "session": {
+                  "method": "GET",
+                  "endpoint": "/api/auth/session",
+                  "description": "Get current user session"
+                },
+                "providers": {
+                  "method": "GET",
+                  "endpoint": "/api/auth/providers",
+                  "description": "Get available OAuth providers"
+                }
+              },
+              "custom": {
+                "register": {
+                  "method": "POST",
+                  "endpoint": "/api/auth/register",
+                  "description": "User registration"
+                },
+                "forgotPassword": {
+                  "method": "POST",
+                  "endpoint": "/api/auth/forgot-password",
+                  "description": "Request password reset"
+                },
+                "resetPassword": {
+                  "method": "POST",
+                  "endpoint": "/api/auth/reset-password",
+                  "description": "Confirm password reset"
+                },
+                "verifyEmail": {
+                  "method": "POST",
+                  "endpoint": "/api/auth/verify-email",
+                  "description": "Email verification"
+                },
+                "refreshToken": {
+                  "method": "POST",
+                  "endpoint": "/api/auth/refresh-token",
+                  "description": "Refresh JWT token"
+                }
+              }
+            },
+            "collections": {
+              "users": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/users",
+                  "permissions": "admin, manager",
+                  "description": "List all users"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/users/:id",
+                  "description": "Get user by ID"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/users",
+                  "permissions": "admin",
+                  "description": "Create new user"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/users/:id",
+                  "description": "Update user"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/users/:id",
+                  "permissions": "admin",
+                  "description": "Delete user"
+                },
+                "me": {
+                  "method": "GET",
+                  "endpoint": "/api/users/me",
+                  "description": "Get current user profile"
+                },
+                "updateMe": {
+                  "method": "PUT",
+                  "endpoint": "/api/users/me",
+                  "description": "Update current user profile"
+                },
+                "preferences": {
+                  "method": "PUT",
+                  "endpoint": "/api/users/me/preferences",
+                  "description": "Update user preferences"
+                }
+              },
+              "tenants": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/tenants",
+                  "permissions": "admin",
+                  "description": "List all tenants"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/tenants/:id",
+                  "description": "Get tenant by ID"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/tenants",
+                  "permissions": "admin",
+                  "description": "Create new tenant"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/tenants/:id",
+                  "description": "Update tenant"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/tenants/:id",
+                  "permissions": "admin",
+                  "description": "Delete tenant"
+                },
+                "settings": {
+                  "get": {
+                    "method": "GET",
+                    "endpoint": "/api/tenants/:id/settings",
+                    "description": "Get tenant settings"
+                  },
+                  "update": {
+                    "method": "PUT",
+                    "endpoint": "/api/tenants/:id/settings",
+                    "description": "Update tenant settings"
+                  }
+                }
+              },
+              "customers": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/customers",
+                  "permissions": "staff+",
+                  "description": "List all customers"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/customers/:id",
+                  "description": "Get customer by ID"
+                },
+                "search": {
+                  "method": "GET",
+                  "endpoint": "/api/customers?email=:email",
+                  "description": "Search customers by email"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/customers",
+                  "description": "Create new customer"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/customers/:id",
+                  "description": "Update customer"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/customers/:id",
+                  "permissions": "admin",
+                  "description": "Delete customer"
+                },
+                "history": {
+                  "method": "GET",
+                  "endpoint": "/api/customers/:id/history",
+                  "description": "Get customer history"
+                },
+                "loyalty": {
+                  "get": {
+                    "method": "GET",
+                    "endpoint": "/api/customers/:id/loyalty",
+                    "description": "Get customer loyalty points"
+                  },
+                  "update": {
+                    "method": "PUT",
+                    "endpoint": "/api/customers/:id/loyalty",
+                    "description": "Update loyalty points"
+                  }
+                }
+              },
+              "appointments": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/appointments",
+                  "description": "List all appointments"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/appointments/:id",
+                  "description": "Get appointment by ID"
+                },
+                "byDate": {
+                  "method": "GET",
+                  "endpoint": "/api/appointments?date=:date",
+                  "description": "Get appointments by date"
+                },
+                "byStylist": {
+                  "method": "GET",
+                  "endpoint": "/api/appointments?stylist=:id",
+                  "description": "Get appointments by stylist"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/appointments",
+                  "description": "Create new appointment"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/appointments/:id",
+                  "description": "Update appointment"
+                },
+                "cancel": {
+                  "method": "PUT",
+                  "endpoint": "/api/appointments/:id/cancel",
+                  "description": "Cancel appointment"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/appointments/:id",
+                  "permissions": "admin",
+                  "description": "Delete appointment"
+                },
+                "checkin": {
+                  "method": "PUT",
+                  "endpoint": "/api/appointments/:id/checkin",
+                  "description": "Check-in appointment"
+                },
+                "complete": {
+                  "method": "PUT",
+                  "endpoint": "/api/appointments/:id/complete",
+                  "description": "Complete appointment"
+                },
+                "reschedule": {
+                  "method": "PUT",
+                  "endpoint": "/api/appointments/:id/reschedule",
+                  "description": "Reschedule appointment"
+                }
+              },
+              "services": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/services",
+                  "description": "List all services"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/services/:id",
+                  "description": "Get service by ID"
+                },
+                "byCategory": {
+                  "method": "GET",
+                  "endpoint": "/api/services?category=:cat",
+                  "description": "Get services by category"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/services",
+                  "permissions": "manager+",
+                  "description": "Create new service"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/services/:id",
+                  "description": "Update service"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/services/:id",
+                  "permissions": "manager+",
+                  "description": "Delete service"
+                },
+                "analytics": {
+                  "method": "GET",
+                  "endpoint": "/api/services/:id/analytics",
+                  "description": "Get service analytics"
+                },
+                "popular": {
+                  "method": "GET",
+                  "endpoint": "/api/services/popular",
+                  "description": "Get popular services"
+                }
+              },
+              "stylists": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/stylists",
+                  "description": "List all stylists"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/stylists/:id",
+                  "description": "Get stylist by ID"
+                },
+                "bySpecialty": {
+                  "method": "GET",
+                  "endpoint": "/api/stylists?specialty=:spec",
+                  "description": "Get stylists by specialty"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/stylists",
+                  "permissions": "manager+",
+                  "description": "Create new stylist"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/stylists/:id",
+                  "description": "Update stylist"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/stylists/:id",
+                  "permissions": "manager+",
+                  "description": "Delete stylist"
+                },
+                "schedule": {
+                  "get": {
+                    "method": "GET",
+                    "endpoint": "/api/stylists/:id/schedule",
+                    "description": "Get stylist schedule"
+                  },
+                  "update": {
+                    "method": "PUT",
+                    "endpoint": "/api/stylists/:id/schedule",
+                    "description": "Update stylist schedule"
+                  }
+                },
+                "availability": {
+                  "method": "GET",
+                  "endpoint": "/api/stylists/:id/availability",
+                  "description": "Get stylist availability"
+                }
+              },
+              "employees": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/employees",
+                  "permissions": "manager+",
+                  "description": "List all employees"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/employees/:id",
+                  "description": "Get employee by ID"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/employees",
+                  "permissions": "manager+",
+                  "description": "Create new employee"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/employees/:id",
+                  "description": "Update employee"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/employees/:id",
+                  "permissions": "manager+",
+                  "description": "Delete employee"
+                },
+                "schedule": {
+                  "get": {
+                    "method": "GET",
+                    "endpoint": "/api/employees/:id/schedule",
+                    "description": "Get employee schedule"
+                  },
+                  "update": {
+                    "method": "PUT",
+                    "endpoint": "/api/employees/:id/schedule",
+                    "description": "Update employee schedule"
+                  }
+                },
+                "performance": {
+                  "method": "GET",
+                  "endpoint": "/api/employees/:id/performance",
+                  "description": "Get employee performance"
+                }
+              },
+              "timeClock": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/time-clock",
+                  "description": "List time entries"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/time-clock/:id",
+                  "description": "Get time entry by ID"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/time-clock",
+                  "description": "Clock in/out"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/time-clock/:id",
+                  "permissions": "manager+",
+                  "description": "Update time entry"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/time-clock/:id",
+                  "permissions": "manager+",
+                  "description": "Delete time entry"
+                },
+                "report": {
+                  "method": "GET",
+                  "endpoint": "/api/time-clock/report",
+                  "description": "Get time reports"
+                },
+                "today": {
+                  "method": "GET",
+                  "endpoint": "/api/time-clock/today",
+                  "description": "Get today's entries"
+                },
+                "week": {
+                  "method": "GET",
+                  "endpoint": "/api/time-clock/week",
+                  "description": "Get weekly entries"
+                }
+              },
+              "payroll": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/payroll",
+                  "permissions": "manager+",
+                  "description": "List payroll entries"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/payroll/:id",
+                  "description": "Get payroll entry by ID"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/payroll",
+                  "permissions": "manager+",
+                  "description": "Create payroll entry"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/payroll/:id",
+                  "description": "Update payroll entry"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/payroll/:id",
+                  "permissions": "manager+",
+                  "description": "Delete payroll entry"
+                },
+                "process": {
+                  "method": "POST",
+                  "endpoint": "/api/payroll/process",
+                  "description": "Process payroll"
+                },
+                "pending": {
+                  "method": "GET",
+                  "endpoint": "/api/payroll/pending",
+                  "description": "Get pending payroll"
+                },
+                "approve": {
+                  "method": "PUT",
+                  "endpoint": "/api/payroll/:id/approve",
+                  "description": "Approve payroll entry"
+                }
+              },
+              "products": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/products",
+                  "description": "List all products"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/products/:id",
+                  "description": "Get product by ID"
+                },
+                "byCategory": {
+                  "method": "GET",
+                  "endpoint": "/api/products?category=:cat",
+                  "description": "Get products by category"
+                },
+                "byBrand": {
+                  "method": "GET",
+                  "endpoint": "/api/products?brand=:brand",
+                  "description": "Get products by brand"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/products",
+                  "permissions": "manager+",
+                  "description": "Create new product"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/products/:id",
+                  "description": "Update product"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/products/:id",
+                  "permissions": "manager+",
+                  "description": "Delete product"
+                },
+                "inventory": {
+                  "get": {
+                    "method": "GET",
+                    "endpoint": "/api/products/:id/inventory",
+                    "description": "Get product inventory"
+                  },
+                  "update": {
+                    "method": "PUT",
+                    "endpoint": "/api/products/:id/inventory",
+                    "description": "Update product inventory"
+                  }
+                },
+                "lowStock": {
+                  "method": "GET",
+                  "endpoint": "/api/products/low-stock",
+                  "description": "Get low stock products"
+                }
+              },
+              "inventory": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/inventory",
+                  "description": "List inventory items"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/inventory/:id",
+                  "description": "Get inventory item by ID"
+                },
+                "add": {
+                  "method": "POST",
+                  "endpoint": "/api/inventory",
+                  "description": "Add inventory item"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/inventory/:id",
+                  "description": "Update inventory item"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/inventory/:id",
+                  "description": "Remove inventory item"
+                },
+                "lowStock": {
+                  "method": "GET",
+                  "endpoint": "/api/inventory/low-stock",
+                  "description": "Get low stock items"
+                },
+                "expiring": {
+                  "method": "GET",
+                  "endpoint": "/api/inventory/expiring",
+                  "description": "Get expiring items"
+                },
+                "adjust": {
+                  "method": "PUT",
+                  "endpoint": "/api/inventory/:id/adjust",
+                  "description": "Adjust inventory quantity"
+                }
+              },
+              "suppliers": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/suppliers",
+                  "description": "List all suppliers"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/suppliers/:id",
+                  "description": "Get supplier by ID"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/suppliers",
+                  "description": "Create new supplier"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/suppliers/:id",
+                  "description": "Update supplier"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/suppliers/:id",
+                  "description": "Delete supplier"
+                },
+                "orders": {
+                  "method": "GET",
+                  "endpoint": "/api/suppliers/:id/orders",
+                  "description": "Get supplier orders"
+                },
+                "order": {
+                  "method": "POST",
+                  "endpoint": "/api/suppliers/:id/order",
+                  "description": "Create supplier order"
+                },
+                "products": {
+                  "method": "GET",
+                  "endpoint": "/api/suppliers/:id/products",
+                  "description": "Get supplier products"
+                }
+              },
+              "orders": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/orders",
+                  "description": "List all orders"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/orders/:id",
+                  "description": "Get order by ID"
+                },
+                "byStatus": {
+                  "method": "GET",
+                  "endpoint": "/api/orders?status=:status",
+                  "description": "Get orders by status"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/orders",
+                  "description": "Create new order"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/orders/:id",
+                  "description": "Update order"
+                },
+                "cancel": {
+                  "method": "DELETE",
+                  "endpoint": "/api/orders/:id",
+                  "description": "Cancel order"
+                },
+                "process": {
+                  "method": "PUT",
+                  "endpoint": "/api/orders/:id/process",
+                  "description": "Process order"
+                },
+                "ship": {
+                  "method": "PUT",
+                  "endpoint": "/api/orders/:id/ship",
+                  "description": "Ship order"
+                },
+                "deliver": {
+                  "method": "PUT",
+                  "endpoint": "/api/orders/:id/deliver",
+                  "description": "Mark as delivered"
+                },
+                "refund": {
+                  "method": "PUT",
+                  "endpoint": "/api/orders/:id/refund",
+                  "description": "Process refund"
+                }
+              },
+              "pages": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/pages",
+                  "description": "List all pages"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/pages/:id",
+                  "description": "Get page by ID"
+                },
+                "bySlug": {
+                  "method": "GET",
+                  "endpoint": "/api/pages?slug=:slug",
+                  "description": "Get page by slug"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/pages",
+                  "permissions": "editor+",
+                  "description": "Create new page"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/pages/:id",
+                  "description": "Update page"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/pages/:id",
+                  "permissions": "editor+",
+                  "description": "Delete page"
+                },
+                "revisions": {
+                  "get": {
+                    "method": "GET",
+                    "endpoint": "/api/pages/:id/revisions",
+                    "description": "Get page revisions"
+                  },
+                  "create": {
+                    "method": "POST",
+                    "endpoint": "/api/pages/:id/revisions",
+                    "description": "Create page revision"
+                  }
+                },
+                "publish": {
+                  "method": "PUT",
+                  "endpoint": "/api/pages/:id/publish",
+                  "description": "Publish page"
+                }
+              },
+              "posts": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/posts",
+                  "description": "List all posts"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/posts/:id",
+                  "description": "Get post by ID"
+                },
+                "byCategory": {
+                  "method": "GET",
+                  "endpoint": "/api/posts?category=:cat",
+                  "description": "Get posts by category"
+                },
+                "byAuthor": {
+                  "method": "GET",
+                  "endpoint": "/api/posts?author=:id",
+                  "description": "Get posts by author"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/posts",
+                  "permissions": "editor+",
+                  "description": "Create new post"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/posts/:id",
+                  "description": "Update post"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/posts/:id",
+                  "permissions": "editor+",
+                  "description": "Delete post"
+                },
+                "meta": {
+                  "get": {
+                    "method": "GET",
+                    "endpoint": "/api/posts/:id/meta",
+                    "description": "Get post metadata"
+                  },
+                  "update": {
+                    "method": "PUT",
+                    "endpoint": "/api/posts/:id/meta",
+                    "description": "Update post metadata"
+                  }
+                }
+              },
+              "projects": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/projects",
+                  "description": "List all projects"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/projects/:id",
+                  "description": "Get project by ID"
+                },
+                "byCategory": {
+                  "method": "GET",
+                  "endpoint": "/api/projects?category=:cat",
+                  "description": "Get projects by category"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/projects",
+                  "permissions": "editor+",
+                  "description": "Create new project"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/projects/:id",
+                  "description": "Update project"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/projects/:id",
+                  "permissions": "editor+",
+                  "description": "Delete project"
+                }
+              },
+              "media": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/media",
+                  "description": "List all media files"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/media/:id",
+                  "description": "Get media file by ID"
+                },
+                "upload": {
+                  "method": "POST",
+                  "endpoint": "/api/media",
+                  "description": "Upload media file"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/media/:id",
+                  "description": "Update media file"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/media/:id",
+                  "description": "Delete media file"
+                },
+                "search": {
+                  "method": "GET",
+                  "endpoint": "/api/media/search?q=:query",
+                  "description": "Search media files"
+                },
+                "download": {
+                  "method": "GET",
+                  "endpoint": "/api/media/:id/download",
+                  "description": "Download media file"
+                },
+                "tags": {
+                  "method": "PUT",
+                  "endpoint": "/api/media/:id/tags",
+                  "description": "Update media tags"
+                }
+              },
+              "notifications": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/notifications",
+                  "description": "List all notifications"
+                },
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/notifications/:id",
+                  "description": "Get notification by ID"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/notifications",
+                  "description": "Create notification"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/notifications/:id",
+                  "description": "Update notification"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/notifications/:id",
+                  "description": "Delete notification"
+                },
+                "me": {
+                  "method": "GET",
+                  "endpoint": "/api/notifications/me",
+                  "description": "Get my notifications"
+                },
+                "read": {
+                  "method": "PUT",
+                  "endpoint": "/api/notifications/:id/read",
+                  "description": "Mark as read"
+                },
+                "readAll": {
+                  "method": "PUT",
+                  "endpoint": "/api/notifications/read-all",
+                  "description": "Mark all as read"
+                }
+              }
+            },
+            "globals": {
+              "header": {
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/globals/header",
+                  "description": "Get header configuration"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/globals/header",
+                  "description": "Update header configuration"
+                },
+                "structure": {
+                  "navItems": [
+                    {
+                      "link": {
+                        "type": "reference",
+                        "reference": {
+                          "relationTo": "pages",
+                          "value": "page_id"
+                        }
+                      },
+                      "label": "string"
+                    }
+                  ]
+                }
+              },
+              "settings": {
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/globals/settings",
+                  "description": "Get site settings"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/globals/settings",
+                  "description": "Update site settings"
+                },
+                "structure": {
+                  "postsPage": {
+                    "id": "string",
+                    "title": "string",
+                    "slug": "string",
+                    "layout": "array",
+                    "meta": {
+                      "title": "string",
+                      "description": "string",
+                      "image": "string"
+                    },
+                    "_status": "published",
+                    "createdAt": "date",
+                    "updatedAt": "date"
+                  },
+                  "projectsPage": {
+                    "id": "string",
+                    "title": "string",
+                    "slug": "string",
+                    "layout": "array",
+                    "meta": {
+                      "title": "string",
+                      "description": "string",
+                      "image": "string"
+                    },
+                    "_status": "published",
+                    "createdAt": "date",
+                    "updatedAt": "date"
+                  }
+                }
+              },
+              "footer": {
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/globals/footer",
+                  "description": "Get footer configuration"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/globals/footer",
+                  "description": "Update footer configuration"
+                }
+              }
+            },
+            "analytics": {
+              "overview": {
+                "method": "GET",
+                "endpoint": "/api/analytics/overview",
+                "description": "Get overview metrics"
+              },
+              "revenue": {
+                "method": "GET",
+                "endpoint": "/api/analytics/revenue",
+                "description": "Get revenue analytics"
+              },
+              "appointments": {
+                "method": "GET",
+                "endpoint": "/api/analytics/appointments",
+                "description": "Get appointment analytics"
+              },
+              "customers": {
+                "method": "GET",
+                "endpoint": "/api/analytics/customers",
+                "description": "Get customer analytics"
+              },
+              "services": {
+                "method": "GET",
+                "endpoint": "/api/analytics/services",
+                "description": "Get service analytics"
+              },
+              "staff": {
+                "method": "GET",
+                "endpoint": "/api/analytics/staff",
+                "description": "Get staff performance"
+              }
+            },
+            "reports": {
+              "daily": {
+                "method": "GET",
+                "endpoint": "/api/reports/daily",
+                "description": "Daily report"
+              },
+              "weekly": {
+                "method": "GET",
+                "endpoint": "/api/reports/weekly",
+                "description": "Weekly report"
+              },
+              "monthly": {
+                "method": "GET",
+                "endpoint": "/api/reports/monthly",
+                "description": "Monthly report"
+              },
+              "custom": {
+                "method": "GET",
+                "endpoint": "/api/reports/custom",
+                "description": "Custom date range report"
+              }
+            },
+            "search": {
+              "global": {
+                "method": "GET",
+                "endpoint": "/api/search",
+                "description": "Global search"
+              },
+              "posts": {
+                "method": "GET",
+                "endpoint": "/api/search/posts",
+                "description": "Search posts"
+              },
+              "projects": {
+                "method": "GET",
+                "endpoint": "/api/search/projects",
+                "description": "Search projects"
+              },
+              "customers": {
+                "method": "GET",
+                "endpoint": "/api/search/customers",
+                "description": "Search customers"
+              },
+              "services": {
+                "method": "GET",
+                "endpoint": "/api/search/services",
+                "description": "Search services"
+              }
+            },
+            "forms": {
+              "list": {
+                "method": "GET",
+                "endpoint": "/api/forms",
+                "description": "List forms"
+              },
+              "get": {
+                "method": "GET",
+                "endpoint": "/api/forms/:id",
+                "description": "Get form by ID"
+              },
+              "create": {
+                "method": "POST",
+                "endpoint": "/api/forms",
+                "description": "Create form"
+              },
+              "update": {
+                "method": "PUT",
+                "endpoint": "/api/forms/:id",
+                "description": "Update form"
+              },
+              "delete": {
+                "method": "DELETE",
+                "endpoint": "/api/forms/:id",
+                "description": "Delete form"
+              },
+              "submissions": {
+                "method": "GET",
+                "endpoint": "/api/forms/:id/submissions",
+                "description": "Get form submissions"
+              },
+              "submit": {
+                "method": "POST",
+                "endpoint": "/api/forms/:id/submit",
+                "description": "Submit form"
+              },
+              "export": {
+                "method": "GET",
+                "endpoint": "/api/forms/:id/export",
+                "description": "Export form submissions"
+              }
+            },
+            "email": {
+              "send": {
+                "method": "POST",
+                "endpoint": "/api/email/send",
+                "description": "Send email"
+              },
+              "templates": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/email/templates",
+                  "description": "Get email templates"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/email/template",
+                  "description": "Create email template"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/email/template/:id",
+                  "description": "Update email template"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/email/template/:id",
+                  "description": "Delete email template"
+                }
+              }
+            },
+            "sms": {
+              "send": {
+                "method": "POST",
+                "endpoint": "/api/sms/send",
+                "description": "Send SMS"
+              },
+              "templates": {
+                "list": {
+                  "method": "GET",
+                  "endpoint": "/api/sms/templates",
+                  "description": "Get SMS templates"
+                },
+                "create": {
+                  "method": "POST",
+                  "endpoint": "/api/sms/template",
+                  "description": "Create SMS template"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/sms/template/:id",
+                  "description": "Update SMS template"
+                },
+                "delete": {
+                  "method": "DELETE",
+                  "endpoint": "/api/sms/template/:id",
+                  "description": "Delete SMS template"
+                }
+              }
+            },
+            "payments": {
+              "stripe": {
+                "createSession": {
+                  "method": "POST",
+                  "endpoint": "/api/payments/create-session",
+                  "description": "Create payment session"
+                },
+                "getSession": {
+                  "method": "GET",
+                  "endpoint": "/api/payments/session/:id",
+                  "description": "Get payment session"
+                },
+                "webhook": {
+                  "method": "POST",
+                  "endpoint": "/api/payments/webhook",
+                  "description": "Stripe webhook"
+                },
+                "methods": {
+                  "list": {
+                    "method": "GET",
+                    "endpoint": "/api/payments/methods",
+                    "description": "Get payment methods"
+                  },
+                  "add": {
+                    "method": "POST",
+                    "endpoint": "/api/payments/method",
+                    "description": "Add payment method"
+                  },
+                  "remove": {
+                    "method": "DELETE",
+                    "endpoint": "/api/payments/method/:id",
+                    "description": "Remove payment method"
+                  }
+                }
+              }
+            },
+            "webhooks": {
+              "list": {
+                "method": "GET",
+                "endpoint": "/api/webhooks",
+                "description": "List webhooks"
+              },
+              "get": {
+                "method": "GET",
+                "endpoint": "/api/webhooks/:id",
+                "description": "Get webhook by ID"
+              },
+              "create": {
+                "method": "POST",
+                "endpoint": "/api/webhooks",
+                "description": "Create webhook"
+              },
+              "update": {
+                "method": "PUT",
+                "endpoint": "/api/webhooks/:id",
+                "description": "Update webhook"
+              },
+              "delete": {
+                "method": "DELETE",
+                "endpoint": "/api/webhooks/:id",
+                "description": "Delete webhook"
+              },
+              "logs": {
+                "method": "GET",
+                "endpoint": "/api/webhooks/:id/logs",
+                "description": "Get webhook logs"
+              },
+              "test": {
+                "method": "POST",
+                "endpoint": "/api/webhooks/:id/test",
+                "description": "Test webhook"
+              }
+            },
+            "health": {
+              "system": {
+                "method": "GET",
+                "endpoint": "/api/health",
+                "description": "Overall system health"
+              },
+              "database": {
+                "method": "GET",
+                "endpoint": "/api/health/database",
+                "description": "Database health"
+              },
+              "cache": {
+                "method": "GET",
+                "endpoint": "/api/health/cache",
+                "description": "Cache health"
+              },
+              "external": {
+                "method": "GET",
+                "endpoint": "/api/health/external",
+                "description": "External services health"
+              }
+            },
+            "test": {
+              "health": {
+                "method": "GET",
+                "endpoint": "/api/test/health",
+                "description": "API connectivity test"
+              },
+              "auth": {
+                "method": "GET",
+                "endpoint": "/api/test/auth",
+                "description": "Authentication test"
+              },
+              "database": {
+                "method": "GET",
+                "endpoint": "/api/test/database",
+                "description": "Database connectivity test"
+              },
+              "load": {
+                "appointments": {
+                  "method": "POST",
+                  "endpoint": "/api/test/load/appointments",
+                  "description": "Load test appointments API"
+                },
+                "search": {
+                  "method": "POST",
+                  "endpoint": "/api/test/load/search",
+                  "description": "Load test search functionality"
+                },
+                "auth": {
+                  "method": "POST",
+                  "endpoint": "/api/test/load/auth",
+                  "description": "Load test authentication"
+                }
+              }
+            },
+            "locations": {
+              "list": {
+                "method": "GET",
+                "endpoint": "/api/locations",
+                "description": "List locations"
+              },
+              "get": {
+                "method": "GET",
+                "endpoint": "/api/locations/:id",
+                "description": "Get location by ID"
+              },
+              "create": {
+                "method": "POST",
+                "endpoint": "/api/locations",
+                "permissions": "admin",
+                "description": "Create location"
+              },
+              "update": {
+                "method": "PUT",
+                "endpoint": "/api/locations/:id",
+                "description": "Update location"
+              },
+              "delete": {
+                "method": "DELETE",
+                "endpoint": "/api/locations/:id",
+                "permissions": "admin",
+                "description": "Delete location"
+              },
+              "staff": {
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/locations/:id/staff",
+                  "description": "Get location staff"
+                },
+                "update": {
+                  "method": "PUT",
+                  "endpoint": "/api/locations/:id/staff",
+                  "description": "Update location staff"
+                }
+              },
+              "services": {
+                "method": "GET",
+                "endpoint": "/api/locations/:id/services",
+                "description": "Get location services"
+              }
+            },
+            "settings": {
+              "get": {
+                "method": "GET",
+                "endpoint": "/api/settings",
+                "description": "Get system settings"
+              },
+              "update": {
+                "method": "PUT",
+                "endpoint": "/api/settings",
+                "description": "Update system settings"
+              },
+              "getKey": {
+                "method": "GET",
+                "endpoint": "/api/settings/:key",
+                "description": "Get specific setting"
+              },
+              "updateKey": {
+                "method": "PUT",
+                "endpoint": "/api/settings/:key",
+                "description": "Update specific setting"
+              }
+            },
+            "seo": {
+              "meta": {
+                "method": "GET",
+                "endpoint": "/api/seo/meta",
+                "description": "Get SEO metadata"
+              },
+              "generate": {
+                "method": "POST",
+                "endpoint": "/api/seo/generate",
+                "description": "Generate SEO metadata"
+              },
+              "update": {
+                "method": "PUT",
+                "endpoint": "/api/seo/update",
+                "description": "Update SEO settings"
+              },
+              "sitemap": {
+                "method": "GET",
+                "endpoint": "/api/seo/sitemap",
+                "description": "Get sitemap"
+              }
+            },
+            "integrations": {
+              "calendar": {
+                "get": {
+                  "method": "GET",
+                  "endpoint": "/api/integrations/calendar",
+                  "description": "Get calendar integration"
+                },
+                "sync": {
+                  "method": "POST",
+                  "endpoint": "/api/integrations/calendar/sync",
+                  "description": "Sync calendar data"
+                }
+              }
+            },
+            "response": {
+              "success": {
+                "success": true,
+                "data": {},
+                "message": "Operation completed successfully",
+                "pagination": {
+                  "page": 1,
+                  "limit": 20,
+                  "total": 100,
+                  "pages": 5
+                }
+              },
+              "error": {
+                "success": false,
+                "error": {
+                  "code": "VALIDATION_ERROR",
+                  "message": "Invalid input data",
+                  "details": {}
+                }
+              }
+            },
+            "roles": {
+              "admin": {
+                "description": "Full system access",
+                "permissions": [
+                  "all"
+                ]
+              },
+              "manager": {
+                "description": "Staff and business management",
+                "permissions": [
+                  "users",
+                  "customers",
+                  "appointments",
+                  "staff",
+                  "reports"
+                ]
+              },
+              "staff": {
+                "description": "Customer and appointment management",
+                "permissions": [
+                  "customers",
+                  "appointments",
+                  "services",
+                  "stylists"
+                ]
+              },
+              "barber": {
+                "description": "Appointment and customer access",
+                "permissions": [
+                  "appointments",
+                  "customers",
+                  "services"
+                ]
+              },
+              "customer": {
+                "description": "Personal account access",
+                "permissions": [
+                  "own_appointments",
+                  "own_profile"
+                ]
+              },
+              "client": {
+                "description": "Limited access (guests)",
+                "permissions": [
+                  "services",
+                  "book_appointment"
+                ]
+              }
+            },
+            "rateLimits": {
+              "authenticated": {
+                "requests": 1000,
+                "period": "hour"
+              },
+              "unauthenticated": {
+                "requests": 100,
+                "period": "hour"
+              },
+              "admin": {
+                "requests": 5000,
+                "period": "hour"
+              }
+            },
+            "caching": {
+              "public": {
+                "duration": 300,
+                "unit": "seconds"
+              },
+              "user": {
+                "duration": 60,
+                "unit": "seconds"
+              },
+              "dynamic": {
+                "duration": 0,
+                "unit": "seconds"
+              },
+              "static": {
+                "duration": 3600,
+                "unit": "seconds"
+              },
+              "preferences": {
+                "duration": 86400,
+                "unit": "seconds"
+              },
+              "analytics": {
+                "duration": 900,
+                "unit": "seconds"
+              }
+            },
+            "cors": {
+              "origins": [
+                "https://modernmen.ca",
+                "https://*.modernmen.ca",
+                "http://localhost:3000"
+              ],
+              "methods": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "OPTIONS"
+              ],
+              "headers": [
+                "Content-Type",
+                "Authorization",
+                "X-Requested-With"
+              ]
+            },
+            "plugins": {
+              "search": {
+                "enabled": true,
+                "description": "Global search functionality"
+              },
+              "formBuilder": {
+                "enabled": true,
+                "description": "Dynamic form creation"
+              },
+              "nestedDocs": {
+                "enabled": true,
+                "description": "Hierarchical content structure"
+              },
+              "seo": {
+                "enabled": true,
+                "description": "Search engine optimization"
+              },
+              "redirects": {
+                "enabled": true,
+                "description": "URL redirection management"
+              },
+              "cloudStorage": {
+                "enabled": true,
+                "provider": "AWS S3",
+                "description": "Cloud file storage"
+              },
+              "email": {
+                "enabled": true,
+                "provider": "SMTP",
+                "description": "Email communication"
+              },
+              "stripe": {
+                "enabled": true,
+                "description": "Payment processing"
+              },
+              "validation": {
+                "enabled": true,
+                "description": "Data validation",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the user"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+}

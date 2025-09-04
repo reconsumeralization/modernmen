@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { appointmentsService } from '@/services/appointments'
+import { smsService } from '@/services/smsService'
 import { Appointment } from '@/types'
+
+export const runtime = 'nodejs'
 
 export async function GET(request: NextRequest) {
   try {
@@ -69,6 +72,38 @@ export async function POST(request: NextRequest) {
     const result = await appointmentsService.createAppointment(appointmentData)
 
     if (result.success) {
+      // Send SMS confirmation if phone number is provided
+      if (body.customer_phone && smsService.isConfigured()) {
+        try {
+          const smsData = {
+            id: result.data.id,
+            customerName: body.customer_name || 'Valued Customer',
+            serviceName: body.service_name || 'Hair Service',
+            barberName: body.staff_name || 'Your Stylist',
+            date: new Date(body.appointment_date).toLocaleDateString(),
+            time: body.start_time || 'TBD',
+            duration: body.duration || 60,
+            price: body.price || 0,
+            salonName: 'Modern Men Hair Salon',
+            salonPhone: '+15551234567'
+          }
+
+          // Send SMS confirmation asynchronously (don't block response)
+          smsService.sendAppointmentConfirmation(body.customer_phone, smsData)
+            .then(() => {
+              // SMS sent successfully - could add metrics tracking here
+            })
+            .catch((error) => {
+              // SMS failure - log but don't throw to avoid breaking appointment creation
+              console.error('SMS confirmation failed:', error)
+            })
+
+        } catch (error) {
+          console.error('SMS setup error:', error)
+          // Don't fail the appointment creation if SMS fails
+        }
+      }
+
       return NextResponse.json(result.data, { status: 201 })
     } else {
       return NextResponse.json({ error: result.error }, { status: 400 })

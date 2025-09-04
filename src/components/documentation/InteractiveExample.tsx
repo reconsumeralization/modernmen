@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Play, Code, Terminal, Database, Cog, Copy, Check, AlertTriangle, Loader2, ExternalLink } from '@/lib/icon-mapping'
+import { Play, Code, Terminal, Database, Cog, Copy, Check, AlertTriangle, Loader2, ExternalLink, Globe } from '@/lib/icon-mapping'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -136,7 +136,7 @@ export function InteractiveExample({
               {error ? (
                 <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-3">
                   <div className="flex items-center gap-2 text-red-400 mb-2">
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertTriangle className="h-4 w-4" />
                     <span className="font-medium">Error</span>
                   </div>
                   <pre className="text-sm text-red-300 whitespace-pre-wrap">{error}</pre>

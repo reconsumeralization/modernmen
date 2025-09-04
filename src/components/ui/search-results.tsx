@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader } from './card'
 import { Badge } from './badge'
 import { Button } from './button'
-import { rch, ExternalLink, Clock, User, Tag, Star, Book, Code, FileText, Cog } from '@/lib/icon-mapping'
+import { rch, ExternalLink, Clock, User, Tag, Star, Book, Code, FileText, Cog, BookOpen, Settings } from '@/lib/icon-mapping'
 import { cn } from '@/lib/utils'
 import { rchResult } from '@/lib/rch-core'
 
@@ -21,9 +21,9 @@ const getTypeIcon = (type: rchResult['type']) => {
     case 'component':
       return <Code className="h-4 w-4" />
     case 'guide':
-      return <BookOpen className="h-4 w-4" />
+      return <Book className="h-4 w-4" />
     case 'api':
-      return <Settings className="h-4 w-4" />
+      return <Cog className="h-4 w-4" />
     case 'reference':
       return <FileText className="h-4 w-4" />
     default:

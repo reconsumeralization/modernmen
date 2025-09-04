@@ -8,11 +8,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase/client'
 import { APPOINTMENT_STATUSES } from '@/constants'
 
 export class AppointmentsService {
-  private baseUrl: string
-
-  constructor(baseUrl: string = '/api/appointments') {
-    this.baseUrl = baseUrl
-  }
+  constructor(private readonly baseUrl: string = '/api/appointments') {}
 
   // Shared method to transform appointment data (eliminates A2A duplication)
   private transformAppointmentData(item: any): Appointment {
@@ -27,31 +23,41 @@ export class AppointmentsService {
     }
   }
 
-  // Shared method for Supabase query building (eliminates query duplication)
-  private buildAppointmentQuery(includeCount: boolean = false) {
-    const query = supabase
-      .from('appointments')
-      .select(`
-        *,
-        customers:customer_id (
-          id,
-          name,
-          email,
-          phone
-        ),
-        services:service_id (
-          id,
-          name,
-          duration
-        ),
-        staff:staff_id (
-          id,
-          name,
-          email
-        )
-      `)
+  // Get base select query string (eliminates duplication)
+  private getBaseSelectQuery(): string {
+    return `
+      *,
+      customers:customer_id (
+        id,
+        name,
+        email,
+        phone
+      ),
+      services:service_id (
+        id,
+        name,
+        duration
+      ),
+      staff:staff_id (
+        id,
+        name,
+        email
+      )
+    `
+  }
 
-    return includeCount ? query.select('*', { count: 'exact', head: false }) : query
+  // Build query without count for filtering
+  private buildAppointmentQuery() {
+    return supabase
+      .from('appointments')
+      .select(this.getBaseSelectQuery())
+  }
+
+  // Build query with count for pagination
+  private buildAppointmentQueryWithCount() {
+    return supabase
+      .from('appointments')
+      .select(this.getBaseSelectQuery(), { count: 'exact', head: false })
   }
 
   // Shared method for Supabase configuration check (eliminates instance checks)
@@ -73,7 +79,8 @@ export class AppointmentsService {
     try {
       this.validateSupabaseConnection()
 
-      let query = this.buildAppointmentQuery(true)
+      // Build base query with joins and count
+      let query = this.buildAppointmentQueryWithCount()
 
       // Apply filters
       if (filters?.status) {
@@ -81,7 +88,7 @@ export class AppointmentsService {
       }
 
       if (filters?.barber) {
-        query = query.ilike('staff.name', `%${filters.barber}%`)
+        query = query.eq('staff_id', filters.barber)
       }
 
       if (filters?.date) {
@@ -89,7 +96,8 @@ export class AppointmentsService {
       }
 
       // Apply ordering
-      query = query.order('appointment_date', { ascending: false })
+      query = query
+        .order('appointment_date', { ascending: false })
         .order('start_time', { ascending: false })
 
       // Apply pagination

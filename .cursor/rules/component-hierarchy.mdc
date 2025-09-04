@@ -1,0 +1,324 @@
+---
+globs: src/components/**/*.tsx,src/components/**/*.ts
+description: Component Organization and Hierarchy Patterns
+---
+
+# 🧩 **COMPONENT HIERARCHY & ORGANIZATION**
+
+## **Component Structure Overview:**
+
+```
+src/components/
+├── layout/                     # Layout Components
+│   ├── navbar.tsx             # Main navigation
+│   ├── footer.tsx             # Site footer
+│   ├── sidebar.tsx            # Admin sidebar
+│   └── header.tsx             # Page headers
+├── ui/                        # Base UI Components
+│   ├── button.tsx             # Button variants
+│   ├── card.tsx               # Card components
+│   ├── form.tsx               # Form elements
+│   ├── modal.tsx              # Modal dialogs
+│   └── icons.tsx              # Icon components
+├── sections/                  # Page Section Components
+│   ├── hero-section.tsx       # Hero banners
+│   ├── services-section.tsx   # Services display
+│   ├── testimonials-section.tsx # Customer reviews
+│   └── contact-section.tsx    # Contact forms
+└── modules/                   # Feature Modules
+    ├── auth/                  # Authentication
+    ├── booking/               # Booking system
+    ├── dashboard/             # Dashboard components
+    └── cms/                   # CMS components
+```
+
+## **Component Categories:**
+
+### **1. Layout Components ([src/components/layout/](mdc:src/components/layout/))**
+**Purpose:** Provide consistent page structure and navigation
+```tsx
+// Usage in pages
+<Navbar />
+<main>{children}</main>
+<Footer />
+```
+
+### **2. UI Components ([src/components/ui/](mdc:src/components/ui/))**
+**Purpose:** Reusable design system components
+```tsx
+// Base components used throughout app
+<Button variant="primary" size="lg">Click me</Button>
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+  </CardHeader>
+  <CardContent>Content</CardContent>
+</Card>
+```
+
+### **3. Section Components ([src/components/sections/](mdc:src/components/sections/))**
+**Purpose:** Large page sections with specific functionality
+```tsx
+// Page sections
+<HeroSection />
+<ServicesSection />
+<TeamSection />
+<ContactSection />
+```
+
+### **4. Feature Components ([src/components/modules/](mdc:src/components/modules/))**
+**Purpose:** Complex feature-specific components
+```tsx
+// Feature modules
+<BookingWizard />
+<AppointmentCalendar />
+<CustomerDashboard />
+```
+
+## **Component Patterns:**
+
+### **Atomic Design Pattern:**
+```
+Atoms (UI) → Molecules (Sections) → Organisms (Features) → Pages (Routes)
+```
+
+### **Component Props Interface:**
+```tsx
+interface ComponentProps {
+  // Required props
+  title: string
+  onAction: () => void
+
+  // Optional props
+  variant?: 'primary' | 'secondary'
+  size?: 'sm' | 'md' | 'lg'
+  disabled?: boolean
+
+  // Event handlers
+  onChange?: (value: any) => void
+  onSubmit?: (data: any) => void
+
+  // Styling
+  className?: string
+}
+```
+
+### **Component State Management:**
+```tsx
+function MyComponent({ initialData }: ComponentProps) {
+  // Local state
+  const [data, setData] = useState(initialData)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Derived state
+  const isValid = useMemo(() => validateData(data), [data])
+
+  return (
+    <div>
+      {/* Component JSX */}
+    </div>
+  )
+}
+```
+
+## **Component Communication Patterns:**
+
+### **1. Props Down:**
+```tsx
+// Parent component
+<ChildComponent
+  data={parentData}
+  onUpdate={handleUpdate}
+  config={componentConfig}
+/>
+
+// Child component
+function ChildComponent({ data, onUpdate, config }: Props) {
+  // Use props
+}
+```
+
+### **2. Events Up:**
+```tsx
+// Child component emits events
+function ChildComponent({ onAction }: Props) {
+  const handleClick = () => {
+    onAction({ type: 'UPDATE', payload: newData })
+  }
+
+  return <button onClick={handleClick}>Action</button>
+}
+
+// Parent component handles events
+<ChildComponent onAction={handleChildAction} />
+```
+
+### **3. Context Pattern:**
+```tsx
+// Create context
+const ThemeContext = createContext<ThemeConfig>(defaultTheme)
+
+// Provider component
+function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState(defaultTheme)
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+
+// Consumer hook
+function useTheme() {
+  const context = useContext(ThemeContext)
+  if (!context) throw new Error('useTheme must be used within ThemeProvider')
+  return context
+}
+```
+
+## **Component Composition Patterns:**
+
+### **Render Props Pattern:**
+```tsx
+function DataProvider({ children, url }: Props) {
+  const [data, setData] = useState(null)
+
+  useEffect(() => {
+    fetch(url).then(setData)
+  }, [url])
+
+  return children({ data, loading: !data })
+}
+
+// Usage
+<DataProvider url="/api/data">
+  {({ data, loading }) => (
+    loading ? <Spinner /> : <DataDisplay data={data} />
+  )}
+</DataProvider>
+```
+
+### **Compound Components Pattern:**
+```tsx
+function Tabs({ children }: { children: React.ReactNode }) {
+  const [activeTab, setActiveTab] = useState(0)
+
+  return (
+    <div>
+      {React.Children.map(children, (child, index) => (
+        React.cloneElement(child as React.ReactElement, {
+          isActive: index === activeTab,
+          onClick: () => setActiveTab(index)
+        })
+      ))}
+    </div>
+  )
+}
+
+function Tab({ children, isActive, onClick }: TabProps) {
+  return (
+    <button
+      className={isActive ? 'active' : ''}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  )
+}
+
+// Usage
+<Tabs>
+  <Tab>Tab 1</Tab>
+  <Tab>Tab 2</Tab>
+  <Tab>Tab 3</Tab>
+</Tabs>
+```
+
+## **Performance Patterns:**
+
+### **Memoization:**
+```tsx
+// Memoize expensive computations
+const expensiveValue = useMemo(() => {
+  return computeExpensiveValue(dependencies)
+}, [dependencies])
+
+// Memoize components
+const MemoizedComponent = React.memo(function Component({ prop }: Props) {
+  return <div>{prop}</div>
+})
+```
+
+### **Lazy Loading:**
+```tsx
+// Dynamic imports
+const LazyComponent = dynamic(() => import('./LazyComponent'), {
+  loading: () => <Spinner />
+})
+
+// Route-based code splitting
+const Dashboard = dynamic(() => import('../pages/Dashboard'))
+```
+
+## **Testing Patterns:**
+
+### **Component Testing Structure:**
+```tsx
+// __tests__/ComponentName.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import ComponentName from '../ComponentName'
+
+describe('ComponentName', () => {
+  it('renders correctly', () => {
+    render(<ComponentName />)
+    expect(screen.getByText('Expected Text')).toBeInTheDocument()
+  })
+
+  it('handles user interactions', () => {
+    const mockFn = jest.fn()
+    render(<ComponentName onAction={mockFn} />)
+
+    fireEvent.click(screen.getByRole('button'))
+    expect(mockFn).toHaveBeenCalled()
+  })
+})
+```
+
+## **Component Documentation:**
+
+### **Storybook Stories:**
+```tsx
+// stories/ComponentName.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react'
+import ComponentName from './ComponentName'
+
+const meta: Meta<typeof ComponentName> = {
+  title: 'Components/ComponentName',
+  component: ComponentName,
+  parameters: {
+    docs: {
+      description: {
+        component: 'Description of what this component does'
+      }
+    }
+  }
+}
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  args: {
+    // Default props
+  }
+}
+
+export const WithData: Story = {
+  args: {
+    data: sampleData
+  }
+}
+```

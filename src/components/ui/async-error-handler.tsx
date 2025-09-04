@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react'
 import { logger } from '@/lib/logger'
 import { Button } from './button'
-import { AlertTriangle, RefreshCw, WifiOff } from '@/lib/icon-mapping'
+import { AlertTriangle, RefreshCw, WifiOff, Wifi } from '@/lib/icon-mapping'
 import { AsyncErrorBoundary } from './global-error-boundary'
 
 interface AsyncErrorHandlerProps {
@@ -171,7 +171,7 @@ export function AsyncErrorHandler({
 }
 
 // Hook for handling async operations with error boundaries
-export function usyncErrorHandler() {
+export function useSyncErrorHandler() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 

@@ -1,0 +1,67 @@
+--- a/pdfplumber/display.py
++++ b/pdfplumber/display.py
+@@ -1,5 +1,8 @@
+ from PIL import Image
+ from .utils import to_bytes
+
++class PdfPlumberImageError(Exception):
++    """Raised when a page image cannot be constructed safely."""
++    pass
+
+ class PageImage(object):
+     def __init__(
+@@ -10,13 +13,23 @@
+         self.kwargs = kwargs
+
+     def _repr_png_(self):
+-        return self.page.to_image(**self.kwargs)._repr_png_()
++        try:
++            return self.page.to_image(**self.kwargs)._repr_png_()
++        except PdfPlumberImageError:
++            # In a notebook context, failing gracefully is better than raising an exception.
++            # We can return a placeholder image or None. Returning None for now.
++            return None
+
+     @property
+     def image(self):
+-        if hasattr(self, "_image"):
+-            return self._image
+-        self._image = self.page.to_image(**self.kwargs).image
+-        return self._image
++        try:
++            if hasattr(self, "_image"):
++                return self._image
++            self._image = self.page.to_image(**self.kwargs).image
++            return self._image
++        except PdfPlumberImageError as e:
++            # Re-raise the controlled exception if accessed directly
++            raise e
+
+-
+--- a/pdfplumber/page.py
++++ b/pdfplumber/page.py
+@@ -2,7 +2,7 @@
+ from . import utils
+ from . import content
+ from . import objects
+-from .display import PageImage
++from .display import PageImage, PdfPlumberImageError
+
+
+ class Page(object):
+@@ -231,7 +231,14 @@
+         return self.crop(bbox, relative=relative)
+
+     def to_image(self, **kwargs):
+-        return PageImage(self, **kwargs)
++        try:
++            # The PageImage class will ultimately call the underlying image creation libs.
++            # We catch our specific error type here to make the API predictable.
++            return PageImage(self, **kwargs)
++        except PdfPlumberImageError:
++            # Re-raise for callers to handle. This makes the API transparent
++            # about failures during image generation.
++            raise
+
+     def extract_text(
+         self,

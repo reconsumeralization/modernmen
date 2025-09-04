@@ -1,3 +1,6 @@
+import { smsService } from '@/services/smsService';
+import { emailService } from '@/services/emailService';
+
 // =============================================================================
 // ADMIN APPOINTMENTS API - CRUD operations for appointment management
 // =============================================================================
@@ -168,7 +171,11 @@ export async function POST(request: NextRequest) {
     }
 
     // TODO: Send confirmation notification
-    // await sendAppointmentConfirmation(data);
+    await emailService.sendAppointmentConfirmation(data);
+
+    if (smsService.isConfigured() && customer.phone) {
+      await smsService.sendAppointmentConfirmation(customer.phone, data);
+    }
 
     return NextResponse.json({
       appointment: data,

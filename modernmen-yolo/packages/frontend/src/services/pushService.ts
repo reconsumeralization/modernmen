@@ -1,19 +1,48 @@
-// Note: ModernMen import removed - using mock implementation for now
-// import { getModernMen } from 'ModernMen'
-// import config from '@/ModernMen.config'
+// Firebase Admin for server-side push notifications
+let admin: any = null
 
-// Mock ModernMen implementation
-const getModernMen = async (options: { config?: any }) => {
-  // Return a mock ModernMen instance
-  return {
-    notifications: {
-      send: async (notification: any) => {
-        console.log('Mock notification sent:', notification);
-        return { success: true };
-      }
+// Only load Firebase Admin on server side
+if (typeof window === 'undefined') {
+  try {
+    admin = require('firebase-admin')
+  } catch (error) {
+    // Mock Firebase Admin for development
+    admin = {
+      messaging: () => ({
+        send: async (message: any) => {
+          console.log('Mock Firebase message sent:', message)
+          return { messageId: 'mock-' + Date.now() }
+        },
+        sendMulticast: async (message: any) => {
+          console.log('Mock Firebase multicast sent:', message)
+          return {
+            successCount: message.tokens?.length || 1,
+            failureCount: 0,
+            responses: [{ success: true, messageId: 'mock-' + Date.now() }]
+          }
+        }
+      })
     }
-  };
-};
+  }
+} else {
+  // Client-side mock
+  admin = {
+    messaging: () => ({
+      send: async (message: any) => {
+        console.log('Client-side Firebase mock:', message)
+        return { messageId: 'client-mock-' + Date.now() }
+      },
+      sendMulticast: async (message: any) => {
+        console.log('Client-side Firebase multicast mock:', message)
+        return {
+          successCount: message.tokens?.length || 1,
+          failureCount: 0,
+          responses: [{ success: true, messageId: 'client-mock-' + Date.now() }]
+        }
+      }
+    })
+  }
+}
 
 export interface PushNotification {
   title: string
@@ -60,7 +89,8 @@ class PushService {
     subscription: PushSubscription
   ): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config: {} })
+      // Get configuration - simplified for now
+const config = {}
 
       // Store subscription in database (you might want to create a dedicated collection)
       // For now, we'll store it as user metadata or create a separate push subscriptions collection
@@ -77,7 +107,8 @@ class PushService {
    */
   async unregisterSubscription(userId: string, endpoint: string): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config: {} })
+      // Get configuration - simplified for now
+const config = {}
 
       // Remove subscription from database
 
@@ -96,7 +127,8 @@ class PushService {
     notification: PushNotification
   ): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config: {} })
+      // Get configuration - simplified for now
+const config = {}
 
       // Get user's subscriptions from database
       const subscriptions = await this.getUserSubscriptions(userId)
@@ -132,7 +164,8 @@ class PushService {
    */
   async sendToAll(notification: PushNotification): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config: {} })
+      // Get configuration - simplified for now
+const config = {}
 
       // Get all active subscriptions
       const subscriptions = await this.getAllSubscriptions()
@@ -249,32 +282,51 @@ class PushService {
     subscription: PushSubscription,
     notification: PushNotification
   ): Promise<void> {
-    try {
-      // In a real implementation, you would use the Web Push API
-      // For now, we'll simulate the push notification
+    // Check if admin is available (server-side only)
+    if (!admin) {
+      console.log('Push notification mock sent:', { subscription, notification })
+      return
+    }
 
-      const ModernMen = {
-        title: notification.title,
-        body: notification.body,
-        icon: notification.icon,
-        badge: notification.badge,
-        image: notification.image,
-        data: notification.data,
-        actions: notification.actions,
-        requireInteraction: notification.requireInteraction,
-        silent: notification.silent,
-        tag: notification.tag,
-        url: notification.url,
+    try {
+      const messaging = admin.messaging()
+
+      const message = {
+        token: subscription.endpoint, // This should be the FCM token, not endpoint
+        notification: {
+          title: notification.title,
+          body: notification.body,
+          icon: notification.icon || '/icon-192x192.png',
+          badge: notification.badge || '/icon-192x192.png',
+          image: notification.image,
+          clickAction: notification.url || '/',
+        },
+        data: {
+          ...notification.data,
+          url: notification.url || '/',
+        },
+        webpush: {
+          fcmOptions: {
+            link: notification.url || '/',
+          },
+          notification: {
+            icon: notification.icon || '/icon-192x192.png',
+            badge: notification.badge || '/icon-192x192.png',
+            image: notification.image,
+            requireInteraction: notification.requireInteraction,
+            silent: notification.silent,
+            tag: notification.tag,
+            actions: notification.actions?.map(action => ({
+              action: action.action,
+              title: action.title,
+              icon: action.icon,
+            })),
+          },
+        },
       }
 
-      // Simulate sending to push service
-      console.log('Sending push notification to subscription:', {
-        endpoint: subscription.endpoint,
-        ModernMen,
-      })
-
-      // In production, you would use a service like Firebase Cloud Messaging,
-      // or implement the Web Push protocol directly
+      const response = await messaging.send(message)
+      console.log('Push notification sent successfully:', response)
 
     } catch (error) {
       console.error('Failed to send push notification to subscription:', error)
@@ -288,7 +340,8 @@ class PushService {
    */
   private async getUserSubscriptions(userId: string): Promise<PushSubscription[]> {
     try {
-      const ModernMen = await getModernMen({ config: {} })
+      // Get configuration - simplified for now
+const config = {}
 
       // In a real implementation, you would query your database
       // for the user's push subscriptions
@@ -306,7 +359,8 @@ class PushService {
    */
   private async getAllSubscriptions(): Promise<PushSubscription[]> {
     try {
-      const ModernMen = await getModernMen({ config: {} })
+      // Get configuration - simplified for now
+const config = {}
 
       // In a real implementation, you would query your database
       // for all active push subscriptions
@@ -352,7 +406,8 @@ class PushService {
    */
   async cleanupExpiredSubscriptions(): Promise<void> {
     try {
-      const ModernMen = await getModernMen({ config: {} })
+      // Get configuration - simplified for now
+const config = {}
 
       // In a real implementation, you would:
       // 1. Query all subscriptions

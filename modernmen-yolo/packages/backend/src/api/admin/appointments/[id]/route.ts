@@ -1,3 +1,6 @@
+import { smsService } from '@/services/smsService';
+import { emailService } from '@/services/emailService';
+
 // =============================================================================
 // ADMIN APPOINTMENT BY ID API - Individual appointment CRUD operations
 // =============================================================================
@@ -103,9 +106,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     // TODO: Send update notification if needed
-    // if (updates.status && updates.status !== existing.status) {
-    //   await sendAppointmentUpdateNotification(data);
-    // }
+    if (updates.status && updates.status !== existing.status) {
+      await emailService.sendAppointmentUpdate(data);
+      if (smsService.isConfigured() && existing.customer_phone) {
+        await smsService.sendAppointmentUpdate(existing.customer_phone, data);
+      }
+    }
 
     return NextResponse.json({
       appointment: data,
@@ -163,7 +169,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     // TODO: Send cancellation notification
-    // await sendAppointmentCancellationNotification(existing);
+    await emailService.sendAppointmentCancellation(existing);
+    if (smsService.isConfigured() && existing.customer_phone) {
+      await smsService.sendAppointmentCancellation(existing.customer_phone, existing);
+    }
 
     return NextResponse.json({
       message: 'Appointment deleted successfully',

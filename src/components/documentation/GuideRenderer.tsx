@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { CheckCircle, Circle, Clock, AlertTriangle, ChevronRight, ChevronDown, Play, Book, Target, Users } from '@/lib/icon-mapping'
+import { CheckCircle, Circle, Clock, AlertTriangle, ChevronRight, ChevronDown, Play, Book, Target, Users, BookOpen } from '@/lib/icon-mapping'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -114,7 +114,7 @@ export function GuideRenderer({
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <CardTitle className="text-2xl text-slate-100 flex items-center gap-2">
-                <BookOpen className="h-6 w-6 text-cyan-400" />
+                <Book className="h-6 w-6 text-cyan-400" />
                 {guide.metadata.title}
               </CardTitle>
               <p className="text-slate-300">{guide.metadata.description}</p>

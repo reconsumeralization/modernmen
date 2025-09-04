@@ -1,17 +1,13 @@
-// Use placeholder icons system to avoid lucide-react import issues
-import React from 'react'
+// Unified icon mapping system for Modern Men Hair Salon
 import type { ComponentType } from 'react'
 
-// Placeholder component used for all icons
-const Placeholder: React.FC<any> = (props) => null
-
-// Import all icons from our placeholder system
-import * as Icons from './icons'
+// Import all icons from our unified icons system
+import * as Icons from './src/icons'
 
 /**
  * The default fallback icon component.
  */
-const FallbackIcon: ComponentType<any> = Placeholder
+const FallbackIcon: ComponentType<any> = Icons.CircleHelp
 
 /**
  * Map of available lucide-react icons.
@@ -25,14 +21,13 @@ const lucideIcons: Record<string, ComponentType<any>> = {
     alertTriangle: Icons.AlertTriangle,
     checkCircle: Icons.CheckCircle,
     code: Icons.Code,
-    rch: Icons.rch,
     book: Icons.BookOpen,
     arrowLeft: Icons.ArrowLeft,
     chevronRight: Icons.ChevronRight,
     menu: Icons.Menu,
     x: Icons.X,
     users: Icons.Users,
-    helpCircle: Icons.HelpCircle,
+    helpCircle: Icons.CircleHelp,
     calendar: Icons.Calendar,
     fileText: Icons.FileText,
     barChart3: Icons.BarChart3,
@@ -121,14 +116,13 @@ export const iconMapping: Record<string, ComponentType<any>> = {
   alertTriangle: Icons.AlertTriangle,
   checkCircle: Icons.CheckCircle,
   code: Icons.Code,
-  rch: Icons.rch,
   book: Icons.BookOpen,
   arrowLeft: Icons.ArrowLeft,
   chevronRight: Icons.ChevronRight,
   menu: Icons.Menu,
   x: Icons.X,
   users: Icons.Users,
-  helpCircle: Icons.HelpCircle,
+  helpCircle: Icons.CircleHelp,
   calendar: Icons.Calendar,
   fileText: Icons.FileText,
   barChart3: Icons.BarChart3,
@@ -197,35 +191,41 @@ export const iconMapping: Record<string, ComponentType<any>> = {
   chart: Icons.Chart,
 
   // Fallback/alias mappings for missing or alternate icon names
-  globe: Icons.Database,
-  mail: Icons.Bell,
-  key: FallbackIcon, // 'lock' does not exist, fallback to Settings
+  globe: Icons.Globe,
+  mail: Icons.Mail,
+  key: Icons.Key,
+  lock: Icons.Lock,
   server: Icons.Database,
-  info: Icons.HelpCircle,
-  alertCircle: Icons.AlertTriangle,
-  infoIcon: Icons.HelpCircle,
+  info: Icons.Info,
+  alertCircle: Icons.AlertCircle,
+  infoIcon: Icons.Info,
   checkCircle2: Icons.CheckCircle,
-  rotateCcw: Icons.RefreshCw,
-  saveIcon: Icons.Download,
+  rotateCcw: Icons.RotateCcw,
+  saveIcon: Icons.Save,
   historyIcon: Icons.Clock,
-  alertCircleIcon: Icons.AlertTriangle,
+  alertCircleIcon: Icons.AlertCircle,
   checkCircleIcon: Icons.CheckCircle,
-  wifi: Icons.WifiOff,
+  wifi: Icons.Wifi,
   paintbrush: Icons.Brush,
   loader: Icons.Loader2,
-  terminal: Icons.Code,
-  accessibility: Icons.HelpCircle,
-  gitBranch: Icons.GitCommit,
-  thumbsDown: Icons.ThumbsUp,
-  link: Icons.ExternalLink,
+  terminal: Icons.Terminal,
+  accessibility: Icons.Accessibility,
+  gitBranch: Icons.GitBranch,
+  thumbsDown: Icons.ThumbsDown,
+  link: Icons.Link,
   barChart: Icons.BarChart3,
-  xCircle: Icons.X,
+  xCircle: Icons.XCircle,
   upload: Icons.Upload,
-  monitor: Icons.Phone, // Alias for phone, as 'monitor' is not directly available in lucideIcons
-  smartphone: Icons.Phone,
-  stop: Icons.Pause, // Use pause as fallback for stop
+  monitor: Icons.Monitor,
+  smartphone: Icons.Smartphone,
+  stop: Icons.Stop,
   edit: Icons.Edit,
-  save: Icons.Download,
+  save: Icons.Save,
+  send: Icons.Send,
+  trash2: Icons.Trash2,
+  plus: Icons.Plus,
+  user: Icons.User,
+  atSign: Icons.Mail, // Use Mail as fallback for AtSign
 }
 
 /**
@@ -238,7 +238,7 @@ export function getIcon(iconName: string): ComponentType<any> {
 }
 
 // Re-export all icons from the icons module for direct import if needed
-export * from './icons'
+export * from './src/icons'
 
 // Direct exports for commonly used capitalized icon names
 export const Award = Icons.Award
@@ -248,9 +248,30 @@ export const Brush = Icons.Brush
 export const Star = Icons.Star
 export const Facebook = Icons.Facebook
 export const Instagram = Icons.Instagram
-export const Mail = Icons.Bell
+export const Mail = Icons.Mail
 export const Search = Icons.Search
 export const LogOut = Icons.LogOut
 export const Camera = Icons.Camera
 export const Book = Icons.BookOpen
 export const Chart = Icons.Chart
+
+// Additional icons needed by CustomerCommunication component
+export const MessageSquare = Icons.MessageSquare
+export const Send = Icons.Send
+export const Phone = Icons.Phone
+export const Calendar = Icons.Calendar
+export const UserIcon = Icons.User
+export const Clock = Icons.Clock
+export const CheckCircle = Icons.CheckCircle
+export const AlertCircle = Icons.AlertCircle
+export const XCircle = Icons.XCircle
+export const Eye = Icons.Eye
+export const Edit = Icons.Edit
+export const Trash2 = Icons.Trash2
+export const Plus = Icons.Plus
+export const Filter = Icons.Filter
+export const MoreHorizontal = Icons.MoreHorizontal
+export const Bell = Icons.Bell
+export const MessageCircle = Icons.MessageCircle
+export const AtSign = Icons.Mail
+export const AtSignIcon = Icons.Mail

@@ -109,13 +109,13 @@ export const CustomAdminWrapper: React.FC<{ collections: any[]; globals: any[] }
             <svg width="32" height="32" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
               <title>ModernMen Admin Logo</title>
               <defs>
-                <style>
+                <style>{`
                   :root {
                     --bg: #000000;
                     --fg: #ffffff;
                   }
                   .ring { fill: none; stroke: var(--fg); stroke-width: 18; }
-                </style>
+                `}</style>
                 <linearGradient id="shimmerGradLeftDark" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="var(--fg)" stopOpacity="0.4">
                     <animate attributeName="stop-opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite"/>

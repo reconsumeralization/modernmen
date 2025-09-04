@@ -21,10 +21,11 @@
       "Bash(pnpm install:*)",
       "Bash(node:*)",
       "Bash(curl:*)",
-      "Bash(docker:*)"
-    ],
-    "deny": [],
-    "yolo_mode": {
+      "Bash(docker:*)",
+      "Bash(git:*)",
+      "Bash(git:*)",
+      "Bash(git:*)",
+      "Bash(git:*)",
       "enabled": true,
       "risk_tolerance": "maximum",
       "safety_filters": "minimal",

@@ -1,0 +1,24 @@
+{
+  "name": "theme-module",
+  "version": "1.0.0",
+  "description": "Theme and styling components module for Modern Men Hair Salon",
+  "type": "theme",
+  "enabled": true,
+  "dependencies": [],
+  "exports": {
+    "ThemeShowcaseWidget": "./components/ThemeShowcaseWidget",
+    "ThemeManager": "./utils/theme-manager",
+    "ThemeProvider": "./components/ThemeProvider"
+  },
+  "components": [
+    "ThemeShowcaseWidget",
+    "ThemeProvider"
+  ],
+  "pages": [],
+  "hooks": [],
+  "utils": [
+    "ThemeManager"
+  ],
+  "permissions": [],
+  "routes": []
+}

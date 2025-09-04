@@ -1,17 +1,15 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
-import { useTheme } from "next-themes"
+import { ModernMenLogo } from "@/lib/video-branding"
 
 interface LogoProps {
   className?: string
   size?: "sm" | "md" | "lg" | "xl"
-  variant?: "default" | "favicon"
+  variant?: "primary" | "dark" | "icon" | "favicon" | "default"
 }
 
-export function Logo({ className = "", size = "md", variant = "default" }: LogoProps) {
-  const { theme, resolvedTheme } = useTheme()
+export function Logo({ className = "", size = "md", variant = "primary" }: LogoProps) {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
@@ -29,21 +27,14 @@ export function Logo({ className = "", size = "md", variant = "default" }: LogoP
     )
   }
 
-  const isDark = resolvedTheme === "dark"
-  const logoSrc = variant === "favicon"
-    ? "/favicon.svg"
-    : isDark
-      ? "/modernmen-logo-dark.svg"
-      : "/modernmen-logo.svg"
+  // Map legacy variants to video branding variants
+  const brandingVariant = variant === "favicon" ? "favicon" :
+                         variant === "default" ? "primary" : variant
 
   return (
-    <Image
-      src={logoSrc}
-      alt="ModernMen Hair Salon"
-      width={size === "sm" ? 32 : size === "md" ? 48 : size === "lg" ? 64 : 80}
-      height={size === "sm" ? 32 : size === "md" ? 48 : size === "lg" ? 64 : 80}
-      className={`object-contain ${getSizeClasses(size)} ${className}`}
-      style={{ imageRendering: "crisp-edges" }}
+    <ModernMenLogo
+      variant={brandingVariant}
+      className={`${getSizeClasses(size)} ${className}`}
     />
   )
 }
@@ -64,22 +55,21 @@ function getSizeClasses(size: LogoProps["size"]) {
   }
 }
 
-// Export hook for programmatic access
+// Export hook for programmatic access using video branding system
 export function useLogo() {
-  const { theme, resolvedTheme } = useTheme()
+  const { getLogo } = React.useMemo(() => {
+    const manager = require('@/lib/video-branding').videoBrandingManager
+    return manager
+  }, [])
 
-  const getLogoSrc = (variant: "default" | "favicon" = "default") => {
-    const isDark = resolvedTheme === "dark"
-    return variant === "favicon"
-      ? "/favicon.svg"
-      : isDark
-        ? "/modernmen-logo-dark.svg"
-        : "/modernmen-logo.svg"
+  const getLogoSrc = (variant: "primary" | "dark" | "icon" | "favicon" = "primary") => {
+    const logo = getLogo(`modern-men-logo-${variant}`)
+    return logo?.src || "/modernmen-logo.svg"
   }
 
   return {
     getLogoSrc,
-    isDark: resolvedTheme === "dark",
-    theme: resolvedTheme
+    getLogo,
+    manager: require('@/lib/video-branding').videoBrandingManager
   }
 }

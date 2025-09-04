@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, Fragment, useCallback, useEffect } from "react";
-import { Button } from "../../../src/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../src/components/ui/card";
-import { Progress } from "../../../src/components/ui/progress";
-import { cn } from "../../../src/lib/utils";
+import { Button } from "../../../packages/frontend/src/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../packages/frontend/src/components/ui/card";
+import { Progress } from "../../../packages/frontend/src/components/ui/progress";
+import { cn } from "../../../packages/frontend/src/lib/utils";
 
 // Custom icon components
 const ChevronLeft = ({ className }: { className?: string }) => (

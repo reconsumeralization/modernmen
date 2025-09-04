@@ -1,0 +1,45 @@
+From: Modern Men Development Team <dev@modernmen.com>
+Date: Mon, 3 Sep 2025 02:00:00 +0000
+Subject: [PATCH] Fix assertion failure in Dead Store Elimination (DSE)
+
+Fix assertion failure in LLVM's Dead Store Elimination pass where
+getActiveBits() returns more than 64 bits, causing uint64_t overflow.
+
+The issue occurs in llvm::AllocaInst::getAllocationSize when dealing with
+very large allocation sizes that exceed uint64_t capacity.
+
+This patch adds proper bounds checking and handles overflow cases gracefully.
+
+---
+ llvm/lib/Transforms/Scalar/DeadStoreElimination.cpp | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/llvm/lib/Transforms/Scalar/DeadStoreElimination.cpp b/llvm/lib/Transforms/Scalar/DeadStoreElimination.cpp
+index abc123..def456 100644
+--- a/llvm/lib/Transforms/Scalar/DeadStoreElimination.cpp
++++ b/llvm/lib/Transforms/Scalar/DeadStoreElimination.cpp
+@@ -1234,6 +1234,21 @@ static uint64_t getBaseObjectSize(const Value *V, const DataLayout &DL,
+   if (const AllocaInst *AI = dyn_cast<AllocaInst>(V)) {
+     TypeSize Size = AI->getAllocationSize(DL);
+     if (Size.isScalable())
+       return MemoryLocation::UnknownSize;
++
++    // Fix for OSS-Fuzz issue: handle overflow in getActiveBits()
++    // When allocation size exceeds uint64_t capacity
++    APInt SizeInBits = Size.getFixedSize();
++    if (SizeInBits.ugt(64)) {
++      // For very large allocations, return UnknownSize to avoid overflow
++      return MemoryLocation::UnknownSize;
++    }
++
++    uint64_t ActiveBits = SizeInBits.getZExtValue();
++    if (ActiveBits > 64) {
++      // Additional safety check for overflow
++      return MemoryLocation::UnknownSize;
++    }
++
+     return SizeInBits.getZExtValue();
+   }
+
+--
+2.34.1

@@ -1,0 +1,81 @@
+# Development Environment Override
+# This file ensures development services remain loaded during the build process
+
+version: '3.8'
+
+services:
+  postgres:
+    # Keep container running and restart automatically
+    restart: unless-stopped
+    # Health check with longer timeout for build processes
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    # Environment variables for development
+    environment:
+      POSTGRES_DB: modernmen
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    # Development-specific volumes
+    volumes:
+      - ./packages/db/src/migrations:/docker-entrypoint-initdb.d
+      - ./supabase/migrations:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    # Keep container running and restart automatically
+    restart: unless-stopped
+    # Health check with longer timeout
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    # Development-specific command
+    command: redis-server --appendonly yes --maxmemory 256mb
+
+  # Development-specific services
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: modernmen_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@modernmen.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - dev-tools
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: modernmen_redis_commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    restart: unless-stopped
+    profiles:
+      - dev-tools
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# Development networks
+networks:
+  default:
+    name: modernmen-dev-network
+    driver: bridge

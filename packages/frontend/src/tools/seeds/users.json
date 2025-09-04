@@ -1,0 +1,20 @@
+[
+  {
+    "email": "admin@modernmen.com",
+    "name": "Modern Men Admin",
+    "role": "admin",
+    "password": "admin123"
+  },
+  {
+    "email": "manager@modernmen.com",
+    "name": "Salon Manager",
+    "role": "manager",
+    "password": "manager123"
+  },
+  {
+    "email": "barber@modernmen.com",
+    "name": "John Barber",
+    "role": "barber",
+    "password": "barber123"
+  }
+]

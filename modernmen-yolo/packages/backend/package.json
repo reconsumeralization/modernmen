@@ -13,9 +13,10 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0",
-    "stripe": "^14.0.0",
     "@sendgrid/mail": "^8.1.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "resend": "^6.0.2",
+    "stripe": "^14.0.0",
     "twilio": "^4.19.0",
     "zod": "^3.22.0"
   },

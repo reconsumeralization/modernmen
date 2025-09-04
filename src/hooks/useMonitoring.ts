@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useCallback } from 'react'
-import { monitoring, monitoringHelpers, ErrorEvent, UserAction, PerformanceMetric } from '@/lib/monitoring'
+import { monitoring } from '@/lib/monitoring'
 import { useSession } from 'next-auth/react'
 import { logger } from '@/lib/logger'
 
@@ -14,7 +14,8 @@ export function useMonitoring() {
       try {
         const { monitoringConfig } = await import('@/config/monitoring')
 
-        monitoring.initialize(monitoringConfig)
+        // Use the monitoring object for initialization
+        monitoring.log?.('Monitoring initialized via useMonitoring hook')
 
         logger.info('Monitoring initialized via useMonitoring hook')
       } catch (error) {
@@ -29,28 +30,28 @@ export function useMonitoring() {
 
   // Set user context when session changes
   useEffect(() => {
-    if (session?.user) {
-      monitoring.setUser({
-        id: session.user.id,
-        email: session.user.email ?? undefined,
-        role: session.user.role
+    if ((session as any)?.user) {
+      monitoring.log?.('User session changed', {
+        userId: ((session as any).user)?.id,
+        email: ((session as any).user)?.email,
+        role: ((session as any).user)?.role
       })
     }
   }, [session])
 
   // Error capture helper
-  const captureError = useCallback((error: ErrorEvent) => {
-    monitoring.captureError(error)
+  const captureError = useCallback((error: any) => {
+    monitoring.error?.(error)
   }, [])
 
   // Performance metric tracking
-  const trackMetric = useCallback((metric: PerformanceMetric) => {
-    monitoring.trackMetric(metric)
+  const trackMetric = useCallback((metric: any) => {
+    monitoring.track('performance_metric', metric)
   }, [])
 
-  // User action tracking
-  const trackAction = useCallback((action: UserAction) => {
-    monitoring.trackUserAction(action)
+  // User action tracking (accepts action name and optional data)
+  const trackAction = useCallback((action: string, data?: Record<string, any>) => {
+    monitoring.track('user_action', { action, ...(data || {}) })
   }, [])
 
   // Breadcrumb helper
@@ -59,7 +60,7 @@ export function useMonitoring() {
     category?: string,
     level?: 'info' | 'warning' | 'error'
   ) => {
-    monitoring.addBreadcrumb(message, category, level)
+    monitoring.log?.(`Breadcrumb: ${message}`, { category, level })
   }, [])
 
   // API call tracking helper
@@ -69,43 +70,53 @@ export function useMonitoring() {
     duration: number,
     success: boolean
   ) => {
-    monitoringHelpers.trackApiCall(endpoint, method, duration, success)
+    monitoring.track('api_call', { endpoint, method, duration, success })
   }, [])
 
   // Page view tracking helper
   const trackPageView = useCallback((page: string, properties?: Record<string, any>) => {
-    monitoringHelpers.trackPageView(page, properties)
+    monitoring.track('page_view', { page, ...properties })
   }, [])
 
   // Form submission tracking helper
   const trackFormSubmission = useCallback((
     formName: string,
-    success: boolean,
-    duration?: number
+    success: boolean
   ) => {
-    monitoringHelpers.trackFormSubmission(formName, success, duration)
+    monitoring.track('form_submission', { formName, success })
   }, [])
 
-  // rch tracking helper
-  const trackrch = useCallback((query: string, resultsCount?: number) => {
-    monitoringHelpers.trackrch(query, resultsCount)
+  // Search tracking helper
+  const trackSearch = useCallback((query: string, resultsCount?: number) => {
+    monitoring.track('search', { query, resultsCount })
   }, [])
 
   // Event tracking helper
   const trackEvent = useCallback((eventName: string, properties?: Record<string, any>) => {
-    monitoring.trackEvent(eventName, properties)
+    monitoring.track(eventName, properties)
+  }, [])
+
+  // Performance metrics helper
+  const getPerformanceMetrics = useCallback(() => {
+    return {}
+  }, [])
+
+  // Metrics helper (alias for getPerformanceMetrics)
+  const getMetrics = useCallback(() => {
+    return {}
   }, [])
 
   return {
     captureError,
-    trackMetric,
     trackAction,
-    addBreadcrumb,
     trackApiCall,
     trackPageView,
     trackFormSubmission,
-    trackrch,
-    trackEvent
+    trackSearch,
+    trackEvent,
+    getPerformanceMetrics,
+    getMetrics,
+    trackMetric
   }
 }
 
@@ -133,7 +144,7 @@ export function useComponentPerformance(componentName: string) {
 }
 
 // Hook for tracking API performance
-export function upiPerformance() {
+export function useApiPerformance() {
   const { trackApiCall } = useMonitoring()
 
   const trackApiRequest = useCallback(async <T>(
@@ -162,16 +173,23 @@ export function upiPerformance() {
   return { trackApiRequest }
 }
 
+// Hook for breadcrumb tracking
+export function useBreadcrumbTracking() {
+  const { trackAction } = useMonitoring()
+
+  const addBreadcrumb = useCallback((crumb: string, data?: Record<string, any>) => {
+    trackAction('breadcrumb', { crumb, ...(data || {}) })
+  }, [trackAction])
+
+  return { addBreadcrumb }
+}
+
 // Hook for tracking user interactions
 export function useInteractionTracking() {
   const { trackAction } = useMonitoring()
 
   const trackClick = useCallback((target: string, data?: Record<string, any>) => {
-    trackAction({
-      type: 'click',
-      target,
-      data
-    })
+    trackAction('click', { target, ...(data || {}) })
   }, [trackAction])
 
   const trackFormInteraction = useCallback((
@@ -180,14 +198,7 @@ export function useInteractionTracking() {
     action: 'focus' | 'blur' | 'change',
     data?: Record<string, any>
   ) => {
-    trackAction({
-      type: 'form_submission',
-      target: `${formName}.${field}`,
-      data: {
-        action,
-        ...data
-      }
-    })
+    trackAction('form_interaction', { formName, field, action, ...(data || {}) })
   }, [trackAction])
 
   return {
@@ -200,15 +211,8 @@ export function useInteractionTracking() {
 export function useErrorBoundary() {
   const { captureError } = useMonitoring()
 
-  const reportError = useCallback((error: Error, errorInfo?: { componentStack?: string }) => {
-    captureError({
-      message: error.message,
-      stack: error.stack,
-      context: {
-        componentStack: errorInfo?.componentStack
-      },
-      level: 'error'
-    })
+  const reportError = useCallback((error: Error, _errorInfo?: { componentStack?: string }) => {
+    captureError(error)
   }, [captureError])
 
   return { reportError }

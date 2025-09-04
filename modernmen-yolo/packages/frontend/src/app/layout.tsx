@@ -2,9 +2,12 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/components/auth/AuthProvider'
-// Service worker registration will be handled by next-pwa plugin
-// import PWAInstall from '@/components/ui/pwa-install'
 import './globals.css'
+import { BrandingProvider } from '@/components/ui/branding-provider'
+import { RealtimeNotificationProvider } from '@/components/layout/RealtimeNotificationProvider'
+import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider'
+import { PrivacyConsent } from '@/components/analytics/PrivacyConsent'
+import { PWAManager } from '@/components/pwa/PWAManager'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -50,16 +53,27 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <AuthProvider>
-          {children}
-          <Toaster
-            position="top-right"
-            richColors
-            closeButton
-            duration={4000}
-          />
-        </AuthProvider>
-        {/* PWA components temporarily disabled for deployment stability */}
+        <PWAManager>
+          <AnalyticsProvider
+            trackingId={process.env.NEXT_PUBLIC_GA_TRACKING_ID}
+            debug={process.env.NODE_ENV === 'development'}
+          >
+            <BrandingProvider>
+              <AuthProvider>
+                <RealtimeNotificationProvider>
+                  {children}
+                  <Toaster
+                    position="top-right"
+                    richColors
+                    closeButton
+                    duration={4000}
+                  />
+                  <PrivacyConsent />
+                </RealtimeNotificationProvider>
+              </AuthProvider>
+            </BrandingProvider>
+          </AnalyticsProvider>
+        </PWAManager>
       </body>
     </html>
   )

@@ -1,11 +1,12 @@
 // =============================================================================
-// ModernMen CMS CONFIGURATION
+// MODERNMEN BARBERSHOP - CMS CONFIGURATION
 // =============================================================================
 
 // Temporary buildConfig function until Payload CMS is properly installed
 const buildConfig = (config: any) => config;
 
 import path from 'path'
+import { MODERNMEN_BRANDING } from './packages/frontend/src/lib/branding-config'
 
 // Import collections
 import { Users } from './cms/src/collections/Users'
@@ -23,10 +24,11 @@ export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001',
   admin: {
     user: 'users',
-    meta: {
-      titleSuffix: '- Modern Men Admin',
-      ogImage: '/og-image.png',
-    },
+    meta: MODERNMEN_BRANDING.admin.meta,
+    favicon: MODERNMEN_BRANDING.admin.favicon,
+    logoDark: MODERNMEN_BRANDING.admin.brandLogo,
+    logoLight: MODERNMEN_BRANDING.logo.white,
+    css: MODERNMEN_BRANDING.adminStyles,
   },
   collections: [
     Users,

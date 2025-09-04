@@ -22,10 +22,12 @@ export default function ServiceWorkerRegistration() {
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New content is available, notify user
-                  if (confirm('New content is available. Reload to update?')) {
-                    window.location.reload()
-                  }
+                  // New content is available, dispatch custom event for app to handle
+                  window.dispatchEvent(new CustomEvent('sw-update-available', {
+                    detail: {
+                      reload: () => window.location.reload()
+                    }
+                  }))
                 }
               })
             }

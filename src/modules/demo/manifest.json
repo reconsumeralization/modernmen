@@ -1,0 +1,42 @@
+{
+  "name": "demo-module",
+  "version": "1.0.0",
+  "description": "Demo and example components module for Modern Men Hair Salon",
+  "type": "demo",
+  "enabled": true,
+  "dependencies": [],
+  "exports": {
+    "AnalyticsDemoPage": "./pages/AnalyticsDemoPage",
+    "NavigationDemoPage": "./pages/NavigationDemoPage",
+    "VersionControlDemoPage": "./pages/VersionControlDemoPage",
+    "TestGuidePage": "./pages/TestGuidePage",
+    "MonitoringExample": "./components/MonitoringExample",
+    "DemoAnalyticsService": "./utils/analytics-service",
+    "DemoNavigationService": "./utils/navigation-service"
+  },
+  "components": [
+    "MonitoringExample",
+    "AnalyticsDemoPage",
+    "NavigationDemoPage",
+    "VersionControlDemoPage",
+    "TestGuidePage"
+  ],
+  "pages": [
+    "AnalyticsDemoPage",
+    "NavigationDemoPage",
+    "VersionControlDemoPage",
+    "TestGuidePage"
+  ],
+  "hooks": [],
+  "utils": [
+    "DemoAnalyticsService",
+    "DemoNavigationService"
+  ],
+  "permissions": [],
+  "routes": [
+    "/documentation/analytics-demo",
+    "/navigation-demo",
+    "/documentation/version-control-demo",
+    "/test-guide"
+  ]
+}

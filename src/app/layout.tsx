@@ -5,6 +5,10 @@ import { Toaster } from '@/components/ui/sonner'
 import { GlobalErrorBoundary } from '@/components/ui/global-error-boundary'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { NavigationProvider } from '@/contexts/NavigationContext'
+import { RoleBasedNavbar } from '@/components/navigation/RoleBasedNavbar'
+import { BreadcrumbNavigation } from '@/components/navigation/BreadcrumbNavigation'
+import { FloatingChatWidget } from '@/components/ai/FloatingChatWidget'
 import './globals.css'
 import { MonitoringInit } from '@/components/monitoring/MonitoringInit'
 
@@ -68,14 +72,23 @@ export default function RootLayout({
       <body className={`${inter.className} ${roboto.variable} ${robotoMono.variable}`}>
         <GlobalErrorBoundary>
           <Providers>
-            <MonitoringInit />
-            <div className="relative min-h-screen bg-background">
-              <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
-              <main className="relative">
-                {children}
-              </main>
-            </div>
-            <Toaster position="top-right" richColors />
+            <NavigationProvider>
+              <MonitoringInit />
+              <div className="relative min-h-screen bg-background">
+                <div className="absolute inset-0 bg-grid-white/[0.02] bg-grid-16 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+                <RoleBasedNavbar />
+                <div className="pt-16"> {/* Account for fixed navbar */}
+                  <div className="container mx-auto px-4 py-4">
+                    <BreadcrumbNavigation />
+                  </div>
+                  <main className="relative">
+                    {children}
+                  </main>
+                </div>
+              </div>
+              <Toaster position="top-right" richColors />
+              <FloatingChatWidget />
+            </NavigationProvider>
           </Providers>
         </GlobalErrorBoundary>
         <Analytics />

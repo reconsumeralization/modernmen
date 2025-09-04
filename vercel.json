@@ -1,25 +1,51 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
+  "outputDirectory": "packages/frontend/.next",
   "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "npm install",
   "env": {
     "PAYLOAD_SECRET": "@payload_secret",
     "PAYLOAD_PUBLIC_SERVER_URL": "@payload_public_server_url",
     "DATABASE_URL": "@database_url",
     "NEXTAUTH_SECRET": "@nextauth_secret",
-    "NEXTAUTH_URL": "@nextauth_url"
+    "NEXTAUTH_URL": "@nextauth_url",
+    "NODE_ENV": "production"
   },
   "functions": {
     "src/app/api/**/*.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/admin/[...payload]/**": {
+      "maxDuration": 60
+    },
+    "src/app/api/payload/**": {
+      "maxDuration": 45
     }
   },
   "regions": ["iad1"],
   "rewrites": [
     {
       "source": "/admin/:path*",
-      "destination": "/api/payload/admin/:path*"
+      "destination": "/api/admin/[...payload]/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/admin/:path*",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
     }
   ]
 }

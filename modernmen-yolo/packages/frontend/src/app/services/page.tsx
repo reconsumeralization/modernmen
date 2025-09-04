@@ -1,8 +1,12 @@
+'use client'
+
 import Link from 'next/link'
+import { useEffect } from 'react'
 import { ArrowRight, Award, Clock, Star, CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { analyticsService, EVENT_ACTIONS, EVENT_CATEGORIES } from '@/lib/analytics'
 
 // ModernMen branded service icon
 const ModernMenServiceIcon = () => (
@@ -75,6 +79,58 @@ const services = [
 ]
 
 export default function ServicesPage() {
+  // Track page view on component mount
+  useEffect(() => {
+    analyticsService.trackPageView('/services', 'Services - Modern Men Hair Salon')
+  }, [])
+
+  // Track service view when service comes into viewport
+  const handleServiceView = (serviceId: string, serviceName: string) => {
+    analyticsService.trackServiceInteraction(serviceId, EVENT_ACTIONS.SERVICE_VIEWED, {
+      service_name: serviceName,
+      page_location: 'services_page',
+      timestamp: new Date().toISOString()
+    })
+  }
+
+  // Track service booking button click
+  const handleServiceBookClick = (serviceId: string, serviceName: string, price: number) => {
+    analyticsService.trackServiceInteraction(serviceId, 'service_book_click', {
+      service_name: serviceName,
+      price: price,
+      page_location: 'services_page',
+      timestamp: new Date().toISOString()
+    })
+
+    // Track as conversion event
+    analyticsService.trackEvent({
+      action: 'service_booking_initiated',
+      category: EVENT_CATEGORIES.CONVERSION,
+      label: serviceId,
+      value: Math.round(price * 100),
+      customParameters: {
+        service_name: serviceName,
+        booking_source: 'services_page',
+        timestamp: new Date().toISOString()
+      }
+    })
+  }
+
+  // Track CTA button clicks
+  const handleMainCTAClick = () => {
+    analyticsService.trackEvent({
+      action: EVENT_ACTIONS.BUTTON_CLICK,
+      category: EVENT_CATEGORIES.USER_ENGAGEMENT,
+      label: 'main_services_cta',
+      customParameters: {
+        button_text: 'Book Your Appointment',
+        page_location: 'services_page',
+        cta_type: 'primary',
+        timestamp: new Date().toISOString()
+      }
+    })
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -96,8 +152,12 @@ export default function ServicesPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service) => (
-              <Card key={service.id} className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            {services.map((service, index) => (
+              <Card
+                key={service.id}
+                className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                onMouseEnter={() => handleServiceView(service.id, service.name)}
+              >
                 <CardHeader className="text-center pb-4">
                   <div className="relative">
                     {service.popular && (
@@ -134,7 +194,10 @@ export default function ServicesPage() {
                     ))}
                   </div>
 
-                  <Button className="w-full group-hover:bg-primary group-hover:text-white transition-colors">
+                  <Button
+                    className="w-full group-hover:bg-primary group-hover:text-white transition-colors"
+                    onClick={() => handleServiceBookClick(service.id, service.name, service.price)}
+                  >
                     <Link href={`/book?service=${service.id}`} className="flex items-center justify-center">
                       Book Now
                       <ArrowRight className="ml-2 w-4 h-4" />
@@ -210,7 +273,12 @@ export default function ServicesPage() {
           <p className="text-xl mb-8 text-primary-foreground/80 max-w-2xl mx-auto">
             Choose your preferred service and schedule an appointment with one of our expert barbers.
           </p>
-          <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
+          <Button
+            size="lg"
+            variant="secondary"
+            className="text-lg px-8 py-6"
+            onClick={handleMainCTAClick}
+          >
             <Link href="/book" className="flex items-center">
               Book Your Appointment
               <ArrowRight className="ml-2 w-5 h-5" />

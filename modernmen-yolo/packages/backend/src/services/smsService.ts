@@ -88,6 +88,17 @@ class SMSService {
   }
 
   /**
+   * Send appointment update SMS
+   */
+  async sendAppointmentUpdate(
+    phoneNumber: string,
+    appointment: AppointmentData
+  ): Promise<void> {
+    const message = this.generateAppointmentUpdateMessage(appointment)
+    await this.sendSMS(phoneNumber, message)
+  }
+
+  /**
    * Send promotional SMS
    */
   async sendPromotionalSMS(
@@ -241,6 +252,21 @@ See you tomorrow! Reply STOP to opt out.`
 👨 ${appointment.barberName}
 
 You can reschedule anytime. Call ${appointment.salonPhone} or visit our website.
+
+Reply STOP to opt out.`
+  }
+
+  /**
+   * Generate appointment update message
+   */
+  private generateAppointmentUpdateMessage(appointment: AppointmentData): string {
+    return `Hi ${appointment.customerName}! Your appointment has been updated:
+
+📅 ${appointment.date} at ${appointment.time}
+💇 ${appointment.serviceName}
+👨 ${appointment.barberName}
+
+If you have any questions, call ${appointment.salonPhone}.
 
 Reply STOP to opt out.`
   }
