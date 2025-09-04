@@ -27,9 +27,9 @@ interface PWAManagerProps {
 export function PWAManager({ children }: PWAManagerProps) {
   const { canInstall, isInstalled, install } = usePWAInstall()
   const { isOnline } = useOnlineStatus()
-  const [showUpdateDialog, setShowUpdateDialog] = useState(false)
+  const [showUpdateDialog, setShowUpdateDialog] = React.useState<boolean>(false)
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Listen for service worker update events
     const handleUpdateAvailable = (event: CustomEvent) => {
       setShowUpdateDialog(true)
@@ -42,7 +42,7 @@ export function PWAManager({ children }: PWAManagerProps) {
     }
   }, [])
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Register service worker on component mount
     if ('serviceWorker' in navigator && typeof window !== 'undefined') {
       navigator.serviceWorker
@@ -317,26 +317,12 @@ export function usePWA() {
     }
   }
 
-  const checkForUpdates = async () => {
-    if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.ready
-      await registration.update()
-
-      // Check if there's a new service worker waiting
-      if (registration.waiting) {
-        // New content is available, notify user
-        setShowUpdateDialog(true)
-      }
-    }
-  }
-
   return {
     canInstall,
     isInstalled,
     isOnline,
     wasOffline,
     install,
-    updateServiceWorker,
-    checkForUpdates
+    updateServiceWorker
   }
 }
