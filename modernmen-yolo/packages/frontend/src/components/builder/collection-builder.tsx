@@ -466,7 +466,7 @@ ${migrationCode}`)
     } finally {
       setIsGenerating(false)
     }
-  }, [collection, onCollectionCreated])
+  }, [collection, onCollectionCreated, generateTypeScriptTypes, toast])
 
   const generatePayloadCollection = (config: CollectionConfig): string => {
     const fieldsCode = config.fields.map(field => {

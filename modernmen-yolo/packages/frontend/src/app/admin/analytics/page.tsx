@@ -1,3 +1,6 @@
+// Force dynamic rendering to avoid useSearchParams static generation issues
+export const dynamic = 'force-dynamic'
+
 import { AdminAnalyticsDashboard } from '@/components/analytics/AdminAnalyticsDashboard'
 
 export default function AdminAnalyticsPage() {

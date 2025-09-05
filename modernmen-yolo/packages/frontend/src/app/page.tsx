@@ -1,3 +1,5 @@
+"use client"
+
 import Link from 'next/link'
 import { ArrowRight, Star, Users, Award, Clock, MapPin, Phone, Calendar, Zap, Shield, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -6,17 +8,16 @@ import { Badge } from '@/components/ui/badge'
 // Dynamic import for heavy components to prevent SSR issues
 import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
+import { useAnalytics, trackBookingFunnel, EVENT_ACTIONS, EVENT_CATEGORIES } from '@/lib/analytics'
+import { useCallback } from 'react'
+import { Chat } from '@/components/Chat'
 
 const VideoBackground = dynamic(() => import('@/lib/video-branding').then(mod => ({ default: mod.VideoBackground })), {
   ssr: false,
   loading: () => <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
 })
-import { useAnalytics, trackBookingFunnel, EVENT_ACTIONS, EVENT_CATEGORIES } from '@/lib/analytics'
-import { useCallback } from 'react'
-import { Chat } from '@/components/Chat'
 
 // Client component wrapper for interactive elements
-"use client"
 function ClientHomePage() {
   const { trackEvent } = useAnalytics()
 

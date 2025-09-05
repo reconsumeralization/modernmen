@@ -40,7 +40,7 @@ export function BrandingProvider({ children }: BrandingProviderProps) {
       // Video branding system integration
       initializeVideoBranding()
     }
-  }, [])
+  }, [initializeVideoBranding])
 
   const initializeVideoBranding = async () => {
     try {

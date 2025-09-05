@@ -5,7 +5,13 @@ import { AuthProvider } from '@/components/auth/AuthProvider'
 import './globals.css'
 import { BrandingProvider } from '@/components/ui/branding-provider'
 import { RealtimeNotificationProvider } from '@/components/layout/RealtimeNotificationProvider'
-import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider'
+// Dynamic import to avoid useSearchParams in server context
+import dynamic from 'next/dynamic'
+
+const AnalyticsProvider = dynamic(() => import('@/components/analytics/AnalyticsProvider').then(mod => ({ default: mod.AnalyticsProvider })), {
+  ssr: false,
+  loading: () => null
+})
 import { PrivacyConsent } from '@/components/analytics/PrivacyConsent'
 import { PWAManager } from '@/components/pwa/PWAManager'
 

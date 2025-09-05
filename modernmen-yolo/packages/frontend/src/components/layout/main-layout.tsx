@@ -7,7 +7,13 @@ import { Header } from "@/components/navigation/header"
 import { Footer } from "@/components/navigation/footer"
 import { BreadcrumbContainer, Breadcrumb } from "@/components/navigation/breadcrumb"
 import { PageTransition } from "@/components/navigation/page-transition"
-import { NavigationProvider } from "@/components/navigation/navigation-provider"
+// Dynamic import to avoid useSearchParams in server context
+import dynamic from 'next/dynamic'
+
+const NavigationProvider = dynamic(() => import("@/components/navigation/navigation-provider").then(mod => ({ default: mod.NavigationProvider })), {
+  ssr: false,
+  loading: () => null
+})
 import { Toaster } from "@/components/ui/toaster"
 
 interface MainLayoutProps {

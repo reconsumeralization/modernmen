@@ -53,7 +53,7 @@ export function SupremeCommandCenter() {
     loadSystemStatus()
     const interval = setInterval(loadSystemStatus, 5000) // Update every 5 seconds
     return () => clearInterval(interval)
-  }, [])
+  }, [loadSystemStatus])
 
   const loadSystemStatus = async () => {
     try {
