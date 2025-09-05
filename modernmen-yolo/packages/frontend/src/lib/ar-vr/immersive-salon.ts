@@ -2,14 +2,15 @@
 // Virtual try-on, remote consultations, and immersive customer experiences
 
 export interface VirtualTryOn {
-  session: { sessionId: string; captured: boolean; timestamp: string; trackingData: {}; };
-  session: { sessionId: string; captured: boolean; timestamp: string; trackingData: {} }
   session: {
     id: string
     customerId: string
     startTime: Date
     device: 'mobile' | 'desktop' | 'vr_headset' | 'ar_glasses'
     mode: 'try_on' | 'consultation' | 'styling_session'
+    captured: boolean
+    timestamp: string
+    trackingData: Record<string, any>
   }
   faceTracking: {
     landmarks: Array<{
@@ -302,7 +303,7 @@ class ImmersiveSalon {
   // Virtual Try-On System
   async startVirtualTryOn(
     customerId: string,
-    device: VirtualTryOn['session']['device']
+    device: 'mobile' | 'desktop' | 'vr_headset' | 'ar_glasses'
   ): Promise<VirtualTryOn> {
     try {
       const response = await fetch(`${this.API_BASE}/try-on/start`, {
@@ -319,8 +320,14 @@ class ImmersiveSalon {
 
       const tryOnSession: VirtualTryOn = {
         session: {
-          ...session.session,
-          startTime: new Date(session.session.startTime)
+          id: session.session.id,
+          customerId: session.session.customerId,
+          startTime: new Date(session.session.startTime),
+          device: session.session.device,
+          mode: session.session.mode,
+          captured: false,
+          timestamp: new Date().toISOString(),
+          trackingData: {}
         },
         faceTracking: session.faceTracking,
         hairSimulation: session.hairSimulation,
@@ -338,7 +345,15 @@ class ImmersiveSalon {
 
   async updateHairSimulation(
     sessionId: string,
-    simulation: Partial<VirtualTryOn['hairSimulation']>
+    simulation: {
+      baseStyle?: string
+      color?: string
+      texture?: 'straight' | 'wavy' | 'curly' | 'coily'
+      length?: number
+      layers?: number
+      bangs?: boolean
+      part?: 'left' | 'right' | 'center' | 'zigzag'
+    }
   ): Promise<VirtualTryOn> {
     try {
       const session = this.activeSessions.get(sessionId)
@@ -415,7 +430,25 @@ class ImmersiveSalon {
       maintenance: 'low' | 'medium' | 'high'
       riskTolerance: 'low' | 'medium' | 'high'
     }
-  ): Promise<VirtualTryOn['recommendations']> {
+  ): Promise<{
+    personalized: Array<{
+      style: string
+      reasoning: string
+      confidence: number
+      maintenance: string[]
+    }>
+    seasonal: Array<{
+      trend: string
+      styles: string[]
+      relevance: number
+    }>
+    celebrity: Array<{
+      celebrity: string
+      style: string
+      match: number
+      image: string
+    }>
+  }> {
     try {
       const response = await fetch(`${this.API_BASE}/recommendations/${sessionId}`, {
         method: 'POST',
