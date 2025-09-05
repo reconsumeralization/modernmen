@@ -397,19 +397,33 @@ class ImmersiveSalon {
       // For now, simulate the capture
       console.log('Face tracking capture simulated for session:', sessionId)
 
-      // Simulate successful response
-      const tracking = {
-        sessionId,
-        captured: true,
-        timestamp: new Date().toISOString(),
-        trackingData: {}
+      // Simulate successful response with proper structure
+      const tracking: VirtualTryOn['faceTracking'] = {
+        landmarks: [
+          { x: 0, y: 0, z: 0, name: 'nose' },
+          { x: 10, y: -10, z: 0, name: 'leftEye' },
+          { x: -10, y: -10, z: 0, name: 'rightEye' }
+        ],
+        measurements: {
+          faceWidth: 140,
+          faceLength: 180,
+          foreheadHeight: 60,
+          eyeDistance: 35,
+          noseBridge: 20
+        },
+        expressions: {
+          happy: 0.8,
+          surprised: 0.2,
+          confused: 0.1,
+          satisfied: 0.7
+        }
       }
 
       // Update session
       const session = this.activeSessions.get(sessionId)
       if (!session) throw new Error('Session not found')
 
-      const updatedSession = {
+      const updatedSession: VirtualTryOn = {
         ...session,
         faceTracking: tracking
       }
