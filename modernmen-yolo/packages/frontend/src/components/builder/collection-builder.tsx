@@ -404,6 +404,49 @@ export function CollectionBuilder({ onCollectionCreated, existingCollections = [
     })
   }, [])
 
+  const generateTypeScriptTypes = (config: CollectionConfig): string => {
+    const interfaceFields = config.fields.map(field => {
+      let typeString = 'any'
+
+      switch (field.type) {
+        case 'text':
+        case 'textarea':
+        case 'email':
+          typeString = 'string'
+          break
+        case 'number':
+          typeString = 'number'
+          break
+        case 'date':
+          typeString = 'Date'
+          break
+        case 'checkbox':
+          typeString = 'boolean'
+          break
+        case 'relationship':
+          typeString = field.hasMany ? 'string[]' : 'string'
+          break
+      }
+
+      const optional = field.required ? '' : '?'
+      return `  ${field.name}${optional}: ${typeString}`
+    }).join('\n')
+
+    return `export interface ${config.name} {
+${interfaceFields}
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface Create${config.name}Input {
+${config.fields.map(field => `  ${field.name}${field.required ? '' : '?'}: ${getFieldType(field)}`).join('\n')}
+}
+
+export interface Update${config.name}Input {
+${config.fields.map(field => `  ${field.name}?: ${getFieldType(field)}`).join('\n')}
+}`
+  }
+
   const generateCollectionCode = useCallback(async () => {
     if (!collection.name || !collection.slug) {
       toast({
@@ -508,49 +551,6 @@ export const ${config.name}: CollectionConfig = {
 ${fieldsCode}
   ],
   timestamps: ${config.timestamps},
-}`
-  }
-
-  const generateTypeScriptTypes = (config: CollectionConfig): string => {
-    const interfaceFields = config.fields.map(field => {
-      let typeString = 'any'
-
-      switch (field.type) {
-        case 'text':
-        case 'textarea':
-        case 'email':
-          typeString = 'string'
-          break
-        case 'number':
-          typeString = 'number'
-          break
-        case 'date':
-          typeString = 'Date'
-          break
-        case 'checkbox':
-          typeString = 'boolean'
-          break
-        case 'relationship':
-          typeString = field.hasMany ? 'string[]' : 'string'
-          break
-      }
-
-      const optional = field.required ? '' : '?'
-      return `  ${field.name}${optional}: ${typeString}`
-    }).join('\n')
-
-    return `export interface ${config.name} {
-${interfaceFields}
-  createdAt: Date
-  updatedAt: Date
-}
-
-export interface Create${config.name}Input {
-${config.fields.map(field => `  ${field.name}${field.required ? '' : '?'}: ${getFieldType(field)}`).join('\n')}
-}
-
-export interface Update${config.name}Input {
-${config.fields.map(field => `  ${field.name}?: ${getFieldType(field)}`).join('\n')}
 }`
   }
 

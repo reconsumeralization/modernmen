@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -49,13 +49,7 @@ export function SupremeCommandCenter() {
   const { getMetrics, getInsights } = useBusinessIntelligence()
   const { getSystemHealth } = useSystemIntegration()
 
-  useEffect(() => {
-    loadSystemStatus()
-    const interval = setInterval(loadSystemStatus, 5000) // Update every 5 seconds
-    return () => clearInterval(interval)
-  }, [loadSystemStatus])
-
-  const loadSystemStatus = async () => {
+  const loadSystemStatus = useCallback(async () => {
     try {
       const globalStatus = getGlobalSystemStatus()
       const systemMetrics = getSystemMetrics()
@@ -74,7 +68,13 @@ export function SupremeCommandCenter() {
     } catch (error) {
       console.error('Failed to load system status:', error)
     }
-  }
+  }, [getGlobalSystemStatus, getSystemMetrics, getSystemHealth, getSupremeCommands])
+
+  useEffect(() => {
+    loadSystemStatus()
+    const interval = setInterval(loadSystemStatus, 5000) // Update every 5 seconds
+    return () => clearInterval(interval)
+  }, [loadSystemStatus])
 
   const handleActivateSupremeMode = async () => {
     try {

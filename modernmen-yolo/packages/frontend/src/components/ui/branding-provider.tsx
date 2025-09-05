@@ -12,6 +12,33 @@ export function BrandingProvider({ children }: BrandingProviderProps) {
   const [videoLoaded, setVideoLoaded] = useState(false)
   const [videoError, setVideoError] = useState(false)
 
+
+  const initializeVideoBranding = async () => {
+    try {
+      // Check if video branding is supported and available
+      const videoSupported = 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices
+
+      if (videoSupported) {
+        // Load video branding assets
+        await loadVideoAssets()
+        setVideoLoaded(true)
+      } else {
+        // Fallback to static branding
+        console.log('Video branding not supported, using static branding')
+      }
+    } catch (error) {
+      console.error('Video branding initialization failed:', error)
+      setVideoError(true)
+      // Fallback to static branding on error
+    }
+  }
+
+  const loadVideoAssets = async () => {
+    // Implementation for loading video branding assets
+    // This would integrate with the collection-builder component for dynamic video content
+    return Promise.resolve()
+  }
+
   useEffect(() => {
     // Apply comprehensive branding with video system
     if (typeof document !== 'undefined') {
@@ -41,32 +68,6 @@ export function BrandingProvider({ children }: BrandingProviderProps) {
       initializeVideoBranding()
     }
   }, [initializeVideoBranding])
-
-  const initializeVideoBranding = async () => {
-    try {
-      // Check if video branding is supported and available
-      const videoSupported = 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices
-
-      if (videoSupported) {
-        // Load video branding assets
-        await loadVideoAssets()
-        setVideoLoaded(true)
-      } else {
-        // Fallback to static branding
-        console.log('Video branding not supported, using static branding')
-      }
-    } catch (error) {
-      console.error('Video branding initialization failed:', error)
-      setVideoError(true)
-      // Fallback to static branding on error
-    }
-  }
-
-  const loadVideoAssets = async () => {
-    // Implementation for loading video branding assets
-    // This would integrate with the collection-builder component for dynamic video content
-    return Promise.resolve()
-  }
 
   return (
     <>
