@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react'
 import { MODERNMEN_BRANDING } from './branding-config'
 

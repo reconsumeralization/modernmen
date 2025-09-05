@@ -252,7 +252,6 @@ class BusinessIntelligenceOrchestrator {
       category: metric.category === 'marketing' ? 'market' :
                metric.category === 'financial' ? 'revenue' :
                metric.category === 'growth' ? 'customer' :
-               metric.category === 'competition' ? 'competition' :
                metric.category === 'operations' ? 'operations' : 'market',
       title: `${metric.name} ${metric.trend === 'up' ? 'Growth' : metric.trend === 'down' ? 'Decline' : 'Stability'}`,
       description: `${metric.name} has ${metric.changePercent > 0 ? 'increased' : 'decreased'} by ${Math.abs(metric.changePercent).toFixed(1)}%`,
@@ -315,25 +314,25 @@ class BusinessIntelligenceOrchestrator {
 
   private async runPredictiveModels(
     category?: string,
-    timeframe: string
+    timeframe?: string
   ): Promise<PredictiveInsight[]> {
     const insights: PredictiveInsight[] = []
 
     // Revenue forecasting
     if (!category || category === 'revenue') {
-      const revenueInsight = await this.generateRevenueInsight(timeframe)
+      const revenueInsight = await this.generateRevenueInsight(timeframe || 'monthly')
       insights.push(revenueInsight)
     }
 
     // Customer behavior prediction
     if (!category || category === 'customer') {
-      const customerInsights = await this.generateCustomerInsights(timeframe)
+      const customerInsights = await this.generateCustomerInsights(timeframe || 'monthly')
       insights.push(...customerInsights)
     }
 
     // Operational optimization
     if (!category || category === 'operations') {
-      const operationalInsights = await this.generateOperationalInsights(timeframe)
+      const operationalInsights = await this.generateOperationalInsights(timeframe || 'monthly')
       insights.push(...operationalInsights)
     }
 

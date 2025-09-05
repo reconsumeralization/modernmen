@@ -319,7 +319,7 @@ class UserExperienceOrchestrator {
     userInteraction.intent = this.analyzeInteractionIntent(userInteraction)
 
     // Update personalization context
-    this.updatePersonalizationContext(userInteraction.userId || 'anonymous', {})
+    this.updatePersonalizationContext(userInteraction.id || 'anonymous', {})
 
     // Update journey progress if applicable
     this.updateJourneyFromInteraction(userInteraction)

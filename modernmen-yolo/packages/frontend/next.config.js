@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Production optimizations for Vercel deployment
+  // Performance optimizations for production builds
   experimental: {
-    // Removed optimizeCss for Vercel compatibility
-    // optimizeCss: true,
+    optimizeCss: true,
+    scrollRestoration: true,
+    // Disable static optimization for complex pages to prevent timeouts
+    serverComponentsExternalPackages: ['framer-motion'],
   },
 
   // Compiler optimizations
@@ -129,16 +131,15 @@ const nextConfig = {
       }
     }
 
-    // Temporarily disable webpack externals to identify the source
-    // if (!isServer) {
-    //   config.externals = config.externals || []
-    //   config.externals.push({
-    //     'drizzle-kit': 'drizzle-kit',
-    //     '@payloadcms/db-postgres': '@payloadcms/db-postgres',
-    //     '@payloadcms/db-mongodb': '@payloadcms/db-mongodb',
-    //     'payload': 'payload'
-    //   })
-    // }
+    // Optimize client components and external packages
+    if (!isServer) {
+      config.externals = config.externals || []
+      // Externalize heavy packages to reduce bundle size
+      config.externals.push({
+        'framer-motion': 'framer-motion',
+        'drizzle-kit': 'drizzle-kit',
+      })
+    }
 
     // Vercel deployment optimizations
     if (!dev && !isServer) {

@@ -3,13 +3,21 @@ import { ArrowRight, Star, Users, Award, Clock, MapPin, Phone, Calendar, Zap, Sh
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { VideoBackground } from '@/lib/video-branding'
+// Dynamic import for heavy components to prevent SSR issues
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
+
+const VideoBackground = dynamic(() => import('@/lib/video-branding').then(mod => ({ default: mod.VideoBackground })), {
+  ssr: false,
+  loading: () => <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+})
 import { useAnalytics, trackBookingFunnel, EVENT_ACTIONS, EVENT_CATEGORIES } from '@/lib/analytics'
 import { useCallback } from 'react'
 import { Chat } from '@/components/Chat'
 
-export default function HomePage() {
+// Client component wrapper for interactive elements
+"use client"
+function ClientHomePage() {
   const { trackEvent } = useAnalytics()
 
   // Track button clicks and conversions
@@ -375,6 +383,15 @@ export default function HomePage() {
       </section>
       <Chat />
     </div>
+  )
+}
+
+// Server component that renders the client component
+export default function HomePage() {
+  return (
+    <VideoBackground videoId="modern-men-haze">
+      <ClientHomePage />
+    </VideoBackground>
   )
 }
 
