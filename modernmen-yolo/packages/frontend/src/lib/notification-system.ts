@@ -790,7 +790,7 @@ class NotificationSystem {
     data: Record<string, any>
   ): Promise<{ subject?: string; content: string }> {
     // Simple template rendering - in production, use a proper template engine
-    const templates = {
+    const templates: Record<string, Record<NotificationChannel, { subject?: string; content: string }>> = {
       [NotificationType.APPOINTMENT_CONFIRMATION]: {
         [NotificationChannel.EMAIL]: {
           subject: 'Appointment Confirmed - ModernMen Barbershop',
@@ -809,12 +809,28 @@ class NotificationSystem {
         },
         [NotificationChannel.SMS]: {
           content: `Hi ${data.customerName}! Your ${data.serviceName} appointment with ${data.barberName} is confirmed for ${data.appointmentDate} at ${data.appointmentTime}. See you soon! - ModernMen`
+        },
+        [NotificationChannel.PUSH]: {
+          content: `Appointment confirmed for ${data.appointmentDate} at ${data.appointmentTime}`
+        },
+        [NotificationChannel.IN_APP]: {
+          content: `Your ${data.serviceName} appointment with ${data.barberName} is confirmed for ${data.appointmentDate} at ${data.appointmentTime}.`
+        },
+        [NotificationChannel.WEBHOOK]: {
+          content: JSON.stringify({
+            type: 'appointment_confirmed',
+            customerName: data.customerName,
+            serviceName: data.serviceName,
+            barberName: data.barberName,
+            appointmentDate: data.appointmentDate,
+            appointmentTime: data.appointmentTime
+          })
         }
       }
       // Add more templates for other notification types...
     }
 
-    const template = templates[type]?.[channel]
+    const template = templates[type as keyof typeof templates]?.[channel]
     
     return {
       subject: template?.subject,

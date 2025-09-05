@@ -179,7 +179,8 @@ class GlobalOrchestrator {
       return result
     } catch (error) {
       command.status = 'failed'
-      command.result = { error: error.message }
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      command.result = { error: errorMessage }
       command.executionTime = Date.now() - startTime
 
       this.emitSupremeEvent('command_failed', command)
