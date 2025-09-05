@@ -1,28 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "builds": [
-    {
-      "src": "packages/frontend/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/packages/frontend/src/app/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/packages/frontend/src/app/$1"
-    }
-  ],
-  "functions": {
-    "packages/frontend/src/app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
+  "buildCommand": "cd packages/frontend && npm run build",
+  "installCommand": "cd packages/frontend && npm install",
   "headers": [
     {
       "source": "/api/(.*)",

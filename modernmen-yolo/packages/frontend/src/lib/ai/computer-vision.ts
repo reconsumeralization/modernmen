@@ -386,7 +386,7 @@ class ComputerVisionEngine {
       })
 
       const results = await Promise.all(analysisPromises)
-      const validResults = results.filter(result => result !== null)
+      const validResults = results.filter((result): result is SalonAnalytics => result !== null)
 
       // Aggregate results
       return {
