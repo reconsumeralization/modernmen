@@ -129,6 +129,17 @@ const nextConfig = {
       }
     }
 
+    // Temporarily disable webpack externals to identify the source
+    // if (!isServer) {
+    //   config.externals = config.externals || []
+    //   config.externals.push({
+    //     'drizzle-kit': 'drizzle-kit',
+    //     '@payloadcms/db-postgres': '@payloadcms/db-postgres',
+    //     '@payloadcms/db-mongodb': '@payloadcms/db-mongodb',
+    //     'payload': 'payload'
+    //   })
+    // }
+
     // Vercel deployment optimizations
     if (!dev && !isServer) {
       // Optimize bundle splitting
