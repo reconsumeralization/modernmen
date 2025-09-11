@@ -99,7 +99,7 @@
     "@payloadcms/plugin-multi-tenant": "^3.54.0",
     "@payloadcms/plugin-search": "^3.54.0",
     "@payloadcms/plugin-stripe": "^3.54.0",
-    "@payloadcms/richtext-lexical": "^3.54.0",
+    "@payloadcms/richtext-lexical": "3.55.1",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-collapsible": "^1.1.12",
