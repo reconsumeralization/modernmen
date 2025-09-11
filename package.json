@@ -92,7 +92,7 @@
     "@lexical/markdown": "^0.34.0",
     "@lexical/react": "^0.28.0",
     "@lexical/table": "^0.28.0",
-    "@payloadcms/db-postgres": "^3.54.0",
+    "@payloadcms/db-postgres": "3.55.1",
     "@payloadcms/db-sqlite": "^3.54.0",
     "@payloadcms/plugin-cloud-storage": "^3.54.0",
     "@payloadcms/plugin-form-builder": "^3.54.0",
