@@ -139,7 +139,7 @@
     "es-toolkit": "^1.39.10",
     "framer-motion": "^12.23.12",
     "glob": "^11.0.3",
-    "googleapis": "^159.0.0",
+    "googleapis": "^161.0.0",
     "gray-matter": "^4.0.3",
     "lexical": "0.28.0",
     "logrocket": "^10.1.0",
